@@ -28,6 +28,12 @@ $this->idioma ["fecha_finalTitulo"] = "Seleccione la fecha final de la poliza";
 $this->idioma ["fecha_aprobacion"] = "Fecha de Aprobación:";
 $this->idioma ["fecha_aprobacionTitulo"] = "Seleccione la fecha de aprobacion de la póliza";
 
+$this->idioma ["fecha_expedicion"] = "Fecha de Expedición:";
+$this->idioma ["fecha_expedicionTitulo"] = "Seleccione la fecha de expedición de la póliza";
+
+
+
+
 $this->idioma ["fecha_inicio_amparo"] = "Fecha Inicial:  ";
 $this->idioma ["fecha_inicio_amparoTitulo"] = "Seleccione  la fecha inicial del amparo.";
 

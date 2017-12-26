@@ -194,6 +194,7 @@ class registrarForm {
             			<th>Fecha de Aprobación</th>
             			<th>Fecha Inicio</th>
             			<th>Fecha Fin</th>
+                                <th>Fecha Expedición</th>
             			<th>Estado</th>
                                 <th>Modificar Poliza</th>            
             			<th>Cambiar Estado</th>
@@ -239,6 +240,8 @@ class registrarForm {
                 $variableAmparos .= "&numero_contrato_suscrito=" . $_REQUEST ['numero_contrato_suscrito'];
                 $variableAmparos .= "&mensaje_titulo=" . $_REQUEST['mensaje_titulo'];
                 $variableAmparos = $this->miConfigurador->fabricaConexiones->crypto->codificar_url($variableAmparos, $directorio);
+                
+               
 
                 $mostrarHtml = "<tr>
                     <td><center>" . $contador . "</center></td>
@@ -247,7 +250,8 @@ class registrarForm {
                     <td><center>" . $valor ['descripcion_poliza'] . "</center></td>
                     <td><center>" . $valor ['fecha_aprobacion'] . "</center></td>
                     <td><center>" . $valor ['fecha_inicio'] . "</center></td>
-                    <td><center>" . $valor ['fecha_fin'] . "</center></td>";
+                    <td><center>" . $valor ['fecha_fin'] . "</center></td>
+                    <td><center>" . $valor ['fecha_expedicion'] . "</center></td>";
 
                 if ($valor["estado"] == 't') {
                     $mostrarHtml .= "<td><center>Activa</center></td>";

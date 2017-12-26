@@ -33,6 +33,8 @@ class RegistradorOrden {
 
         $cadenaSql = $this->miSql->getCadenaSql('obtenerMaxIdPoliza');
         $maxId = $esteRecursoDB->ejecutarAcceso($cadenaSql, "busqueda");
+
+        
         $datosPoliza = array(
             'id_poliza' => $maxId[0][0] + 1,
             'descripcion' => $_REQUEST['descripcion_poliza'],
@@ -46,10 +48,13 @@ class RegistradorOrden {
             'vigencia' => $_REQUEST['vigencia'],
             'numero_contrato_suscrito' => $_REQUEST['numero_contrato_suscrito'],
             'mensaje_titulo' => $_REQUEST['mensaje_titulo'],
+            'fecha_expedicion' => $_REQUEST['fecha_expedicion'],
+            
         );
 
         $cadenaSql = $this->miSql->getCadenaSql('insertarPoliza', $datosPoliza);
         $resultado = $esteRecursoDB->ejecutarAcceso($cadenaSql, "acceso",$datosPoliza,"registroPoliza");
+    
           
         if ($resultado != false) {
             redireccion::redireccionar('registroPoliza', $datosPoliza);

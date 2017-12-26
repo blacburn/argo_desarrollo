@@ -705,7 +705,7 @@ class Sql extends \Sql {
 
             case "obtenerPolizas" :
                 $cadenaSql = "SELECT p.id_poliza,p.descripcion_poliza,p.fecha_registro,p.estado,  ";
-                $cadenaSql .= " ea.nombre as nombre_aseguradora ,p.fecha_inicio,p.fecha_fin,p.numero_poliza,p.fecha_aprobacion  ";
+                $cadenaSql .= " ea.nombre as nombre_aseguradora ,p.fecha_inicio,p.fecha_fin,p.numero_poliza,p.fecha_aprobacion, p.fecha_expedicion  ";
                 $cadenaSql .= "FROM argo.poliza p, core.entidad_aseguradora ea  ";
                 $cadenaSql .= "WHERE p.numero_contrato = '" . $variable['numero_contrato'] . "' and p.vigencia = " . $variable['vigencia'] . " AND ";
                 $cadenaSql .= " p.entidad_aseguradora = ea.id  ";
@@ -713,7 +713,7 @@ class Sql extends \Sql {
                 break;
             case "obtenerPolizasActivas" :
                 $cadenaSql = "SELECT p.id_poliza,p.descripcion_poliza,p.fecha_registro,p.estado,p.usuario,  ";
-                $cadenaSql .= " ea.nombre as nombre_aseguradora ,p.fecha_inicio,p.fecha_fin,p.numero_poliza,p.fecha_aprobacion  ";
+                $cadenaSql .= " ea.nombre as nombre_aseguradora ,p.fecha_inicio,p.fecha_fin,p.numero_poliza,p.fecha_aprobacion, p.fecha_expedicion  ";
                 $cadenaSql .= "FROM argo.poliza p, core.entidad_aseguradora ea  ";
                 $cadenaSql .= "WHERE p.numero_contrato = '" . $variable['numero_contrato'] . "' and p.vigencia = " . $variable['vigencia'] . " AND ";
                 $cadenaSql .= " p.entidad_aseguradora = ea.id  and p.estado='t' ";
@@ -760,7 +760,7 @@ class Sql extends \Sql {
             case "insertarPoliza" :
                 $cadenaSql = " INSERT INTO poliza( id_poliza,numero_poliza, ";
                 $cadenaSql .= " descripcion_poliza,entidad_aseguradora,fecha_inicio,fecha_fin,fecha_aprobacion,"
-                        . "numero_contrato,vigencia, usuario)VALUES (";
+                        . "numero_contrato,vigencia, usuario, fecha_expedicion)VALUES (";
                 $cadenaSql .= $variable['id_poliza'] . ", ";
                 $cadenaSql .= "'" . $variable['numero_poliza'] . "', ";
                 $cadenaSql .= "'" . $variable['descripcion'] . "', ";
@@ -770,7 +770,8 @@ class Sql extends \Sql {
                 $cadenaSql .= "'" . $variable['fecha_aprobacion'] . "', ";
                 $cadenaSql .= "'" . $variable['numero_contrato'] . "', ";
                 $cadenaSql .= " " . $variable['vigencia'] . ", ";
-                $cadenaSql .= "'" . $variable['usuario'] . "'); ";
+                $cadenaSql .= "'" . $variable['usuario'] . "', ";
+                $cadenaSql .= "'" . $variable['fecha_expedicion'] . "'); ";
                 break;
 
             case "insertarAmparo" :

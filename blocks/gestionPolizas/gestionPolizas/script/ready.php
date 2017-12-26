@@ -128,6 +128,7 @@ onSelect: function(dateText, inst) {
 var lockDate = new Date($('#<?php echo $this->campoSeguro('fecha_inicio') ?>').datepicker('getDate'));
 $('input#<?php echo $this->campoSeguro('fecha_final') ?>').datepicker('option', 'minDate', lockDate);
 $('input#<?php echo $this->campoSeguro('fecha_aprobacion') ?>').datepicker('option', 'minDate', lockDate);
+$('input#<?php echo $this->campoSeguro('fecha_expedicion') ?>').datepicker('option', 'minDate', lockDate);
 },
 });
 
@@ -162,14 +163,42 @@ dayNamesShort: ['Dom','Lun','Mar','Mie','Jue','Vie','Sab'],
 dayNamesMin: ['Do','Lu','Ma','Mi','Ju','Vi','Sa'],
 beforeShow: function() {
 var lockDate = $('#<?php echo $this->campoSeguro('fecha_inicial') ?>').val();
-$('input#<?php echo $this->campoSeguro('fecha_aprobacion') ?>').datepicker('option', 'minDate', lockDate);  
+$('input#<?php echo $this->campoSeguro('fecha_aprobacion') ?>').datepicker('option', 'minDate', lockDate); 
+$('input#<?php echo $this->campoSeguro('fecha_expedicion') ?>').datepicker('option', 'minDate', lockDate);
 },
 onClose: function() {
 var lockDate = $('#<?php echo $this->campoSeguro('fecha_inicial') ?>').val();
-$('input#<?php echo $this->campoSeguro('fecha_aprobacion') ?>').datepicker('option', 'minDate', lockDate);  
+$('input#<?php echo $this->campoSeguro('fecha_aprobacion') ?>').datepicker('option', 'minDate', lockDate); 
+$('input#<?php echo $this->campoSeguro('fecha_expedicion') ?>').datepicker('option', 'minDate', lockDate);
 }
 
 });
+
+$('#<?php echo $this->campoSeguro('fecha_expedicion') ?>').datepicker({
+dateFormat: 'yy-mm-dd',
+changeYear: true,
+changeMonth: true,
+monthNames: ['Enero','Febrero','Marzo','Abril','Mayo','Junio',
+'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'],
+monthNamesShort: ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'],
+dayNames: ['Domingo','Lunes','Martes','Miercoles','Jueves','Viernes','Sabado'],
+dayNamesShort: ['Dom','Lun','Mar','Mie','Jue','Vie','Sab'],
+dayNamesMin: ['Do','Lu','Ma','Mi','Ju','Vi','Sa'],
+beforeShow: function() {
+var lockDate = $('#<?php echo $this->campoSeguro('fecha_inicial') ?>').val();
+$('input#<?php echo $this->campoSeguro('fecha_aprobacion') ?>').datepicker('option', 'minDate', lockDate); 
+$('input#<?php echo $this->campoSeguro('fecha_expedicion') ?>').datepicker('option', 'minDate', lockDate);
+},
+onClose: function() {
+var lockDate = $('#<?php echo $this->campoSeguro('fecha_inicial') ?>').val();
+$('input#<?php echo $this->campoSeguro('fecha_aprobacion') ?>').datepicker('option', 'minDate', lockDate); 
+$('input#<?php echo $this->campoSeguro('fecha_expedicion') ?>').datepicker('option', 'minDate', lockDate);
+}
+
+});
+
+
+
 
 
 $('#<?php echo $this->campoSeguro('fecha_inicio_amparo') ?>').datepicker({
@@ -185,6 +214,7 @@ dayNamesMin: ['Do','Lu','Ma','Mi','Ju','Vi','Sa'],
 onSelect: function(dateText, inst) {
 var lockDate = new Date($('#<?php echo $this->campoSeguro('fecha_inicio_amparo') ?>').datepicker('getDate'));
 $('input#<?php echo $this->campoSeguro('fecha_final_amparo') ?>').datepicker('option', 'minDate', lockDate);
+
 },
 
 });
