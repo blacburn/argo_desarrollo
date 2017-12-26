@@ -38,6 +38,7 @@ class RegistradorOrden {
             'descripcion' => $_REQUEST['descripcion_poliza'],
             'numero_poliza' => $_REQUEST['numero_poliza'],
             'fecha_aprobacion' => $_REQUEST['fecha_aprobacion'],
+            'fecha_expedicion' => $_REQUEST['fecha_expedicion'],
             'usuario' => $_REQUEST['usuario'],
             'entidad_aseguradora' => $_REQUEST['entidad_aseguradora'],
             'fecha_inicio' => $_REQUEST['fecha_inicio'],

@@ -785,7 +785,7 @@ class Sql extends \Sql {
 
             case "obtenerPoliza" :
                 $cadenaSql = "SELECT numero_poliza,descripcion_poliza,"
-                        . "fecha_registro,estado,entidad_aseguradora,fecha_inicio,fecha_fin,fecha_aprobacion  ";
+                        . "fecha_registro,estado,entidad_aseguradora,fecha_inicio,fecha_fin,fecha_aprobacion, fecha_expedicion  ";
                 $cadenaSql .= "FROM poliza WHERE id_poliza = $variable; ";
                 break;
             case "obtenerAmparos" :
@@ -808,7 +808,8 @@ class Sql extends \Sql {
                 $cadenaSql .= " entidad_aseguradora=" . $variable['entidad_aseguradora'] . ",";
                 $cadenaSql .= " fecha_inicio= '" . $variable['fecha_inicio'] . "', ";
                 $cadenaSql .= " fecha_fin='" . $variable['fecha_final'] . "',";
-                $cadenaSql .= " fecha_aprobacion='" . $variable['fecha_aprobacion'] . "'";
+                $cadenaSql .= " fecha_aprobacion='" . $variable['fecha_aprobacion'] . "',";
+                $cadenaSql .= " fecha_expedicion='" . $variable['fecha_expedicion'] . "'";
                 $cadenaSql .= " WHERE id_poliza =" . $variable['id_poliza'] . ";";
                 break;
 
