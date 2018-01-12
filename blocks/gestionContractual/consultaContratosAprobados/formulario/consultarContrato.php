@@ -63,11 +63,14 @@ class registrarForm {
         $directorio .= $this->miConfigurador->getVariableConfiguracion("site") . "/index.php?";
         $directorio .= $this->miConfigurador->getVariableConfiguracion("enlace");
 
+        if (isset($_REQUEST ['accesoCondor']) && $_REQUEST ['accesoCondor'] == 'true') {
+            
+        } else {
+            $id_usuario = $_REQUEST['usuario'];
+            $cadenaSqlUnidad = $this->miSql->getCadenaSql("obtenerInfoUsuario", $id_usuario);
+            $unidad = $DBFrameWork->ejecutarAcceso($cadenaSqlUnidad, "busqueda");
+        }
 
-
-        $id_usuario = $_REQUEST['usuario'];
-        $cadenaSqlUnidad = $this->miSql->getCadenaSql("obtenerInfoUsuario", $id_usuario);
-        $unidad = $DBFrameWork->ejecutarAcceso($cadenaSqlUnidad, "busqueda");
 
         // Limpia Items Tabla temporal
         // ---------------- SECCION: Parámetros Generales del Formulario ----------------------------------
@@ -195,6 +198,29 @@ class registrarForm {
         $cadenaSqlelaboro = $this->miSql->getCadenaSql('obtenerInformacionElaborador', $contrato['usuario']);
         $usuario = $DBFrameWork->ejecutarAcceso($cadenaSqlelaboro, "busqueda");
 
+        if (isset($_REQUEST ['accesoCondor']) && $_REQUEST ['accesoCondor'] == 'true') {
+            $atributos ["id"] = "logos";
+            $atributos ["estilo"] = " ";
+            echo $this->miFormulario->division("inicio", $atributos);
+            unset($atributos);
+            {
+
+                $esteCampo = 'logo';
+                $atributos ['id'] = $esteCampo;
+                $atributos ['tabIndex'] = $tab;
+                $atributos ['estilo'] = '';
+                $atributos ['enlaceImagen'] = $this->miConfigurador->getVariableConfiguracion('rutaUrlBloque') . 'css/images/banner_argo.jpg';
+                $atributos ['ancho'] = '100%';
+                $atributos ['alto'] = '150px';
+                $tab ++;
+                echo $this->miFormulario->enlace($atributos);
+                unset($atributos);
+            }
+
+            echo $this->miFormulario->division("fin");
+            unset($atributos);
+        }
+
 
         $esteCampo = "marcoDatos";
         $atributos ['id'] = $esteCampo;
@@ -234,7 +260,27 @@ class registrarForm {
                 $variable .= "&unidad_ejecutora_consulta=" . $arreglo['unidad\_ejecutora'];
 
                 $variable = $this->miConfigurador->fabricaConexiones->crypto->codificar_url($variable, $directorio);
-            } else {
+            } 
+
+             elseif (isset($_REQUEST['consultaSupervisor']) && $_REQUEST['consultaSupervisor'] == "TRUE") {
+
+                $arreglo = preg_replace('!s:(\d+):"(.*?)";!e', "'s:'.strlen('$2').':\"$2\";'", $_REQUEST['arreglo']);
+                $arreglo = unserialize($arreglo);
+
+                $variable = "bloque=gestionActas";
+                $variable .= "&pagina=gestionActasInicio";
+                $variable .= "&opcion=ConsultarContratos";
+                $variable .= "&clase_contrato=" . $arreglo['clase\_contrato'];
+                $variable .= "&id_contrato=" . $arreglo['numero\_contrato'] . "-(" . $arreglo['vigencia'] . ")";
+                $variable .= "&fecha_inicio_sub=" . $arreglo['fecha\_inicial'];
+                $variable .= "&id_contratista=" . $arreglo['nit'];
+                $variable .= "&fecha_final_sub=" . $arreglo['fecha\_final'];
+                $variable .= "&vigencia_por_contrato=" . $arreglo['vigencia\_curso'];
+                $variable .= "&unidad_ejecutora_consulta=" . $arreglo['unidad\_ejecutora'];
+
+                $variable = $this->miConfigurador->fabricaConexiones->crypto->codificar_url($variable, $directorio);
+            }      
+            else {
 
                 $arreglo = preg_replace('!s:(\d+):"(.*?)";!e', "'s:'.strlen('$2').':\"$2\";'", $_REQUEST['arreglo']);
                 $arreglo = unserialize($arreglo);
@@ -247,6 +293,10 @@ class registrarForm {
                 $variable .= "&fecha_inicio_sub=" . $arreglo ['fecha\_inicial'];
                 $variable .= "&fecha_final_sub=" . $arreglo ['fecha\_final'];
                 $variable .= "&usuario=" . $_REQUEST ['usuario'];
+                if (isset($_REQUEST ['accesoCondor']) && $_REQUEST ['accesoCondor'] == 'true') {
+
+                    $variable .= "&accesoCondor=true";
+                }
 
                 $variable = $this->miConfigurador->fabricaConexiones->crypto->codificar_url($variable, $directorio);
             }
@@ -287,7 +337,7 @@ class registrarForm {
                                                                                         Suficiencia
                                                                                 </th>
                                                                                 <th class="text-center">
-                                                                                        Vigencia
+                                                                                        Descripción
                                                                                 </th>
                                                                         </tr>
                                                                 </thead>
@@ -323,7 +373,7 @@ class registrarForm {
                                                                                                     <input type="text" id="porcentajeamparo'.$contadorArrend.'" name="porcentajeamparo'.$contadorArrend.'" placeholder="Porcentaje(%)-> 10%" maxlength="3" value="'.$arrendamientoGeneral[$contadorArrend]['suficiencia'].'" class="form-control  custom[number]" disabled/>
                                                                                                     </td>
                                                                                                     <td>
-                                                                                                    <input type="text" id="valoramparo'.$contadorArrend.'" name="valoramparo'.$contadorArrend.'" placeholder="Vigencia" maxlength="50" value="'.$arrendamientoGeneral[$contadorArrend]['vigencia'].'" class="form-control  " disabled/>
+                                                                                                    <input type="text" id="valoramparo'.$contadorArrend.'" name="valoramparo'.$contadorArrend.'" placeholder="Descripción" maxlength="500" value="'.$arrendamientoGeneral[$contadorArrend]['vigencia'].'" class="form-control  " disabled/>
                                                                                                     </td>';
                                                                                                   $tablaAmparosDinamica .= '</tr>';  
                                                                                                   $contadorArrend++;
@@ -2922,6 +2972,10 @@ class registrarForm {
         $valorCodificado .= "&usuario=" . $_REQUEST ['usuario'];
         $valorCodificado .= "&numero_contrato=" . $_REQUEST ['numero_contrato'];
         $valorCodificado .= "&vigencia=" . $_REQUEST ['vigencia'];
+        if (isset($_REQUEST ['accesoCondor']) && $_REQUEST ['accesoCondor'] == 'true') {
+
+            $valorCodificado .= "&accesoCondor=true";
+        }
 
         /**
          * SARA permite que los nombres de los campos sean dinámicos.
