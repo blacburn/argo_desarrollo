@@ -83,11 +83,13 @@ class registrarForm {
             $variable .= "&opcion=consultaElementos";
             $variable .= "&id_contrato=";
             $variable .= "&clase_contrato=";
-            $variable .= "&id_contratista=";
+            $variable .= "&id_contratista=" . $_REQUEST ['id_contratista'];
             $variable .= "&fecha_inicio_consulta=";
             $variable .= "&fecha_final_consulta=";
+            $variable .= "&id_orden=" . $_REQUEST ['id_orden'];
+            $variable .= "&id_elemento_acta=" . $_REQUEST ['id_elemento_acta'];
             $variable .= "&usuario=";
-            $variable .= "&arreglo=";
+            $variable .= "&arreglo=". stripslashes($_REQUEST ['arreglo']);
             $variable .= "&mensaje_titulo=" . $_REQUEST ['mensaje_titulo'];
             $variable .= "&numerocontrato=" . $_REQUEST['numerocontrato'];
             $variable .= "&vigencia=" . $_REQUEST['vigencia'];
@@ -95,7 +97,7 @@ class registrarForm {
             $variable = $this->miConfigurador->fabricaConexiones->crypto->codificar_url($variable, $directorio);
 
             // ---------------- SECCION: Controles del Formulario -----------------------------------------------
-            $esteCampo = "marcoDatosBasicos";
+            $esteCampo = "marcoDatos";
             $atributos ['id'] = $esteCampo;
             $atributos ["estilo"] = "jqueryui";
             $atributos ['tipoEtiqueta'] = 'inicio';
@@ -211,6 +213,12 @@ class registrarForm {
             $valorCodificado .= "&bloqueGrupo=" . $esteBloque ["grupo"];
             $valorCodificado .= "&opcion=eliminarElementoOrden";
             $valorCodificado .= "&id_elemento_acta=" . $_REQUEST ['id_elemento_acta'];
+            $valorCodificado .= "&id_orden=" . $_REQUEST ['id_orden'];
+            $valorCodificado .= "&id_contratista=" . $_REQUEST ['id_contratista'];
+            $valorCodificado .= "&numerocontrato=" . $_REQUEST ['numerocontrato'];
+            $valorCodificado .= "&vigencia=" . $_REQUEST ['vigencia'];
+            $valorCodificado .= "&mensaje_titulo=" . $_REQUEST ['mensaje_titulo'];
+            $valorCodificado .= "&arreglo=" . stripslashes($_REQUEST ['arreglo']);
             $valorCodificado .= "&usuario=" . $_REQUEST ['usuario'];
 
             /**

@@ -79,8 +79,13 @@ class registrarForm {
         $conexionFrameWork = "estructura";
         $DBFrameWork = $this->miConfigurador->fabricaConexiones->getRecursoDB($conexionFrameWork);
        
-        $cadenaSqlUnidad = $this->miSql->getCadenaSql("obtenerInfoUsuario", $_REQUEST['usuario']);
-        $unidad = $DBFrameWork->ejecutarAcceso($cadenaSqlUnidad, "busqueda");
+        if(isset($_REQUEST['usuario'])) {
+            $cadenaSqlUnidad = $this->miSql->getCadenaSql("obtenerInfoUsuario", $_REQUEST['usuario']);
+            $unidad = $DBFrameWork->ejecutarAcceso($cadenaSqlUnidad, "busqueda");
+
+        }
+
+        
 
 
         $esteCampo = "marcoDatosBasicos";

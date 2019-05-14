@@ -91,8 +91,94 @@ class registrarForm {
         $atributos ["leyenda"] = "Consultar Contratos Suscritos - Gestion de Polizas";
         echo $this->miFormulario->marcoAgrupacion('inicio', $atributos); {
             
+             
+            // ---------------- CONTROL: Cuadro de Texto --------------------------------------------------------
+            $esteCampo = 'vigencia_por_contrato';
+            $atributos ['columnas'] = 2;
+            $atributos ['nombre'] = $esteCampo;
+            $atributos ['id'] = $esteCampo;
+            $atributos ['evento'] = '';
+            $atributos ['deshabilitado'] = false;
+            $atributos ["etiquetaObligatorio"] = false;
+            $atributos ['tab'] = $tab;
+            $atributos ['tamanno'] = 1;
+            $atributos ['estilo'] = 'jqueryui';
+            $atributos ['validar'] = ' ';
+            $atributos ['limitar'] = false;
+            $atributos ['etiqueta'] = $this->lenguaje->getCadena($esteCampo);
+            $atributos ['anchoEtiqueta'] = 213;
+
+            if (isset($_REQUEST [$esteCampo])) {
+                $atributos ['seleccion'] = $_REQUEST [$esteCampo];
+            } else {
+                $atributos ['seleccion'] = 6;
+            }
+
+            // $atributos ['matrizItems'] = $matrizItems;
+            // Utilizar lo siguiente cuando no se pase un arreglo:
+            $atributos ['baseDatos'] = 'contractual';
+            $atributos ['cadena_sql'] = $this->miSql->getCadenaSql("vigencia_contrato");
+
+
+            $atributos = array_merge($atributos, $atributosGlobales);
+
+
+            echo $this->miFormulario->campoCuadroLista($atributos);
+            unset($atributos);
+
+
+            $esteCampo = 'consecutivo_por_contrato';
+            $atributos ['columnas'] = 2;
+            $atributos ['nombre'] = $esteCampo;
+            $atributos ['id'] = $esteCampo;
+            $atributos ['evento'] = '';
+            $atributos ['deshabilitado'] = false;
+            $atributos ["etiquetaObligatorio"] = false;
+            $atributos ['tab'] = $tab;
+            $atributos ['tamanno'] = 1;
+            $atributos ['estilo'] = 'jqueryui';
+            $atributos ['validar'] = ' ';
+            $atributos ['limitar'] = false;
+            $atributos ['etiqueta'] = $this->lenguaje->getCadena($esteCampo);
+            $atributos ['anchoEtiqueta'] = 213;
+            if (isset($_REQUEST [$esteCampo])) {
+                $atributos ['seleccion'] = $_REQUEST [$esteCampo];
+            } else {
+                $atributos ['seleccion'] = -1;
+            }
+
+            $tab ++;
             
-            $esteCampo = 'vigencia_contrato';
+            $consulta_consecutivo= array('unidad' => $unidad[0]['unidad_ejecutora'], 'vigencia_curso' => date('Y'));
+
+            $atributos ['cadena_sql'] = $this->miSql->getCadenaSql("consecutivo_contrato2",$consulta_consecutivo);
+            $matrizItems = $esteRecursoDB->ejecutarAcceso($atributos ['cadena_sql'], "busqueda");
+
+            
+             if ($matrizItems) {
+                $atributos ['matrizItems'] = $matrizItems;
+            }
+            else{
+                     $matrizItems = array(
+                          array(
+                              ' ',
+                              'Sin Datos'
+                          )
+                     );
+                     $atributos ['matrizItems'] = $matrizItems;
+            }  
+
+            if ($matrizItems) {
+                $atributos ['matrizItems'] = $matrizItems;
+            }
+
+            $atributos = array_merge($atributos, $atributosGlobales);
+            echo $this->miFormulario->campoCuadroLista($atributos);
+            unset($atributos);
+
+
+
+            /*$esteCampo = 'vigencia_contrato';
             $atributos ['id'] = $esteCampo;
             $atributos ['nombre'] = $esteCampo;
             $atributos ['tipo'] = 'text';
@@ -122,7 +208,7 @@ class registrarForm {
             // Aplica atributos globales al control
             $atributos = array_merge($atributos, $atributosGlobales);
             echo $this->miFormulario->campoCuadroTexto($atributos);
-            unset($atributos);
+            unset($atributos);*/
 
             $esteCampo = 'id_contrato';
             $atributos ["id"] = $esteCampo; // No cambiar este nombre

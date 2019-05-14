@@ -133,7 +133,7 @@ class registrarForm {
                                                                                         Suficiencia
                                                                                 </th>
                                                                                 <th class="text-center">
-                                                                                        Vigencia
+                                                                                        Descripción
                                                                                 </th>
                                                                         </tr>
                                                                 </thead>
@@ -155,7 +155,7 @@ class registrarForm {
                                                                                         <input type="text" id="porcentajeamparo0" name="porcentajeamparo0" placeholder="Porcentaje(%)-> 10%" maxlength="3" class="form-control validate[required] custom[number]"/>
                                                                                         </td>
                                                                                         <td>
-                                                                                        <input type="text" id="valoramparo0" name="valoramparo0" placeholder="Vigencia" maxlength="50" class="form-control validate[required]"/>
+                                                                                        <input type="text" id="valoramparo0" name="valoramparo0" placeholder="Descripción" maxlength="500" class="form-control validate[required]"/>
                                                                                         </td>
                                                                                 </tr>
                                         </tbody>
@@ -226,7 +226,7 @@ class registrarForm {
 
 
 
-                echo "<h3>Informacion del Contrato</h3>
+                echo "<h3>Información de Contrato</h3>
 							<section>"; {
 
                     $esteCampo = 'tipo_compromiso';
@@ -669,7 +669,7 @@ class registrarForm {
                 }
                 echo "</section>";
 
-		echo "<h3>Garantia y Mecanismos de Cobertura del Riesgo</h3><section>";
+		echo "<h3>Garantía y Mecanismos de Cobertura del Riesgo</h3><section>";
                 
                 
                   echo '<label for="vigencia">Número de Amparos Registrados : </label>' .
@@ -687,7 +687,7 @@ class registrarForm {
 
                 
 
-                echo "<h3>Información del Solicitante y el Supervisor</h3><section>";
+                echo "<h3>Información Solicitante y Supervisor</h3><section>";
 
                 $esteCampo = "AgrupacionSolicitante";
                 $atributos ['id'] = $esteCampo;
@@ -851,8 +851,13 @@ class registrarForm {
                     echo $this->miFormulario->campoCuadroLista($atributos);
                     unset($atributos);
 
+
+
+
+                    /*
+
                     $esteCampo = 'tipo_supervisor';
-                    $atributos ['columnas'] = 3;
+                    $atributos ['columnas'] = 1;
                     $atributos ['nombre'] = $esteCampo;
                     $atributos ['id'] = $esteCampo;
                     $atributos ['evento'] = '';
@@ -1001,6 +1006,93 @@ class registrarForm {
                     unset($atributos);
                     // ---------------- CONTROL: Cuadro de Texto --------------------------------------------------------
                     // -----------------CONTROL: Botón ----------------------------------------------------------------
+
+                    */
+
+
+                    $esteCampo = 'nombre_supervisor';
+                    $atributos ['id'] = $esteCampo;
+                    $atributos ['nombre'] = $esteCampo;
+                    $atributos ['tipo'] = 'text';
+                    $atributos ['estilo'] = 'jqueryui';
+                    $atributos ['deshabilitado'] = true;
+                    $atributos ['marco'] = true;
+                    $atributos ['estiloMarco'] = '';
+                    $atributos ["etiquetaObligatorio"] = true;
+                    $atributos ['columnas'] = 2;
+                    $atributos ['dobleLinea'] = 0;
+                    $atributos ['tabIndex'] = $tab;
+                    $atributos ['etiqueta'] = $this->lenguaje->getCadena($esteCampo);
+                    $atributos ['validar'] = 'required,  minSize[5],maxSize[2000]';
+
+                    if (isset($_REQUEST [$esteCampo])) {
+                        $atributos ['valor'] = $_REQUEST [$esteCampo];
+                    } else {
+                        $atributos ['valor'] = '';
+                    }
+                    $atributos ['titulo'] = $this->lenguaje->getCadena($esteCampo . 'Titulo');
+                    $atributos ['deshabilitado'] = true;
+                    $atributos ['tamanno'] = 45;
+                    $atributos ['maximoTamanno'] = '';
+                    $atributos ['anchoEtiqueta'] = 115;
+                    $tab ++;
+
+                    // Aplica atributos globales al control
+                    $atributos = array_merge($atributos, $atributosGlobales);
+                    echo $this->miFormulario->campoCuadroTexto($atributos);
+                    unset($atributos);
+
+                    
+                   
+                    
+
+
+                    // ---------------- CONTROL: Cuadro Lista --------------------------------------------------------
+                    $esteCampo = 'cargo_supervisor';
+                    $atributos ['id'] = $esteCampo;
+                    $atributos ['nombre'] = $esteCampo;
+                    $atributos ['tipo'] = 'text';
+                    $atributos ['estilo'] = 'jqueryui';
+                    $atributos ['marco'] = true;
+                    $atributos ['estiloMarco'] = '';
+                    $atributos ["etiquetaObligatorio"] = true;
+                    $atributos ['columnas'] = 2;
+                    $atributos ['dobleLinea'] = 0;
+                    $atributos ['tabIndex'] = $tab;
+                    $atributos ['etiqueta'] = $this->lenguaje->getCadena($esteCampo);
+                    $atributos ['validar'] = 'required,  minSize[5],maxSize[2000]';
+
+                    if (isset($_REQUEST [$esteCampo])) {
+                        $atributos ['valor'] = $_REQUEST [$esteCampo];
+                    } else {
+                        $atributos ['valor'] = '';
+                    }
+                    $atributos ['titulo'] = $this->lenguaje->getCadena($esteCampo . 'Titulo');
+                    $atributos ['deshabilitado'] = true;
+                    $atributos ['tamanno'] = 45;
+                    $atributos ['maximoTamanno'] = '';
+                    $atributos ['anchoEtiqueta'] = 115;
+                    $tab ++;
+
+                    // Aplica atributos globales al control
+                    $atributos = array_merge($atributos, $atributosGlobales);
+                    echo $this->miFormulario->campoCuadroTexto($atributos);
+                    unset($atributos);
+
+
+                    $esteCampo = 'id_supervisor_hidden';
+                    $atributos ['id'] = $esteCampo;
+                    $atributos ['nombre'] = $esteCampo;
+                    $atributos ['tipo'] = 'hidden';
+                    $atributos ['estilo'] = 'jqueryui';
+                    $atributos ['deshabilitado'] = false;
+                    $tab ++;
+                    // Aplica atributos globales al control
+                    $atributos = array_merge($atributos, $atributosGlobales);
+                    echo $this->miFormulario->campoCuadroTexto($atributos);
+                    unset($atributos);
+
+
 
 
                     $esteCampo = 'tipo_control';
@@ -1367,7 +1459,7 @@ class registrarForm {
                         $atributos ['dobleLinea'] = 0;
                         $atributos ['tabIndex'] = $tab;
                         $atributos ['etiqueta'] = "";
-                        $atributos ['validar'] = 'required';
+                        $atributos ['validar'] = 'required, minSize[13]';
                         $atributos ['textoFondo'] = 'Digite el documento del contratista.';
 
                         if (isset($_REQUEST [$esteCampo])) {
@@ -2180,6 +2272,28 @@ class registrarForm {
                     echo $this->miFormulario->campoCuadroTexto($atributos);
                     unset($atributos);
 
+                    $atributos ["id"] = "nombre_supervisor_h"; // No cambiar este nombre
+                    $atributos ["tipo"] = "hidden";
+                    $atributos ['estilo'] = '';
+                    $atributos ["obligatorio"] = false;
+                    $atributos ['marco'] = true;
+                    $atributos ["etiqueta"] = "";
+                    $atributos ["valor"] = '';
+                    $atributos = array_merge($atributos, $atributosGlobales);
+                    echo $this->miFormulario->campoCuadroTexto($atributos);
+                    unset($atributos);
+                    
+                    $atributos ["id"] = "cargo_supervisor_h"; // No cambiar este nombre
+                    $atributos ["tipo"] = "hidden";
+                    $atributos ['estilo'] = '';
+                    $atributos ["obligatorio"] = false;
+                    $atributos ['marco'] = true;
+                    $atributos ["etiqueta"] = "";
+                    $atributos ["valor"] = '';
+                    $atributos = array_merge($atributos, $atributosGlobales);
+                    echo $this->miFormulario->campoCuadroTexto($atributos);
+                    unset($atributos);
+
                     $atributos ["id"] = "division";
                     echo $this->miFormulario->division("inicio", $atributos);
                     unset($atributos);
@@ -2600,7 +2714,7 @@ class registrarForm {
 
 
                 echo "</section>";
-                echo "<h3>Justificacion y Condiciones</h3><section>";
+                echo "<h3>Justificación y Condiciones</h3><section>";
 
                 $esteCampo = "AgrupacionObjetoContrato";
                 $atributos ['id'] = $esteCampo;

@@ -33,6 +33,7 @@ class RegistradorOrden {
         if (isset($_REQUEST ['accesoCondor']) && $_REQUEST ['accesoCondor'] == 'true') {
             $datosActadeInicio = array(
                 'fecha_inicio_acta' => $_REQUEST['fecha_inicio_acta'],
+                'fecha_final_acta' => $_REQUEST['fecha_final_acta'],
                 'observaciones' => $_REQUEST['observaciones'],
                 'vigencia' => $_REQUEST['vigencia'],
                 'numero_contrato' => $_REQUEST['numero_contrato'],
@@ -45,6 +46,7 @@ class RegistradorOrden {
         } else {
             $datosActadeInicio = array(
                 'fecha_inicio_acta' => $_REQUEST['fecha_inicio_acta'],
+                'fecha_final_acta' => $_REQUEST['fecha_final_acta'],
                 'observaciones' => $_REQUEST['observaciones'],
                 'vigencia' => $_REQUEST['vigencia'],
                 'numero_contrato' => $_REQUEST['numero_contrato'],

@@ -3,6 +3,7 @@ if (! isset ( $GLOBALS ["autorizado"] )) {
 	include ("../index.php");
 	exit ();
 }
+
 /**
  * Este script está incluido en el método html de la clase Frontera.class.php.
  *

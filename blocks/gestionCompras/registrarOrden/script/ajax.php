@@ -1,8 +1,3 @@
-window.onload = detectarCarga;
-
-function detectarCarga() {
-    $('#marcoDatos').show('slow');
-}
 <?php
 /**
  *
@@ -264,6 +259,24 @@ $cadenaDependencia = $this->miConfigurador->fabricaConexiones->crypto->codificar
 // URL definitiva
 $urlFinalDependencia = $url . $cadenaDependencia;
 
+
+// Variables
+$cadenaACodificarSuperxDep = "pagina=" . $this->miConfigurador->getVariableConfiguracion("pagina");
+$cadenaACodificarSuperxDep .= "&procesarAjax=true";
+$cadenaACodificarSuperxDep .= "&action=index.php";
+$cadenaACodificarSuperxDep .= "&bloqueNombre=" . $esteBloque ["nombre"];
+$cadenaACodificarSuperxDep .= "&bloqueGrupo=" . $esteBloque ["grupo"];
+$cadenaACodificarSuperxDep .= $cadenaACodificarSuperxDep . "&funcion=consultarSuperxDependencia";
+$cadenaACodificarSuperxDep .= "&tiempo=" . $_REQUEST ['tiempo'];
+
+// Codificar las variables
+$enlace = $this->miConfigurador->getVariableConfiguracion("enlace");
+$cadenaSuperxDep = $this->miConfigurador->fabricaConexiones->crypto->codificar_url($cadenaACodificarSuperxDep, $enlace);
+
+// URL definitiva
+$urlFinalSupervisorxDependencia = $url . $cadenaSuperxDep;
+
+
 // Variables
 $cadenaACodificarDireccionSede = "pagina=" . $this->miConfigurador->getVariableConfiguracion("pagina");
 $cadenaACodificarDireccionSede .= "&procesarAjax=true";
@@ -505,8 +518,8 @@ $urlFinalDeptoEjecucion = $url . $cadenaACodificarDeptoxPais;
                 $("#amparo0").width(300);
                 $("#amparo0").select2();
             }
-            
-            
+
+
             if (currentIndex === 0 && ($("#<?php echo $this->campoSeguro('poliza') ?>").val()) === 'No Aplica' && $("#ventanaA").find('section').length !== 8)
             {
 
@@ -526,7 +539,7 @@ $urlFinalDeptoEjecucion = $url . $cadenaACodificarDeptoxPais;
 
         },
         onFinished: function (event, currentIndex) {
-        	 var camposA = '';
+            var camposA = '';
             var camposS = '';
             var camposV = '';
 
@@ -535,9 +548,9 @@ $urlFinalDeptoEjecucion = $url . $cadenaACodificarDeptoxPais;
 
 
 
-                camposA = camposA + $('#amparo' + index).val() + ',',
-                        camposS = camposS + $('#porcentajeamparo' + index).val() + ',',
-                        camposV = camposV + $('#valoramparo' + index).val() + ',';
+                camposA = camposA + $('#amparo' + index).val() + '~',
+                        camposS = camposS + $('#porcentajeamparo' + index).val() + '~',
+                        camposV = camposV + $('#valoramparo' + index).val() + '~';
 
 
             });
@@ -575,14 +588,14 @@ $urlFinalDeptoEjecucion = $url . $cadenaACodificarDeptoxPais;
 
     });
 
-        var i = 0;
+    var i = 0;
     var numeracion = 1;
-    
-     
+
+
     function agregarAmparo() {
-    
-    
-         
+
+
+
 
         $resultado = $("#registrarContrato").validationEngine("validate");
 
@@ -594,7 +607,7 @@ $urlFinalDeptoEjecucion = $url . $cadenaACodificarDeptoxPais;
             $('#tab_amparos tr:last').after('<tr id="addr' + (i + 1) + '">' +
                     lista +
                     '<td>' + "<input id='porcentajeamparo" + (i + 1) + "' name='porcentajeamparo" + (i + 1) + "' type='text' placeholder='Porcentaje(%)-> 10%' maxlength='3' class='form-control   custom[number]'>" + '</td>' +
-                    '<td>' + "<input id='valoramparo" + (i + 1) + "'  name='valoramparo" + (i + 1) + "' type='text' placeholder='Vigencia'  maxlength='50' class='form-control input-md  '>" + '</td>' +
+                    '<td>' + "<input id='valoramparo" + (i + 1) + "'  name='valoramparo" + (i + 1) + "' type='text' placeholder='Descripción'  maxlength='500' class='form-control input-md  '>" + '</td>' +
                     '</tr>');
 
             var data = jQuery.parseJSON($("#amparosOculto").val());
@@ -602,37 +615,36 @@ $urlFinalDeptoEjecucion = $url . $cadenaACodificarDeptoxPais;
             if (data[0][0] != " ") {
                 $("<option value=''>Seleccione  ....</option>").appendTo("#amparo" + (i + 1));
                 $.each(data, function (indice, valor) {
-                	 var camposA = '';
-                                var validacion=1;
+                    var camposA = '';
+                    var validacion = 1;
 
-                               $('#tab_amparos tr').each(function (index, element) {
-                                   
-                                     if(validacion === 1){
+                    $('#tab_amparos tr').each(function (index, element) {
 
-                                           camposA = $('#amparo' + index).val();
-                                           
-                                          
-                                              if(camposA === data[ indice ].id){
-                                                  validacion=0;
-                                                 
-                                                   return false;
-                                              }
-                                              else{
-                                                  validacion=1;
-                                              }
-                                     
-                                     }
-                                          
-                                });
-                                
-                               
-                                
-                                
-                                if(validacion !== 0){
-                                    
-                                    $("<option value='" + data[ indice ].id + "'>" + data[ indice ].nombre + "</option>").appendTo("#amparo" + (i + 1));
-                                }
-                   
+                        if (validacion === 1) {
+
+                            camposA = $('#amparo' + index).val();
+
+
+                            if (camposA === data[ indice ].id) {
+                                validacion = 0;
+
+                                return false;
+                            } else {
+                                validacion = 1;
+                            }
+
+                        }
+
+                    });
+
+
+
+
+                    if (validacion !== 0) {
+
+                        $("<option value='" + data[ indice ].id + "'>" + data[ indice ].nombre + "</option>").appendTo("#amparo" + (i + 1));
+                    }
+
 
                 });
 
@@ -886,6 +898,7 @@ $urlFinalDeptoEjecucion = $url . $cadenaACodificarDeptoxPais;
     });
 
 
+
     function consultarDependenciaSuper(elem, request, response) {
         $.ajax({
             url: "<?php echo $urlFinalDependencia ?>",
@@ -915,11 +928,80 @@ $urlFinalDeptoEjecucion = $url . $cadenaACodificarDeptoxPais;
         });
     }
     ;
+
+
+    //--------------Inicio JavaScript y Ajax  Dependencia y Supervisor ---------------------------------------------------------------------------------------------    
+    $("#<?php echo $this->campoSeguro('dependencia_supervisor') ?>").change(function () {
+
+        if ($("#<?php echo $this->campoSeguro('dependencia_supervisor') ?>").val() != '') {
+            consultarSupervisorXDependencia();
+        }
+
+    });
+
+
+    function consultarSupervisorXDependencia(elem, request, response) {
+        $.ajax({
+            url: "<?php echo $urlFinalSupervisorxDependencia ?>",
+            dataType: "json",
+            data: {valor: $("#<?php echo $this->campoSeguro('dependencia_supervisor') ?>").val()},
+            success: function (data) {
+
+                if (data[0] != " ") {
+
+                    if (!data) {
+
+                        var sedeOpt = $("#<?php echo $this->campoSeguro('sede_super') ?> option:selected").text();
+                        var dependenciaOpt = $("#<?php echo $this->campoSeguro('dependencia_supervisor') ?> option:selected").text();
+
+
+                        swal({
+                            title: 'ATENCIÓN',
+                            type: 'error',
+                            html:
+                                    'No se puede hacer registro de SUPERVISOR para:<br><br>'
+                                    + 'Sede: <b>' + sedeOpt + '</b><br>'
+                                    + 'Dependencia: <b>' + dependenciaOpt + '</b><br>'
+                                    + '<br>'
+                                    + 'No existe supervisor <b>ACTIVO</b> para la SEDE y DEPENDENCIA seleccionadas, por favor realice el registro del supervisor en el Módulo de Parámetros Personas<br>',
+                            confirmButtonText:
+                                    'Aceptar'
+                        })
+
+                    } else {
+                        $("#<?php echo $this->campoSeguro('nombre_supervisor') ?>").html('');
+                        $("<option value=''>Seleccione  ....</option>").appendTo("#<?php echo $this->campoSeguro('nombre_supervisor') ?>");
+                        $.each(data, function (indice, valor) {
+
+                            $("<option value='" + data[ indice ].id + "'>" + data[ indice ].supervisor + "</option>").appendTo("#<?php echo $this->campoSeguro('nombre_supervisor') ?>");
+
+                        });
+
+                        $("#<?php echo $this->campoSeguro('nombre_supervisor') ?>").removeAttr('disabled');
+
+                        $('#<?php echo $this->campoSeguro('nombre_supervisor') ?>').width(350);
+                        $("#<?php echo $this->campoSeguro('nombre_supervisor') ?>").select2();
+
+                    }
+
+                }
+
+
+            }
+
+        });
+
+
+    }
+    ;
+
+
+
 //--------------Fin JavaScript y Ajax Sede y Dependencia Suepervisor --------------------------------------------------------------------------------------------------   
     //--------------Inicio JavaScript y Ajax Convenios x Vigenca ---------------------------------------------------------------------------------------------    
     $("#<?php echo $this->campoSeguro('vigencia_convenio') ?>").change(function () {
 
-        if ($("#<?php echo $this->campoSeguro('vigencia_convenio') ?>").val() != '') {
+        if ($("#<?php echo $this->campoSeguro('vigencia_convenio') ?>").val() !== '') {
             consultaConveniosxVigencia();
         } else {
             $("#<?php echo $this->campoSeguro('convenio_solicitante') ?>").attr('disabled', '');
@@ -964,12 +1046,18 @@ $urlFinalDeptoEjecucion = $url . $cadenaACodificarDeptoxPais;
 
     $("#<?php echo $this->campoSeguro('nombre_supervisor') ?>").change(function () {
 
-        if ($("#<?php echo $this->campoSeguro('nombre_supervisor') ?>").val() != '') {
+        if ($("#<?php echo $this->campoSeguro('nombre_supervisor') ?>").val() !== '') {
+            var supervisor = $("#<?php echo $this->campoSeguro('nombre_supervisor') ?> option:selected").text();
+            var identificacion = supervisor.split("-");
+            
+            calcularDigitoCedulaSupervisor(identificacion[0]);
             cargoSuper();
+
         }
 
-    });
 
+    });
+//
     function cargoSuper(elem, request, response) {
         $.ajax({
             url: "<?php echo $urlFinal17 ?>",
@@ -1501,17 +1589,7 @@ $urlFinalDeptoEjecucion = $url . $cadenaACodificarDeptoxPais;
         });
 
 
-        $("#<?php echo $this->campoSeguro('dependencia_supervisor') ?>").change(function () {
 
-
-            if ($("#<?php echo $this->campoSeguro('dependencia_supervisor') ?>").val() != '') {
-                datosCargoDe();
-            } else {
-                $("#<?php echo $this->campoSeguro('nombre_supervisor') ?>").val('');
-            }
-
-
-        });
 
     });
 
@@ -1899,14 +1977,7 @@ $urlFinalDeptoEjecucion = $url . $cadenaACodificarDeptoxPais;
             calcularDigitoCedulaSupervisor(identificacion[0]);
         }
     });
-    $("#<?php echo $this->campoSeguro('nombre_supervisor') ?>").change(function () {
 
-        if ($("#<?php echo $this->campoSeguro('nombre_supervisor') ?>").val() != '') {
-            var supervisor = $("#<?php echo $this->campoSeguro('nombre_supervisor') ?>").val();
-            var identificacion = supervisor.split("-");
-            calcularDigitoCedulaSupervisor(identificacion[0]);
-        }
-    });
 
 
     function calcularDigitoCedulaSupervisor(cadenaCedula) {

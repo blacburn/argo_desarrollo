@@ -462,6 +462,12 @@ class RegistradorOrden {
 
         //-------------- Se accede al Servicio de Agora para Consultar el Proveedor de la Orden de Compra -------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------               
+        
+        
+      
+        
+        
+        
         $datosContrato = array(
             0 => $_REQUEST ['numero_contrato'],
             1 => $_REQUEST ['vigencia'],
@@ -473,27 +479,33 @@ class RegistradorOrden {
 
         $cadenaSql = $this->miSql->getCadenaSql('consultarCargoSupervisor', $datosContrato);
         $info_cargo_supervisor = $esteRecursoDB->ejecutarAcceso($cadenaSql, "busqueda");
-       
-        
-      
+
+
+
         $cadenaSql = $this->miSql->getCadenaSql('consultarActasInicio', $datosContrato);
         $actas_inicio = $esteRecursoDB->ejecutarAcceso($cadenaSql, "busqueda");
 
-        
+
         $fecha_inicio = explode("-", $actas_inicio[0]['fecha_inicio']);
         $fecha_inicio_dia = $fecha_inicio[2];
         $fecha_inicio_mes = $fecha_inicio[1];
         $fecha_inicio_ano = $fecha_inicio[0];
 
-                
+
         $cadenaSql = $this->miSql->getCadenaSql('consultarFechaFinActa', $datosContrato);
         $fecha_fin_acta = $esteRecursoDB->ejecutarAcceso($cadenaSql, "busqueda");
-      
-        
-        $actas_inicio[0]['fecha_fin']=$fecha_fin_acta[0][0];
+
+
+        $actas_inicio[0]['fecha_fin'] = $fecha_fin_acta[0][0];
 
 
         $fecha_fin = explode("-", $actas_inicio[0]['fecha_fin']);
+
+        if($fecha_fin[2]=='31'){
+                $fecha_fin[2]='30';
+        }
+
+
         $fecha_fin_dia = $fecha_fin[2];
         $fecha_fin_mes = $fecha_fin[1];
         $fecha_fin_ano = $fecha_fin[0];
@@ -555,6 +567,7 @@ class RegistradorOrden {
                 $amparos = array_merge($amparos, $amparosPoliza);
             }
         }
+
 
 
         $cadenaSql = $this->miSql->getCadenaSql('Consultar_Info_Suscripcion', $datosContrato);
@@ -629,7 +642,9 @@ class RegistradorOrden {
 
         $fechaSucripcion = explode("-", $infoSuscripcion['fecha_suscripcion']);
         setlocale(LC_TIME, "es_ES.UTF-8");
+
         $fechaSucripcion = strftime("%A, %d de %B de %Y", gmmktime(12, 0, 0, $fechaSucripcion[1], $fechaSucripcion[2], $fechaSucripcion[0]));
+
 
         $sqlfechaMaximaAprobacion = $this->miSql->getCadenaSql('obtenerFechaAprobacionMaximaPolizasActivas', $datosContrato);
         $fechaMaximaAprobacion = $esteRecursoDB->ejecutarAcceso($sqlfechaMaximaAprobacion, "busqueda");
@@ -647,6 +662,16 @@ class RegistradorOrden {
         $minimoVigente = $esteRecursoDB->ejecutarAcceso($cadenaMinimoVigente, "busqueda");
 
 
+        $fechaAprobacionpoliza = explode("-", $polizas[0]['fecha_aprobacion']);
+        setlocale(LC_TIME, "es_ES.UTF-8");
+
+        $fechaAprobacionpoliza = strftime("%A, %d de %B de %Y", gmmktime(12, 0, 0, $fechaAprobacionpoliza[1], $fechaAprobacionpoliza[2], $fechaAprobacionpoliza[0]));
+
+        $fechaExpedicionpoliza = explode("-", $polizas[0]['fecha_expedicion']);
+        setlocale(LC_TIME, "es_ES.UTF-8");
+
+        $fechaExpedicionpoliza = strftime("%A, %d de %B de %Y", gmmktime(12, 0, 0, $fechaExpedicionpoliza[1], $fechaExpedicionpoliza[2], $fechaExpedicionpoliza[0]));
+
 
         if (is_numeric($_REQUEST['tamanoletra']) && $_REQUEST['tamanoletra'] != null) {
             $letra = $_REQUEST['tamanoletra'];
@@ -656,28 +681,33 @@ class RegistradorOrden {
 
 
         $id_usuario = $_REQUEST['usuario'];
-        $cadenaSqlUnidad = $this->miSql->getCadenaSql("obtenerInfoUsuario", $id_usuario);
-        $unidadEjecutora = $DBFrameWork->ejecutarAcceso($cadenaSqlUnidad, "busqueda");
 
-        $supervisor = $unidadEjecutora[0]['identificacion'];
+        $cadena_buscada = 'CC';
+
+        $posicion_coincidencia = strrpos($id_usuario, $cadena_buscada);
+
+        if ($posicion_coincidencia === false) {
+            $supervisor = $_REQUEST['usuario'];
+        } else {
+            $cadenaSqlUnidad = $this->miSql->getCadenaSql("obtenerInfoUsuario", $id_usuario);
+            $unidadEjecutora = $DBFrameWork->ejecutarAcceso($cadenaSqlUnidad, "busqueda");
+
+            $supervisor = $unidadEjecutora[0]['identificacion'];
+        }
+
+
+
 
         $val_fallo = '';
-        
-        
 
-        
 
         $cadenaSql = $this->miSql->getCadenaSql('consultarInformacionSupervisor', $supervisor);
         $info_supervisor = $esteRecursoDB->ejecutarAcceso($cadenaSql, "busqueda");
-        
-        
-        
-        
 
-
-        $cadenaSql = $this->miSql->getCadenaSql('consultarLugarExpSiCapital',$info_supervisor[0]['documento']);
+        $cadenaSql = $this->miSql->getCadenaSql('consultarLugarExpSiCapital', $info_supervisor[0]['documento']);
         $lugar_exp = $DBSICA->ejecutarAcceso($cadenaSql, "busqueda");
 
+       
 
         $InfoSupervisor = strtoupper($info_supervisor[0]['nombre']) . ", mayor de edad, identificado con CÉDULA DE CIUDADANÍA No. " . $info_supervisor[0]['documento'] . " expedida en " . $lugar_exp[0][0];
 
@@ -827,8 +857,8 @@ class RegistradorOrden {
                      <tr>
                         <td style='width:5%;text-align:left;height: 30px'></td>	
                         <td style='width:35%;text-align:justify;height: 30px'><font size='3px'><b>CONTRATO No.</b></font></td>	
-                        <td style='width:55%;text-align:justify;height: 30px'><font size='3px'>" . $consecutivo_unico_contrato[0]['numero_contrato_suscrito'] . "</font></td>	
-                        <td style='width:5%;text-align:left;height: 30px'></td>	
+                        <td style='width:55%;text-align:justify;height: 30px'><font size='3px'><b>" . $consecutivo_unico_contrato[0]['numero_contrato_suscrito'] . '</b>  suscrito el '.  $fechaSucripcion . "</font></td>	
+                        <td style='width:5%;text-align:left;height: 30px'></td>	 
                     </tr>
                     <tr>
                         <td style='width:5%;text-align:left;height: 30px'></td>	
@@ -881,13 +911,13 @@ class RegistradorOrden {
                        <tr>
                         <td style='width:5%;text-align:left;height: 30px'></td>	
                         <td style='width:35%;text-align:justify;height: 30px'><font size='3px'><b>FECHA DE EXPEDICIÓN DE PÓLIZA</b></font></td>	
-                        <td style='width:55%;text-align:justify;height: 30px'><font size='3px'>" . $fechaSucripcion . "</font></td>	
+                        <td style='width:55%;text-align:justify;height: 30px'><font size='3px'>" . $fechaExpedicionpoliza . "</font></td>	
                         <td style='width:5%;text-align:left;height: 30px'></td>	
                     </tr>
                     <tr>
                         <td style='width:5%;text-align:left;height: 30px'></td>	
                         <td style='width:35%;text-align:justify;height: 30px'><font size='3px'><b>FECHA DE APROBACIÓN DE PÓLIZA.</b></font></td>	
-                        <td style='width:55%;text-align:justify;height: 30px'><font size='3px'>" . $fechaSucripcion . "</font></td>	
+                        <td style='width:55%;text-align:justify;height: 30px'><font size='3px'>" . $fechaAprobacionpoliza. "</font></td>	
                         <td style='width:5%;text-align:left;height: 30px'></td>	
                     </tr>
                     
@@ -918,102 +948,20 @@ class RegistradorOrden {
 
                 "<br><br><table align='justify' style='width:100%;' >                   
                      <tr>
-                        <td style='width:5%;text-align:left;height: 30px'></td>	
-                        <td style='width:90%;text-align:justify;height: 60px'>En " . $direccionEjecucion[0]['nombre_ciudad'] . "  a los " . $funcionFechaLetras->Fecha_Dias($fecha_final_dia) . " (" . $fecha_final_dia . ") días del mes "
-                . "de " . $funcionFechaLetras->Fecha_Mes($fecha_final_mes) . "	del año " . $fecha_final_ano . "	, se reunieron: " . $InfoContratista . " quien ejerce como Contratista . y " . $InfoSupervisor . " en calidad
+                        <td style='width:5%;text-align:left;height: 30px'></td> 
+                        <td style='width:90%;text-align:justify;height: 60px'>En " . $direccionEjecucion[0]['nombre_ciudad'] . "  a los " . $funcionFechaLetras->Fecha_Dias($fecha_inicio_dia) . " (" . $fecha_inicio_dia . ") días del mes "
+                . "de " . $funcionFechaLetras->Fecha_Mes($fecha_inicio_mes) . " del año " . $fecha_inicio_ano . "   , se reunieron: " . $InfoContratista . " quien ejerce como Contratista . y " . $InfoSupervisor . " en calidad
                             de Supervisor del Contrato por parte de la Universidad Distrital Francisco José de Caldas con el objeto de dejar constancia del inicio real y efectivo del Contrato anteriormente citado, previo cumplimiento
                             de los requisitos de legalización del Contrato. En consecuencia, se procede a la iniciación del Contrato a partir del día " . $funcionFechaLetras->Fecha_Dias($fecha_inicio_dia) . " (" . $fecha_inicio_dia . ") del "
                 . "         mes de " . $funcionFechaLetras->Fecha_Mes($fecha_inicio_mes) . " del año " . $fecha_inicio_ano . ". El Supervisor puso en conocimiento del Contratista lo siguiente: 1. Que para la firma de la presente Acta de 
                             Iniciación, el Contratista ha presentado y reposa en la respectiva Carpeta, toda la documentación exigida por la Universidad para estos casos. 2. Que para el desarrollo del Contrato es indispensable mantener
-                            el Plan Individual de Trabajo elaborado y cualquier modificación debe convenirse entre las partes. 3. Que en todo momento debe acatarse las instrucciones o exigencias que presente la Supervisión en lo 
-                            referente a los Procesos y Procedimientos de la Dependencia.</td>	
-                        <td style='width:5%;text-align:left;height: 30px'></td>	
+                            la Propuesta de Servicios elaborada y cualquier modificación debe convenirse entre las partes. 3. Que en todo momento debe acatarse las instrucciones o exigencias que presente la Supervisión en lo 
+                            referente a los Procesos y Procedimientos de la Dependencia.</td>   
+                        <td style='width:5%;text-align:left;height: 30px'></td> 
                     </tr>
                     </table>
                     
-                  <br><br>";
-
-
-        
-
-
-//        $cadenaSqlInventario = $this->miSql->getCadenaSql("consultarElementosContratista", $info_contratista_documento);
-//        $inventario = $DBMArka->ejecutarAcceso($cadenaSqlInventario, "busqueda");
-//        
-//      
-//
-//        if ($inventario) {
-//
-//            $contenidoPagina .=
-//
-//                    "   <table  align='justify' style='width:100%;' >  
-//                     <tr>
-//                         <td style='width:30%;text-align:left;height: 30px'></td>
-//                         <td style='width:40%;text-align:center;font-weight:bold;'> INVENTARIO ASIGNADO</td>
-//                         <td style='width:30%;text-align:left;height: 30px'></td>
-//                     </tr>
-//                   
-//                    </table>
-//
-//                   
-//
-//                    <table cellpadding='0' cellspacing='0' align='justify' style='width:100%;' > 
-//                    <tr>  
-//                         <td style='width:5%;text-align:left;height: 30px'></td>
-//                         <td style='width:90%;text-align:justify;height: 60px'>
-//                         <table  style='border-collapse: collapse;width:100%;' >
-//                                        
-//                                            <tr  >
-//                                            <td style='border: 1px solid black;width:5%;text-align:center;font-weight:bold;'>#</td>
-//                                            <td style='border: 1px solid black;width:10%;text-align:center;font-weight:bold;'>Tipo de Bien</td>
-//                                            <td style='border: 1px solid black;width:10%;text-align:center;font-weight:bold;'>Placa</td>
-//                                            <td style='border: 1px solid black;width:30%;text-align:center;font-weight:bold;'>Descripción</td>
-//                                            <td style='border: 1px solid black;width:14%;text-align:center;font-weight:bold;'>Sede</td>
-//                                            <td style='border: 1px solid black;width:18%;text-align:center;font-weight:bold;'>Dependencia</td>
-//                                            <td style='border: 1px solid black;width:13%;text-align:center;font-weight:bold;'>Estado del bien</td>
-//                                            </tr>";
-//
-//
-//            for ($i = 0; $i < count($inventario); $i++) {
-//                
-//                $contenidoPagina .= '<tr>'
-//                        . '<td style="border: 1px solid black;width:5%;text-align:center;">' . ($i + 1) . '</td>'
-//                        . '<td style="border: 1px solid black;width:10%;text-align:center;">' . trim($inventario[$i]['tipo_bien']) . '</td>'
-//                        . '<td style="border: 1px solid black;width:10%;text-align:center;">' . trim($inventario[$i]['placa']) . '</td>'
-//                        . '<td style="border: 1px solid black;width:30%;text-align:center;">' . trim($inventario[$i]['descripcion']) . '</td>'
-//                        . '<td style="border: 1px solid black;width:14%;text-align:center;">' . trim($inventario[$i]['sede']) . '</td>'
-//                        . '<td style="border: 1px solid black;width:18%;text-align:center;">' . trim($inventario[$i]['dependencia']) . '</td>'
-//                        . '<td style="border: 1px solid black;width:13%;text-align:center;">ACTIVO</td>'
-//                        . '</tr>';
-//            }
-//
-//          
-//            $contenidoPagina .= "         </table></td>
-//                         <td style='width:5%;text-align:left;height: 30px'></td>	       
-//                    </tr>
-//                   
-//                    </table>
-//
-//                    ";
-//        }
-//        else{
-//            
-//            $contenidoPagina .=
-//
-//                    "   <table align='justify' style='width:100%;' >  
-//                     <tr>
-//                         <td style='width:30%;text-align:left;height: 30px'></td>
-//                         <td style='width:40%;text-align:center;font-weight:bold;'> El Contratista No Cuenta con Inventario Asignado en el Momento.</td>
-//                         <td style='width:30%;text-align:left;height: 30px'></td>
-//                     </tr>
-//                   
-//                    </table>";
-//            
-//        }
-
-
-
-
+                  <br><br>";        
 
         $contenidoPagina .= "  <table align='justify' style='width:100%;' >  
                      <tr>

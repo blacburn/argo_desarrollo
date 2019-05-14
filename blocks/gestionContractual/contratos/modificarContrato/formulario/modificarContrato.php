@@ -85,7 +85,7 @@ class registrarForm {
         $atributos ['metodo'] = 'POST';
         // Si no se coloca, entonces toma el valor predeterminado 'index.php' (Recomendado)
         $atributos ['action'] = 'index.php';
-        $atributos ['titulo'] = $this->lenguaje->getCadena($esteCampo);
+        $atributos ['titulo'] = '';
         // Si no se coloca, entonces toma el valor predeterminado.
         $atributos ['estilo'] = '';
         $atributos ['marco'] = false;
@@ -217,15 +217,52 @@ class registrarForm {
             $_REQUEST['arreglo'] = preg_replace('!s:(\d+):"(.*?)";!e', "'s:'.strlen('$2').':\"$2\";'", $_REQUEST['arreglo']);
             $arreglo = unserialize($_REQUEST ['arreglo']);
 
-            $variable = "pagina=" . $miPaginaActual; // pendiente la pagina para modificar parametro
-            $variable .= "&opcion=ConsultarContratos";
-            $variable .= "&id_contrato=" . $arreglo ['numero\_contrato'] . "-(" . $arreglo ['vigencia'] . ")";
-            $variable .= "&clase_contrato=" . $arreglo ['clase\_contrato'];
-            $variable .= "&id_contratista=" . $arreglo ['nit'];
-            $variable .= "&fecha_inicio_sub=" . $arreglo ['fecha\_inicial'];
-            $variable .= "&fecha_final_sub=" . $arreglo ['fecha\_final'];
-            $variable .= "&usuario=" . $_REQUEST ['usuario'];
-            $variable = $this->miConfigurador->fabricaConexiones->crypto->codificar_url($variable, $directorio);
+
+            if(isset($_REQUEST ['miPaginaAct'])){
+                $variable = "pagina=" . $_REQUEST ['miPaginaAct'];
+                $variable .= "&opcion=ConsultarContratos";
+                $variable .= "&id_contrato=" . $arreglo ['numero\_contrato'] . "-(" . $arreglo ['vigencia'] . ")";
+                $variable .= "&clase_contrato=" . $arreglo ['clase\_contrato'];
+                $variable .= "&id_contratista=" . $arreglo ['nit'];
+                $variable .= "&fecha_inicio_sub=" . $arreglo ['fecha\_inicial'];
+                $variable .= "&fecha_final_sub=" . $arreglo ['fecha\_final'];
+                $variable .= "&usuario=" . $_REQUEST ['usuario'];
+                $variable = $this->miConfigurador->fabricaConexiones->crypto->codificar_url($variable, $directorio);
+
+                $esteCampo = 'justificacion_hidden';
+                $atributos ['id'] = $esteCampo;
+                $atributos ['nombre'] = $esteCampo;
+                $atributos ['tipo'] = 'hidden';
+                $atributos ['estilo'] = 'jqueryui';
+                $atributos ['marco'] = true;
+                $atributos ['columnas'] = 1;
+                $atributos ['dobleLinea'] = false;
+                $atributos ['tabIndex'] = $tab;
+                $atributos ['valor'] = $unidad[0]['unidad_ejecutora'];
+                $atributos ['deshabilitado'] = false;
+                $atributos ['tamanno'] = 30;
+                $atributos ['maximoTamanno'] = '';
+                $tab ++;
+                // Aplica atributos globales al control
+                $atributos = array_merge($atributos, $atributosGlobales);
+                echo $this->miFormulario->campoCuadroTexto($atributos);
+                unset($atributos);
+                // ------------------Division para los botones-------------------------
+
+                echo "<input id='suscritoMod' name='suscritoMod' type='hidden' value='" . true . "'>";
+            }else{
+                $variable = "pagina=" . $miPaginaActual; // pendiente la pagina para modificar parametro
+                $variable .= "&opcion=ConsultarContratos";
+                $variable .= "&id_contrato=" . $arreglo ['numero\_contrato'] . "-(" . $arreglo ['vigencia'] . ")";
+                $variable .= "&clase_contrato=" . $arreglo ['clase\_contrato'];
+                $variable .= "&id_contratista=" . $arreglo ['nit'];
+                $variable .= "&fecha_inicio_sub=" . $arreglo ['fecha\_inicial'];
+                $variable .= "&fecha_final_sub=" . $arreglo ['fecha\_final'];
+                $variable .= "&usuario=" . $_REQUEST ['usuario'];
+                $variable = $this->miConfigurador->fabricaConexiones->crypto->codificar_url($variable, $directorio);
+
+                echo "<input id='suscritoMod' name='suscritoMod' type='hidden' value='" . false . "'>";
+            }
 
             // ---------------- CONTROL: Cuadro de Texto --------------------------------------------------------
             $esteCampo = 'botonRegresar';
@@ -270,7 +307,7 @@ class registrarForm {
                                                                                         Suficiencia
                                                                                 </th>
                                                                                 <th class="text-center">
-                                                                                        Vigencia
+                                                                                        Descripción
                                                                                 </th>
                                                                         </tr>
                                                                 </thead>
@@ -306,7 +343,7 @@ class registrarForm {
                                                                                                     <input type="text" id="porcentajeamparo'.$contadorArrend.'" name="porcentajeamparo'.$contadorArrend.'" placeholder="Porcentaje(%)-> 10%" maxlength="3" value="'.$arrendamientoGeneral[$contadorArrend]['suficiencia'].'" class="form-control  custom[number]"/>
                                                                                                     </td>
                                                                                                     <td>
-                                                                                                    <input type="text" id="valoramparo'.$contadorArrend.'" name="valoramparo'.$contadorArrend.'" placeholder="Vigencia" maxlength="50" value="'.$arrendamientoGeneral[$contadorArrend]['vigencia'].'" class="form-control  "/>
+                                                                                                    <input type="text" id="valoramparo'.$contadorArrend.'" name="valoramparo'.$contadorArrend.'" placeholder="Descripción" maxlength="500" value="'.$arrendamientoGeneral[$contadorArrend]['vigencia'].'" class="form-control  "/>
                                                                                                     </td>';
                                                                                                   $tablaAmparosDinamica .= '</tr>';  
                                                                                                   $contadorArrend++;
@@ -332,7 +369,7 @@ class registrarForm {
                                                                                                                                                         <input type="text" id="porcentajeamparo'.$contadorArrend.'" name="porcentajeamparo'.$contadorArrend.'" placeholder="Porcentaje(%)-> 10%" maxlength="3" class="form-control custom[number]"/>
                                                                                                                                                         </td>
                                                                                                                                                         <td>
-                                                                                                                                                        <input type="text" id="valoramparo'.$contadorArrend.'" name="valoramparo'.$contadorArrend.'" placeholder="Vigencia" maxlength="50" class="form-control "/>
+                                                                                                                                                        <input type="text" id="valoramparo'.$contadorArrend.'" name="valoramparo'.$contadorArrend.'" placeholder="Descripción" maxlength="500" class="form-control "/>
                                                                                                                                                         </td>
                                                                                                                                                 </tr>                
 
@@ -362,7 +399,7 @@ class registrarForm {
                                                                                                                                                         <input type="text" id="porcentajeamparo'.$contadorArrend.'" name="porcentajeamparo'.$contadorArrend.'" placeholder="Porcentaje(%)-> 10%" maxlength="3" class="form-control custom[number] validate[required] "/>
                                                                                                                                                         </td>
                                                                                                                                                         <td>
-                                                                                                                                                        <input type="text" id="valoramparo'.$contadorArrend.'" name="valoramparo'.$contadorArrend.'" placeholder="Vigencia" maxlength="50" class="form-control  validate[required] "/>
+                                                                                                                                                        <input type="text" id="valoramparo'.$contadorArrend.'" name="valoramparo'.$contadorArrend.'" placeholder="Descripción" maxlength="500" class="form-control  validate[required] "/>
                                                                                                                                                         </td>
                                                                                                                                                 </tr>                
 
@@ -445,7 +482,7 @@ class registrarForm {
                 //-------------- Se accede al Servicio de Agora para Consultar el Proveedor de la Orden de Compra -------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------               
 
-                echo "<h3>Informacion del Contrato</h3>
+                echo "<h3>Información de Contrato</h3>
 							<section>"; {
 
                     $esteCampo = 'tipo_compromiso';
@@ -902,7 +939,7 @@ class registrarForm {
                 }
                 echo "</section>";
 
-                echo "<h3>Garantia y Mecanismos de Cobertura del Riesgo</h3><section>";
+                echo "<h3>Garantía y Mecanismos de Cobertura del Riesgo</h3><section>";
                 
                 
                   echo '<label for="vigencia">Número de Amparos Registrados : </label>' .
@@ -918,7 +955,7 @@ class registrarForm {
                  "</section>";
 
 
-                echo "<h3>Información del Solicitante y el Supervisor</h3><section>";
+                echo "<h3>Información Solicitante y Supervisor</h3><section>";
 
                 $esteCampo = "AgrupacionSolicitante";
                 $atributos ['id'] = $esteCampo;
@@ -972,7 +1009,7 @@ class registrarForm {
                     $atributos ['tamanno'] = 1;
                     $atributos ['estilo'] = 'jqueryui';
                     $atributos ['validar'] = 'required';
-                    $atributos ['limitar'] = true;
+                    $atributos ['limitar'] = false;
                     $atributos ['etiqueta'] = $this->lenguaje->getCadena($esteCampo);
                     $atributos ['anchoEtiqueta'] = 115;
                     $atributos ['cadena_sql'] = $this->miSql->getCadenaSql("dependenciasConsultadas", $_REQUEST['sede']);
@@ -1058,7 +1095,7 @@ class registrarForm {
                     $atributos ['tamanno'] = 1;
                     $atributos ['estilo'] = 'jqueryui';
                     $atributos ['validar'] = 'required';
-                    $atributos ['limitar'] = true;
+                    $atributos ['limitar'] = false;
                     $atributos ['anchoEtiqueta'] = 175;
                     $atributos ['etiqueta'] = $this->lenguaje->getCadena($esteCampo);
                     $atributos ['cadena_sql'] = $this->miSql->getCadenaSql("dependenciasConsultadas", $_REQUEST['sede_super']);
@@ -1076,6 +1113,10 @@ class registrarForm {
                     $atributos = array_merge($atributos, $atributosGlobales);
                     echo $this->miFormulario->campoCuadroLista($atributos);
                     unset($atributos);
+
+
+
+                    /*
 
                     $esteCampo = 'tipo_supervisor';
                     $atributos ['columnas'] = 3;
@@ -1232,6 +1273,97 @@ class registrarForm {
                     unset($atributos);
                     // ---------------- CONTROL: Cuadro de Texto --------------------------------------------------------
                     // -----------------CONTROL: Botón ----------------------------------------------------------------
+
+
+                    */
+
+
+                    $esteCampo = 'nombre_supervisor';
+                    $atributos ['id'] = $esteCampo;
+                    $atributos ['nombre'] = $esteCampo;
+                    $atributos ['tipo'] = 'text';
+                    $atributos ['estilo'] = 'jqueryui';
+                    $atributos ['deshabilitado'] = true;
+                    $atributos ['marco'] = true;
+                    $atributos ['estiloMarco'] = '';
+                    $atributos ["etiquetaObligatorio"] = true;
+                    $atributos ['columnas'] = 2;
+                    $atributos ['dobleLinea'] = 0;
+                    $atributos ['tabIndex'] = $tab;
+                    $atributos ['etiqueta'] = $this->lenguaje->getCadena($esteCampo);
+                    $atributos ['validar'] = 'required,  minSize[5],maxSize[2000]';
+
+                    if (isset($_REQUEST [$esteCampo])) {
+                        $atributos ['valor'] = $_REQUEST [$esteCampo];
+                    } else {
+                        $atributos ['valor'] = '';
+                    }
+                    $atributos ['titulo'] = $this->lenguaje->getCadena($esteCampo . 'Titulo');
+                    $atributos ['deshabilitado'] = true;
+                    $atributos ['tamanno'] = 45;
+                    $atributos ['maximoTamanno'] = '';
+                    $atributos ['anchoEtiqueta'] = 115;
+                    $tab ++;
+
+                    // Aplica atributos globales al control
+                    $atributos = array_merge($atributos, $atributosGlobales);
+                    echo $this->miFormulario->campoCuadroTexto($atributos);
+                    unset($atributos);
+
+                    
+                   
+                    
+
+
+                    // ---------------- CONTROL: Cuadro Lista --------------------------------------------------------
+                    $esteCampo = 'cargo_supervisor';
+                    $atributos ['id'] = $esteCampo;
+                    $atributos ['nombre'] = $esteCampo;
+                    $atributos ['tipo'] = 'text';
+                    $atributos ['estilo'] = 'jqueryui';
+                    $atributos ['marco'] = true;
+                    $atributos ['estiloMarco'] = '';
+                    $atributos ["etiquetaObligatorio"] = true;
+                    $atributos ['columnas'] = 2;
+                    $atributos ['dobleLinea'] = 0;
+                    $atributos ['tabIndex'] = $tab;
+                    $atributos ['etiqueta'] = $this->lenguaje->getCadena($esteCampo);
+                    $atributos ['validar'] = 'required,  minSize[5],maxSize[2000]';
+
+                    if (isset($_REQUEST [$esteCampo])) {
+                        $atributos ['valor'] = $_REQUEST [$esteCampo];
+                    } else {
+                        $atributos ['valor'] = '';
+                    }
+                    $atributos ['titulo'] = $this->lenguaje->getCadena($esteCampo . 'Titulo');
+                    $atributos ['deshabilitado'] = true;
+                    $atributos ['tamanno'] = 45;
+                    $atributos ['maximoTamanno'] = '';
+                    $atributos ['anchoEtiqueta'] = 115;
+                    $tab ++;
+
+                    // Aplica atributos globales al control
+                    $atributos = array_merge($atributos, $atributosGlobales);
+                    echo $this->miFormulario->campoCuadroTexto($atributos);
+                    unset($atributos);
+
+
+                    $esteCampo = 'id_supervisor_hidden';
+                    $atributos ['id'] = $esteCampo;
+                    $atributos ['nombre'] = $esteCampo;
+                    $atributos ['tipo'] = 'hidden';
+                    $atributos ['estilo'] = 'jqueryui';
+                    $atributos ['deshabilitado'] = false;
+                    $atributos ['valor'] = $contrato['idsupervisor'];
+                    $tab ++;
+                    // Aplica atributos globales al control
+                    $atributos = array_merge($atributos, $atributosGlobales);
+                    echo $this->miFormulario->campoCuadroTexto($atributos);
+                    unset($atributos);
+
+
+
+
 
 
                     $esteCampo = 'tipo_control';
@@ -1480,7 +1612,7 @@ class registrarForm {
                         $atributos ['tamanno'] = 1;
                         $atributos ['estilo'] = 'jqueryui';
                         $atributos ['validar'] = '';
-                        $atributos ['limitar'] = true;
+                        $atributos ['limitar'] = false;
                         $atributos ['etiqueta'] = $this->lenguaje->getCadena($esteCampo);
                         $atributos ['anchoEtiqueta'] = 175;
                         if (isset($_REQUEST [$esteCampo])) {
@@ -1592,7 +1724,7 @@ class registrarForm {
                         $estiloSociedadTemporal = "display:none";
                         $sqlDatosProveedor = $this->miSql->getCadenaSql("buscar_Informacion_proveedor_edicion", $contrato['contratista']);
                         $datosProveedor = $esteRecursoDBAgora->ejecutarAcceso($sqlDatosProveedor, "busqueda");
-                        $infoProveedorUnico = '<b>TIPO PERSONA:</b>' . $datosProveedor[0]['tipopersona'] . '<br>
+                        $infoProveedorUnico = '<b>TIPO PERSONA: </b>' . $datosProveedor[0]['tipopersona'] . '<br>
                             <b>NOMBRE:</b> ' . $datosProveedor[0]['nom_proveedor'] . '<br>
                             <b>DOCUMENTO:</b> ' . $datosProveedor[0]['num_documento'] . '<br>
                             <b>CIUDAD DE CONTACTO:</b> ' . $datosProveedor[0]['nombreciudad'] . '<br>
@@ -1600,11 +1732,11 @@ class registrarForm {
                             <b>CORREO:</b> ' . $datosProveedor[0]['correo'] . '<br>
                             <b>SITIO WEB:</b> ' . $datosProveedor[0]['web'] . '<br>
                             <b>ASESOR:</b> ' . $datosProveedor[0]['nom_asesor'] . '<br>
-                            <b>TELEFONO ASESOR:</b> ' . $datosProveedor[0]['tel_asesor'] . '<br>
+                            <b>TELÉFONO ASESOR:</b> ' . $datosProveedor[0]['tel_asesor'] . '<br>
                             <b>DESCRIPCIÓN:</b> ' . $datosProveedor[0]['descripcion'] . '<br>
                             <b>PUNTAJE DE EVALUACIÓN:</b> ' . $datosProveedor[0]['puntaje_evaluacion'] . '<br>
                             <b>TIPO CUENTA BANCARIA:</b> ' . $datosProveedor[0]['tipo_cuenta_bancaria'] . '<br>
-                            <b>NUMERO CUENTA :</b> ' . $datosProveedor[0]['num_cuenta_bancaria'] . '<br>
+                            <b>NÚMERO CUENTA:</b> ' . $datosProveedor[0]['num_cuenta_bancaria'] . '<br>
                             <b>ENTIDAD BANCARIA:</b> ' . $datosProveedor[0]['nombrebanco'];
 
                         $Infoparticipantes = "";
@@ -1628,7 +1760,7 @@ class registrarForm {
                                 '<b>REPRESENTANTE SUPLENTE:</b> ' . $infoSociedad[0]['inforepresentantesuplente'] . '<br>' .
                                 '<b>PUNTAJE DE EVALUACIÓN:</b> ' . $infoSociedad[0]['puntaje_evaluacion'] . '<br>' .
                                 '<b>TIPO CUENTA BANCARIA:</b> ' . $infoSociedad[0]['tipo_cuenta_bancaria'] . '<br>' .
-                                '<b>NUMERO CUENTA :</b> ' . $infoSociedad[0]['num_cuenta_bancaria'] . '<br>' .
+                                '<b>NÚMERO CUENTA:</b> ' . $infoSociedad[0]['num_cuenta_bancaria'] . '<br>' .
                                 '<b>ENTIDAD BANCARIA:</b> ' . $infoSociedad[0]['nombrebanco'];
 
                         $sqlDatosParticipantes = $this->miSql->getCadenaSql("buscar_participantes_sociedad", $contrato['contratista']);
@@ -1675,10 +1807,10 @@ class registrarForm {
                         $atributos ['dobleLinea'] = 0;
                         $atributos ['tabIndex'] = $tab;
                         $atributos ['etiqueta'] = "";
-                        $atributos ['validar'] = '';
+                        $atributos ['validar'] = 'required, minSize[13]';
                         $atributos ['textoFondo'] = 'Ingrese el documento y de clic en el boton que aparece a continuación.';
                         if ($_REQUEST['clase_contratista'] == '33') {
-                            $atributos ['valor'] = $datosProveedor[0]['num_documento'] . "-" . $datosProveedor[0]['nom_proveedor'] . "(TIPO PERSONA:" . $datosProveedor[0]['tipopersona'] . ")";
+                            $atributos ['valor'] = $datosProveedor[0]['num_documento'] . "-" . $datosProveedor[0]['nom_proveedor'] . "(TIPO PERSONA: " . $datosProveedor[0]['tipopersona'] . ")";
                         } else {
                             $atributos ['valor'] = "";
                         }
@@ -1769,7 +1901,7 @@ class registrarForm {
                         $atributos ['textoFondo'] = 'Digite el documento del contratista.';
 
                         if ($_REQUEST['clase_contratista'] != '33') {
-                            $atributos ['valor'] = $infoSociedad[0]['num_documento'] . "-" . $infoSociedad[0]['nom_proveedor'] . "(TIPO PERSONA:" . $infoSociedad[0]['tipopersona'] . ")";
+                            $atributos ['valor'] = $infoSociedad[0]['num_documento'] . "-" . $infoSociedad[0]['nom_proveedor'] . "(TIPO PERSONA: " . $infoSociedad[0]['tipopersona'] . ")";
                         } else {
                             $atributos ['valor'] = "";
                         }
@@ -2951,7 +3083,7 @@ class registrarForm {
 
                 echo "</section>";
 
-                echo "<h3>Justificacion y Condiciones</h3><section>";
+                echo "<h3>Justificación y Condiciones</h3><section>";
 
                 $esteCampo = "AgrupacionJustificacionCondiciones";
                 $atributos ['id'] = $esteCampo;
@@ -3178,6 +3310,10 @@ class registrarForm {
         $valorCodificado .= "&clase_contratista=" . $_REQUEST['clase_contratista'];
         $valorCodificado .= "&lugar_ejecucion=" . $contrato['lugar_ejecucion'];
         $valorCodificado .= "&vigencia=" . $_REQUEST ['vigencia'];
+        if(isset($_REQUEST['miPaginaAct'])){
+            $valorCodificado .= "&miPaginaAct=" . $_REQUEST['miPaginaAct'];
+            $valorCodificado .= "&numero_contrato_suscrito=" . $_REQUEST ['numero_contrato_suscrito'];
+        }
         if (isset($_REQUEST['idnovedadModificacion'])) {
             $valorCodificado .= "&idnovedadModificacion=" . $_REQUEST['idnovedadModificacion'];
             $valorCodificado .= "&numero_contrato_suscrito=" . $_REQUEST['numero_contrato_suscrito'];

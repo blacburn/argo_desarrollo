@@ -24,19 +24,10 @@ $('#tablaTitulos').dataTable( {
 "sPaginationType": "full_numbers"
 } );
 
-$("#ventanaEmergenteContratista" ).dialog({
-height: 700,
-width: 900,
-title: "Datos Convenio",
-autoOpen: false,
-});
 
-$("#ventanaEmergenteActaInicio" ).dialog({
-height: 450,
-width: 900,
-title: "Datos Convenio",
-autoOpen: false,
-});
+$('#marcoContratos').fadeOut(100);
+$('#marcoNovedades').fadeOut(100);
+$('#botonesGestActa').fadeOut(100);
 
 
 
@@ -49,7 +40,11 @@ $("#<?php echo $this->campoSeguro('vigencia_por_contrato') ?>").select2();
 $("#<?php echo $this->campoSeguro('consecutivo_por_contrato') ?>").width(150);
 $("#<?php echo $this->campoSeguro('consecutivo_por_contrato') ?>").select2();
 
+$("#<?php echo $this->campoSeguro('vigencia_por_contrato_nov') ?>").width(150);
+$("#<?php echo $this->campoSeguro('vigencia_por_contrato_nov') ?>").select2();
 
+$("#<?php echo $this->campoSeguro('tipo_acta_inicio') ?>").width(300);
+$("#<?php echo $this->campoSeguro('tipo_acta_inicio') ?>").select2();
 
 
 $("#<?php echo $this->campoSeguro('clase_contrato') ?>").width(220);
@@ -267,56 +262,6 @@ $('input#fechafinamparo0').datepicker('option', 'minDate', lockDate);
 
 });
 
-$('#<?php echo $this->campoSeguro('fecha_inicio_acta') ?>').datepicker({
-dateFormat: 'yy-mm-dd',
-changeYear: true,
-changeMonth: true,
-minDate: $('#<?php echo $this->campoSeguro('fecha_inicio_validacion') ?>').val(),
-monthNames: ['Enero','Febrero','Marzo','Abril','Mayo','Junio',
-'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'],
-monthNamesShort: ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'],
-dayNames: ['Domingo','Lunes','Martes','Miercoles','Jueves','Viernes','Sabado'],
-dayNamesShort: ['Dom','Lun','Mar','Mie','Jue','Vie','Sab'],
-dayNamesMin: ['Do','Lu','Ma','Mi','Ju','Vi','Sa'],
-onSelect: function(dateText, inst) {
-var lockDate = new Date($('#<?php echo $this->campoSeguro('fecha_inicio_acta') ?>').datepicker('getDate'));
-$('input#<?php echo $this->campoSeguro('fecha_final_acta') ?>').datepicker('option', 'minDate', lockDate);
-},
-onClose: function() { 
-if ($('input#<?php echo $this->campoSeguro('fecha_inicio_acta') ?>').val()!='')
-{
-$('#<?php echo $this->campoSeguro('fecha_final_acta') ?>').attr("class", "cuadroTexto ui-widget ui-widget-content ui-corner-all   validate[required]");
-}else {
-$('#<?php echo $this->campoSeguro('fecha_final_acta') ?>').attr("class", "cuadroTexto ui-widget ui-widget-content ui-corner-all ");
-}
-}
-
-
-});
-$('#<?php echo $this->campoSeguro('fecha_final_acta') ?>').datepicker({
-dateFormat: 'yy-mm-dd',
-changeYear: true,
-changeMonth: true,
-monthNames: ['Enero','Febrero','Marzo','Abril','Mayo','Junio',
-'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'],
-monthNamesShort: ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'],
-dayNames: ['Domingo','Lunes','Martes','Miercoles','Jueves','Viernes','Sabado'],
-dayNamesShort: ['Dom','Lun','Mar','Mie','Jue','Vie','Sab'],
-dayNamesMin: ['Do','Lu','Ma','Mi','Ju','Vi','Sa'],
-onSelect: function(dateText, inst) {
-var lockDate = new Date($('#<?php echo $this->campoSeguro('fecha_final_acta') ?>').datepicker('getDate'));
-$('input#<?php echo $this->campoSeguro('fecha_inicio_sub') ?>').datepicker('option', 'maxDate', lockDate);
-},
-onClose: function() { 
-if ($('input#<?php echo $this->campoSeguro('fecha_final_acta') ?>').val()!='')
-{
-$('#<?php echo $this->campoSeguro('fecha_inicio_acta') ?>').attr("class", "cuadroTexto ui-widget ui-widget-content ui-corner-all   validate[required]");
-}else {
-$('#<?php echo $this->campoSeguro('fecha_inicio_acta') ?>').attr("class", "cuadroTexto ui-widget ui-widget-content ui-corner-all ");
-}
-}
-
-});
 
   $('#<?php echo $this->campoSeguro('porcentaje_amparo') ?>').keyup(function(){
             var valorPorcentaje = $('#<?php echo $this->campoSeguro('porcentaje_amparo') ?>').val();

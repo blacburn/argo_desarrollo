@@ -274,6 +274,23 @@ class EnLetras {
 }
 
 //-----Consulta Contratos ---------------------------------
+if ($_REQUEST ['funcion'] == 'consultaContratoConsecutivo') {
+    
+    
+    if($_REQUEST ['unidad']=='1'){
+        $unidad=1;
+    }
+    else{
+         $unidad=2;
+    }
+
+    $cadenaSql = $this->sql->getCadenaSql('buscar_contrato2', array('unidad' => $unidad
+        , 'identificacion' => $unidad[0]['identificacion'], 'vigencia_curso' => $_REQUEST ['vigencia']));
+ 
+    $resultadoItems = $esteRecursoDB->ejecutarAcceso($cadenaSql, "busqueda");
+
+    echo json_encode($resultadoItems);
+}
 
 if ($_REQUEST ['funcion'] == 'consultaContrato') {
 

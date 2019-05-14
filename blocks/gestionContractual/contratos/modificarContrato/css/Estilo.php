@@ -9,11 +9,19 @@ $estilo[$indice++]="jquery.auto-complete.css";
 $estilo[$indice++]="modal.css";
 $estilo[$indice++]="estiloFechasPolizas.css";
 
+
+
 /*
  * Estilo Personalizado del Bloque actual
  */
 
+
 $estilo[$indice++]="estiloBloque.css";
+
+
+if(isset($_REQUEST ['miPaginaAct']) && isset($_REQUEST ['opcion']) && $_REQUEST ['opcion'] == 'modificarContratos'){
+	$estilo[$indice++]="estiloBloqueAlert.css";
+}
 
 
 // Bootstrap
@@ -23,7 +31,7 @@ $estilo[$indice++] = "jquery.dataTables.css";
 $estilo[$indice++] = "bootstrap.css";
 $estilo[$indice++] = "bootstrap.min.css";
 
-
+$estilo[$indice++]="sweetalert2.min.css";
 
 $rutaBloque=$this->miConfigurador->getVariableConfiguracion("host");
 $rutaBloque.=$this->miConfigurador->getVariableConfiguracion("site");

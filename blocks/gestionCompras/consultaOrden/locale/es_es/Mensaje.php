@@ -686,4 +686,13 @@ $this->idioma ["restablecerCargo"] = "Reestablecer Cargo";
 
 
 $this->idioma ["division1Titulo"] = "Seleccione Fecha Disponibilidad Presupuestal";
+
+$this->idioma ["botonSiguiente"] = "Continuar";
+
+$this->idioma ["nombre"] = "Nombre : ";
+$this->idioma ["nombreTitulo"] = "Ingrese Nombre Elemento o Servicio";
+
+$this->idioma ["tiempo_ejecucion"] = "Tiempo de Ejecución en Días: ";
+$this->idioma ["tiempo_ejecucionTitulo"] = "Ingrese tiempo de  Ejecución en días";
+
 ?>

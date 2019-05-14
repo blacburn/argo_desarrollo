@@ -32,7 +32,42 @@ class Sql extends \Sql {
         switch ($tipo) {
 
 
+            case 'buscar_contrato3' :
+                $cadenaSql = " SELECT  DISTINCT cs.numero_contrato_suscrito AS  data, ce.estado as value, cg.tipo_contrato as type, cs.fecha_suscripcion ";
+                $cadenaSql .= " FROM contrato_general cg, contrato_estado ce, estado_contrato ec, contrato_suscrito cs  ";
+                $cadenaSql .= " WHERE cg.unidad_ejecutora ='" . $variable['unidad'] . "' ";
+                $cadenaSql .= " AND cg.numero_contrato = cs.numero_contrato  ";
+                $cadenaSql .= " AND cg.numero_contrato = ce.numero_contrato and cg.vigencia = ce.vigencia and ce.estado = ec.id and cg.vigencia = " . $variable['vigencia_curso'] . " ";
+                $cadenaSql .= " AND cs.numero_contrato_suscrito = '" . $variable['numero'] . "' ";
+                $cadenaSql .= " AND ce.fecha_registro = (SELECT MAX(cee.fecha_registro) from contrato_estado cee where cg.numero_contrato = cee.numero_contrato and  cg.vigencia = cee.vigencia) ";
+                $cadenaSql .= " AND ec.id = 3 ";
+                $cadenaSql .= " ORDER BY cs.fecha_suscripcion ASC;";
+                break;
 
+            case 'buscar_contrato2' :
+                $cadenaSql = " SELECT  DISTINCT cs.numero_contrato_suscrito AS  data,  cs.fecha_suscripcion ";
+                $cadenaSql .= " FROM contrato_general cg, contrato_estado ce, estado_contrato ec, contrato_suscrito cs, tipo_contrato tpc ";
+                $cadenaSql .= " WHERE cg.unidad_ejecutora ='" . $variable['unidad'] . "' AND tpc.id = cg.tipo_contrato ";
+                $cadenaSql .= " AND cg.numero_contrato = cs.numero_contrato  ";
+                $cadenaSql .= " AND cg.numero_contrato = ce.numero_contrato and cg.vigencia = ce.vigencia and ce.estado = ec.id and cg.vigencia = " . $variable['vigencia_curso'] . " ";
+                $cadenaSql .= " AND ce.fecha_registro = (SELECT MAX(cee.fecha_registro) from contrato_estado cee where cg.numero_contrato = cee.numero_contrato and  cg.vigencia = cee.vigencia) ";
+                $cadenaSql .= " AND ec.id = 3 AND tpc.id_grupo_tipo_contrato = 1";
+                $cadenaSql .= " ORDER BY cs.fecha_suscripcion ASC;";
+                break;
+
+            case "list_vigencias" :
+
+                $cadenaSql = "  SELECT  DISTINCT vigencia as id, vigencia as value ";
+                $cadenaSql .= " FROM  ";
+                $cadenaSql .= " argo.contrato_general;";
+                break;
+
+            case "list_estados" :
+
+                $cadenaSql = "  SELECT  DISTINCT id as id, nombre_estado as value ";
+                $cadenaSql .= " FROM  ";
+                $cadenaSql .= " argo.estado_contrato WHERE id NOT IN (1, 3);";
+                break;    
 
 
             //------------------ Consulta Contratos ------------------------
@@ -180,11 +215,11 @@ class Sql extends \Sql {
             case "consultarOrdenGeneral" :
 
                 $cadenaSql = "SELECT DISTINCT o.id_orden, p.descripcion, o.numero_contrato, "
-                        . "o.vigencia, o.fecha_registro, cg.contratista  as proveedor,o.tipo_orden,"
+                        . "o.vigencia, cs.fecha_registro, cg.contratista  as proveedor,o.tipo_orden,"
                         . "cg.clase_contratista,cg.convenio,tpc.tipo_contrato,"
                         . " se.\"ESF_SEDE\" ||'-'|| dep.\"ESF_DEP_ENCARGADA\" as SedeDependencia, "
                         . " ec.nombre_estado, "
-                        . "ce.fecha_registro as fecha_registro_estado,cg.unidad_ejecutora, cs.numero_contrato_suscrito ";
+                        . "ce.fecha_registro as fecha_registro_estado,cg.unidad_ejecutora, cs.numero_contrato_suscrito , cs.fecha_suscripcion ";
                 $cadenaSql .= "FROM orden o, parametros p, contrato_general cg, \"sedes_SIC\" se, \"dependencia_SIC\" dep, ";
                 $cadenaSql .= "contrato_estado ce, estado_contrato ec, contrato_suscrito cs, tipo_contrato tpc  ";
                 $cadenaSql .= "WHERE o.tipo_orden = p.id_parametro AND tpc.id = cg.tipo_contrato ";

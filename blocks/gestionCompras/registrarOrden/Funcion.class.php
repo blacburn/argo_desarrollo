@@ -84,6 +84,8 @@ class Funcion {
                        
 			switch ($_REQUEST ['opcion']) {
 				case 'registrarOrden' :
+                                  
+                                    
                                         $this->regitrarOrden ();
 					break;
 				

@@ -101,8 +101,7 @@ class registrarForm {
             $atributos ["id"] = "logos";
             $atributos ["estilo"] = " ";
             echo $this->miFormulario->division("inicio", $atributos);
-            unset($atributos);
-            {
+            unset($atributos); {
 
                 $esteCampo = 'logo';
                 $atributos ['id'] = $esteCampo;
@@ -125,7 +124,7 @@ class registrarForm {
         $atributos ['id'] = $esteCampo;
         $atributos ["estilo"] = "jqueryui";
         $atributos ['tipoEtiqueta'] = 'inicio';
-        $atributos ["leyenda"] = "Registrar Acta de Inicio: " . $_REQUEST['mensaje_titulo'];
+        $atributos ["leyenda"] = "Modificar Acta de Inicio: " . $_REQUEST['mensaje_titulo'];
         echo $this->miFormulario->marcoAgrupacion('inicio', $atributos);
 
 
@@ -141,9 +140,11 @@ class registrarForm {
         $variable .= "&fecha_final_sub=" . $arreglo ['fecha\_final'];
         $variable .= "&vigencia_por_contrato=" . $arreglo['vigencia\_curso'];
         $variable .= "&usuario=" . $_REQUEST ['usuario'];
+        $variable .= "&tipo_acceso=" . $_REQUEST ['tipo_acceso'];
         if (isset($_REQUEST ['accesoCondor']) && $_REQUEST ['accesoCondor'] == 'true') {
 
             $variable .= "&accesoCondor=true";
+            $variable .= "&identificacion=" . $_REQUEST['usuario'];
         }
 
         $variable = $this->miConfigurador->fabricaConexiones->crypto->codificar_url($variable, $directorio);
@@ -173,17 +174,25 @@ class registrarForm {
             'vigencia' => $_REQUEST['vigencia'],
         );
 
-        $sqlFechaSuscripcion = $this->miSql->getCadenaSql('obtenerFechadeSuscripcion', $datos_contrato);
-        $fechaSuscripcion = $DBContractual->ejecutarAcceso($sqlFechaSuscripcion, "busqueda");
-
-        $esteCampo = 'fecha_inicio_validacion';
+        $esteCampo = 'numero_contrato';
         $atributos ["id"] = $esteCampo; // No cambiar este nombre
         $atributos ["tipo"] = "hidden";
         $atributos ['estilo'] = '';
         $atributos ["obligatorio"] = false;
         $atributos ['marco'] = true;
         $atributos ["etiqueta"] = "";
-        $atributos ['valor'] = $fechaSuscripcion[0]['fecha_suscripcion'];
+        $atributos ['valor'] = $_REQUEST['numero_contrato'];
+        $atributos = array_merge($atributos, $atributosGlobales);
+        echo $this->miFormulario->campoCuadroTexto($atributos);
+
+        $esteCampo = 'vigencia_contrato';
+        $atributos ["id"] = $esteCampo; // No cambiar este nombre
+        $atributos ["tipo"] = "hidden";
+        $atributos ['estilo'] = '';
+        $atributos ["obligatorio"] = false;
+        $atributos ['marco'] = true;
+        $atributos ["etiqueta"] = "";
+        $atributos ['valor'] = $_REQUEST['vigencia'];
         $atributos = array_merge($atributos, $atributosGlobales);
         echo $this->miFormulario->campoCuadroTexto($atributos);
 
@@ -199,8 +208,7 @@ class registrarForm {
             $atributos ["estilo"] = "jqueryui";
             $atributos ['tipoEtiqueta'] = 'inicio';
             $atributos ['leyenda'] = "Gestion de Pólizas";
-            echo $this->miFormulario->agrupacion('inicio', $atributos);
-            {
+            echo $this->miFormulario->agrupacion('inicio', $atributos); {
                 echo "<div class='container'>
     
 	<div class='row'>
@@ -218,6 +226,7 @@ class registrarForm {
 								<th>Entidad Aseguradora</th>
 								<th>Fecha Inicio</th>
 								<th>Fecha Fin</th>
+                                <th>Fecha Aprobación</th>
 								<th>Descripcion</th>
 								<th>Estado</th>
 								<th>Amparos</th>
@@ -242,6 +251,7 @@ class registrarForm {
 								<td>" . $polizas[$i]['nombre_aseguradora'] . "</td>
 								<td>" . $polizas[$i]['fecha_inicio'] . "</td>
 								<td>" . $polizas[$i]['fecha_fin'] . "</td>
+                                <td>" . $polizas[$i]['fecha_aprobacion'] . "</td>
 								<td>" . $polizas[$i]['descripcion_poliza'] . "</td>
 								<td>" . $estado . "</td>";
                     echo "<td><a href='javascript:void(0);' onclick='VerAmparos($i)'>Ver Amparos</a>";
@@ -313,21 +323,212 @@ class registrarForm {
             $contrato = $DBContractual->ejecutarAcceso($cadenaSql, "busqueda");
 
 
+            $cadenaSql = $this->miSql->getCadenaSql('ConsultarDescripcionParametro', $contrato[0]['unidad_ejecucion']);
+            $plazo_ejecion_consulta = $DBContractual->ejecutarAcceso($cadenaSql, "busqueda");
+            $plazo_ejecucion = $contrato[0]['plazo_ejecucion'] . " " . $plazo_ejecion_consulta[0][0];
 
 
             $cadenaSql = $this->miSql->getCadenaSql('obtenerInfoProveedor', $contrato[0]['contratista']);
             $contratista = $esteRecursoDBAgora->ejecutarAcceso($cadenaSql, "busqueda");
 
+            $contratista[0]['num_documento'];
+
+            $cadenaSql = $this->miSql->getCadenaSql('consultaTipoDocumento', $contratista[0]['num_documento']);
+            $tipoDocumento = $esteRecursoDBAgora->ejecutarAcceso($cadenaSql, "busqueda");
+
+            $cadenaSql = $this->miSql->getCadenaSql('consultarActasInicio', $datosContrato);
+            $actas_inicio = $DBContractual->ejecutarAcceso($cadenaSql, "busqueda");
 
 
+            $datosActaConsulta = array(
+                'id_acta' => $actas_inicio[0]['id'],
+                'contratista' => $contrato[0]['contratista']
+            );
+
+
+            $cadenaSql = $this->miSql->getCadenaSql('consultarActasxContratistaMod', $datosActaConsulta);
+            $fecha_fin = $DBContractual->ejecutarAcceso($cadenaSql, "busqueda");
+
+            $fechaFinVal = '';
+            $fechaIniVal = '';
+            $mensajeVal = '';
+            if ($contrato[0]['tipo_contrato'] === '6' || $contrato[0]['tipo_contrato'] === '17') {
+                if ($fecha_fin[0]['fecha_fin']) {
+                    $fechaFinVal = $fecha_fin[0]['fecha_fin'];
+                } else {
+                    $cadenaSql = $this->miSql->getCadenaSql('consultarFechaFinActa2', $fecha_fin[0]['id']);
+                    $fecha_fin_acta = $DBContractual->ejecutarAcceso($cadenaSql, "busqueda");
+
+                    $fechaFinVal = $fecha_fin_acta[0][0];
+                }
+
+                if (date('Y-m-d') <= $fechaFinVal) {
+                     $fechaIniVal = date('Y-m-d', strtotime($fechaFinVal . ' + 1 days'));
+                    $mensajeVal = 'mensaje';
+                } else {
+                    $arreglo = array(
+                        'numero_contrato' => $_REQUEST['numero_contrato_suscrito'],
+                        'vigencia_curso' => $contrato[0]['vigencia'],
+                        'unidad_ejecutora' => $contrato[0]['unidad_ejecutora'],
+                        'clase_contrato' => $contrato[0]['tipo_contrato'],
+                        'vigencia' => $contrato[0]['vigencia'],
+                        'nit' => $contrato[0]['contratista'],
+                        'supervisor' => $contrato[0]['supervisor'],
+                        'fecha_inicial' => '',
+                        'fecha_final' => '',
+                    );
+
+                    $cadenaSql = $this->miSql->getCadenaSql('consultarContratosGeneral', $arreglo);
+                    $fecha_fin_acta = $DBContractual->ejecutarAcceso($cadenaSql, "busqueda");
+
+
+                    $fechaFinVal = date('Y-m-d', strtotime($fecha_fin_acta[0]['fecha_suscripcion']));
+
+
+                    $fechaIniVal = date('Y-m-d', strtotime($fechaFinVal));
+                    $mensajeVal = 'mensajeInfo';
+                }
+               
+            } else {
+
+                $arreglo = array(
+                    'numero_contrato' => $_REQUEST['numero_contrato_suscrito'],
+                    'vigencia_curso' => $contrato[0]['vigencia'],
+                    'unidad_ejecutora' => $contrato[0]['unidad_ejecutora'],
+                    'clase_contrato' => $contrato[0]['tipo_contrato'],
+                    'vigencia' => $contrato[0]['vigencia'],
+                    'nit' => $contrato[0]['contratista'],
+                    'supervisor' => $contrato[0]['supervisor'],
+                    'fecha_inicial' => '',
+                    'fecha_final' => '',
+                );
+
+                $cadenaSql = $this->miSql->getCadenaSql('consultarContratosGeneral', $arreglo);
+                $fecha_fin_acta = $DBContractual->ejecutarAcceso($cadenaSql, "busqueda");
+
+
+                $fechaFinVal = date('Y-m-d', strtotime($fecha_fin_acta[0]['fecha_suscripcion']));
+
+
+                $fechaIniVal = date('Y-m-d', strtotime($fechaFinVal));
+            }
+//            if ($fecha_fin[0]['fecha_fin']) {
+//                $fechaFinVal = $fecha_fin[0]['fecha_fin'];
+//            } else {
+//                $cadenaSql = $this->miSql->getCadenaSql('consultarFechaFinActa2', $fecha_fin[0]['id']);
+//                $fecha_fin_acta = $DBContractual->ejecutarAcceso($cadenaSql, "busqueda");
+//
+//                $fechaFinVal = $fecha_fin_acta[0][0];
+//            }
+//
+//
+//            if (date('Y-m-d') <= $fechaFinVal) {
+//
+//                $mensajeVal = 'mensaje';
+//            } else {
+//                $mensajeVal = 'mensajeInfo';
+//            }
+//            $fechaIniVal = date('Y-m-d', strtotime($fechaFinVal . ' + 1 days'));
+
+            $esteCampo = 'fecha_inicio_validacion';
+            $atributos ["id"] = $esteCampo; // No cambiar este nombre
+            $atributos ["tipo"] = "hidden";
+            $atributos ['estilo'] = '';
+            $atributos ["obligatorio"] = false;
+            $atributos ['marco'] = true;
+            $atributos ["etiqueta"] = "";
+            $atributos ['valor'] = $fechaIniVal;
+            $atributos = array_merge($atributos, $atributosGlobales);
+            echo $this->miFormulario->campoCuadroTexto($atributos);
 
 //            $cadenaSqlInventario = $this->miSql->getCadenaSql("consultarElementosContratista", $contratista[0]['num_documento']);
 //
 //            $inventario = $DBMArka->ejecutarAcceso($cadenaSqlInventario, "busqueda");
 
+            if ($mensajeVal == 'mensaje') {
 
-            $cadenaSql = $this->miSql->getCadenaSql('consultarActasInicio', $datosContrato);
-            $actas_inicio = $DBContractual->ejecutarAcceso($cadenaSql, "busqueda");
+                $mensaje = "¡ATENCIÓN! <br><br>" . " El contratista asociado al Acta de Inicio seleccionada actualmente tiene un contrato en ejecución. <br><br>";
+                $mensaje .= " Nombre del Contratista : " . $contratista[0]['nom_proveedor'] . "<br>";
+                $mensaje .= "Tipo Documento: " . $tipoDocumento[0][0] . " <br>";
+                $mensaje .= "Documento: " . $contratista[0]['num_documento'] . " <br>";
+                $mensaje .= "Tipo Persona: " . $contratista[0]['tipopersona'] . " <br><br>";
+                $mensaje .="Por lo cual se Ajusta la Selección de Fecha de Inicio de Acta";
+
+
+                // ---------------- CONTROL: Cuadro de Texto --------------------------------------------------------
+                $esteCampo = 'mensajeRegistro';
+                $atributos ['id'] = $esteCampo;
+                $atributos ['tipo'] = 'warning';
+                $atributos ['estilo'] = 'textoCentrar';
+                $atributos ['mensaje'] = $mensaje;
+
+                $tab ++;
+
+                // Aplica atributos globales al control
+                $atributos = array_merge($atributos, $atributosGlobales);
+                echo $this->miFormulario->cuadroMensaje($atributos);
+            }
+
+            if ($mensajeVal == 'mensajeInfo') {
+
+                $mensaje = "INFORMACIÓN DEL CONTRATISTA. <br><br>" . "Se Realizará Modificación de Acta de Inicio al contratista: <br><br>";
+                $mensaje .= " Nombre del Contratista : " . $contratista[0]['nom_proveedor'] . "<br>";
+                $mensaje .= "Tipo Documento: " . $tipoDocumento[0][0] . " <br>";
+                $mensaje .= "Documento: " . $contratista[0]['num_documento'] . " <br>";
+                $mensaje .= "Tipo Persona: " . $contratista[0]['tipopersona'] . " <br><br>";
+
+
+                // ---------------- CONTROL: Cuadro de Texto --------------------------------------------------------
+                $esteCampo = 'mensajeRegistro';
+                $atributos ['id'] = $esteCampo;
+                $atributos ['tipo'] = 'info';
+                $atributos ['estilo'] = 'textoCentrar';
+                $atributos ['mensaje'] = $mensaje;
+
+                $tab ++;
+
+                // Aplica atributos globales al control
+                $atributos = array_merge($atributos, $atributosGlobales);
+                echo $this->miFormulario->cuadroMensaje($atributos);
+            }
+
+
+
+            $cadenaSql = $this->miSql->getCadenaSql('consultarFechaFinActa2', $actas_inicio[0]['id']);
+            $fecha_fin_acta = $DBContractual->ejecutarAcceso($cadenaSql, "busqueda");
+
+
+            // ---------------- CONTROL: Cuadro de Texto --------------------------------------------------------
+            $esteCampo = 'plazo_ejecucion';
+            $atributos ['id'] = $esteCampo;
+            $atributos ['nombre'] = $esteCampo;
+            $atributos ['tipo'] = 'text';
+            $atributos ['estilo'] = 'jqueryui';
+            $atributos ['marco'] = true;
+            $atributos ['estiloMarco'] = '';
+            // $atributos ["etiquetaObligatorio"] = true;
+            $atributos ['columnas'] = 1;
+            $atributos ['dobleLinea'] = 0;
+            $atributos ['tabIndex'] = $tab;
+            $atributos ['etiqueta'] = $this->lenguaje->getCadena($esteCampo);
+            $atributos ['validar'] = 'required';
+
+            if (isset($_REQUEST [$esteCampo])) {
+                $atributos ['valor'] = $_REQUEST [$esteCampo];
+            } else {
+                $atributos ['valor'] = $plazo_ejecucion;
+            }
+            $atributos ['titulo'] = $this->lenguaje->getCadena($esteCampo . 'Titulo');
+            $atributos ['deshabilitado'] = true;
+            $atributos ['tamanno'] = 10;
+            $atributos ['maximoTamanno'] = '';
+            $atributos ['anchoEtiqueta'] = 200;
+            $tab ++;
+
+            // Aplica atributos globales al control
+            $atributos = array_merge($atributos, $atributosGlobales);
+            echo $this->miFormulario->campoCuadroTexto($atributos);
+            unset($atributos);
 
             // ---------------- CONTROL: Cuadro de Texto --------------------------------------------------------
             $esteCampo = 'fecha_inicio_acta';
@@ -360,37 +561,37 @@ class registrarForm {
             $atributos = array_merge($atributos, $atributosGlobales);
             echo $this->miFormulario->campoCuadroTexto($atributos);
 
-//            // ---------------- CONTROL: Cuadro de Texto --------------------------------------------------------
-//            $esteCampo = 'fecha_final_acta';
-//            $atributos ['id'] = $esteCampo;
-//            $atributos ['nombre'] = $esteCampo;
-//            $atributos ['tipo'] = 'text';
-//            $atributos ['estilo'] = 'jqueryui';
-//            $atributos ['marco'] = true;
-//            $atributos ['estiloMarco'] = '';
-//            // $atributos ["etiquetaObligatorio"] = true;
-//            $atributos ['columnas'] = 2;
-//            $atributos ['dobleLinea'] = 0;
-//            $atributos ['tabIndex'] = $tab;
-//            $atributos ['etiqueta'] = $this->lenguaje->getCadena($esteCampo);
-//            $atributos ['validar'] = 'required';
-//
-//            if (isset($_REQUEST [$esteCampo])) {
-//                $atributos ['valor'] = $_REQUEST [$esteCampo];
-//            } else {
-//                $atributos ['valor'] = '';
-//            }
-//            $atributos ['titulo'] = $this->lenguaje->getCadena($esteCampo . 'Titulo');
-//            $atributos ['deshabilitado'] = false;
-//            $atributos ['tamanno'] = 10;
-//            $atributos ['maximoTamanno'] = '';
-//            $atributos ['anchoEtiqueta'] = 150;
-//            $tab ++;
-//
-//            // Aplica atributos globales al control
-//            $atributos = array_merge($atributos, $atributosGlobales);
-//            echo $this->miFormulario->campoCuadroTexto($atributos);
-//            unset($atributos);
+            // ---------------- CONTROL: Cuadro de Texto --------------------------------------------------------
+            $esteCampo = 'fecha_final_acta';
+            $atributos ['id'] = $esteCampo;
+            $atributos ['nombre'] = $esteCampo;
+            $atributos ['tipo'] = 'text';
+            $atributos ['estilo'] = 'jqueryui';
+            $atributos ['marco'] = true;
+            $atributos ['estiloMarco'] = '';
+            // $atributos ["etiquetaObligatorio"] = true;
+            $atributos ['columnas'] = 2;
+            $atributos ['dobleLinea'] = 0;
+            $atributos ['tabIndex'] = $tab;
+            $atributos ['etiqueta'] = $this->lenguaje->getCadena($esteCampo);
+            $atributos ['validar'] = 'required';
+
+            if (isset($_REQUEST [$esteCampo])) {
+                $atributos ['valor'] = $_REQUEST [$esteCampo];
+            } else {
+                $atributos ['valor'] = $fecha_fin_acta[0][0];
+            }
+            $atributos ['titulo'] = $this->lenguaje->getCadena($esteCampo . 'Titulo');
+            $atributos ['deshabilitado'] = true;
+            $atributos ['tamanno'] = 10;
+            $atributos ['maximoTamanno'] = '';
+            $atributos ['anchoEtiqueta'] = 200;
+            $tab ++;
+
+            // Aplica atributos globales al control
+            $atributos = array_merge($atributos, $atributosGlobales);
+            echo $this->miFormulario->campoCuadroTexto($atributos);
+            unset($atributos);
             // ---------------- CONTROL: Cuadro de Texto --------------------------------------------------------
             $esteCampo = 'observaciones';
             $atributos ['id'] = $esteCampo;

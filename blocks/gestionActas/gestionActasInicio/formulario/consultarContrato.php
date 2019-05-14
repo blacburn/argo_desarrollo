@@ -179,7 +179,7 @@ class registrarForm {
         $atributos ['id'] = $esteCampo;
         $atributos ["estilo"] = "jqueryui";
         $atributos ['tipoEtiqueta'] = 'inicio';
-        $atributos ["leyenda"] = "Cosultar Contrato ".$_REQUEST['mensaje_titulo'];
+        $atributos ["leyenda"] = "Consultar Contrato ".$_REQUEST['mensaje_titulo'];
         echo $this->miFormulario->marcoAgrupacion('inicio', $atributos);
         unset($atributos);
         {
@@ -2776,7 +2776,7 @@ class registrarForm {
 
                 echo "</section>";
 
-                echo "<h3>Justificacion y Condiciones</h3><section>";
+                echo "<h3>Justificación y Condiciones</h3><section>";
 
                 $esteCampo = "AgrupacionJustificacionCondiciones";
                 $atributos ['id'] = $esteCampo;

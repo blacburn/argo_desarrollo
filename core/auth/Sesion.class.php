@@ -45,7 +45,7 @@ class Sesion extends SesionBase {
      * @access public
      */
     function verificarSesion() {
-		
+
         $resultado = true;
 
         // Se eliminan las sesiones expiradas
@@ -55,8 +55,7 @@ class Sesion extends SesionBase {
 
             // Verificar si en el cliente existe y tenga registrada una cookie que identifique la sesion
             $this->sesionId = $this->numeroSesion();
-            
-           
+
             if ($this->sesionId) {
                 $resultado = $this->abrirSesion($this->sesionId);
 
@@ -95,7 +94,7 @@ class Sesion extends SesionBase {
      * @access public
      */
     function numeroSesion() {
-    	
+
         if (isset($_COOKIE [self::APLICATIVO])) {
             $this->sesionId = $_COOKIE [self::APLICATIVO];
         } else {
@@ -184,7 +183,6 @@ class Sesion extends SesionBase {
      * @access public
      */
     function crearSesion($usuarioId) {
-    	
         // 0. Borrar todas las sesiones del equipo
         if ($this->verificarSesion()) {
             $this->terminarSesion($this->sesionId);
@@ -210,7 +208,6 @@ class Sesion extends SesionBase {
 
             // Insertar id_usuario
             $this->resultado = $this->guardarValorSesion('idUsuario', $usuarioId, $this->sesionId, $this->sesionExpiracion);
-            
             if ($this->resultado) {
                 return $this->sesionId;
             }
@@ -230,14 +227,12 @@ class Sesion extends SesionBase {
      * @access public
      */
     function guardarValorSesion($variable, $valor, $sesion = '', $expiracion = '') {
-    	
+
         $totalArgumentos = func_num_args();
         if ($totalArgumentos == 0) {
             return FALSE;
         } else {
-        	
             if (strlen($sesion) != 32) {
-            	
                 if (isset($_COOKIE [self::APLICATIVO])) {
                     $this->sesionId = $_COOKIE [self::APLICATIVO];
                 } else {
@@ -248,21 +243,19 @@ class Sesion extends SesionBase {
             }
 
             // Si el valor de sesión existe entonces se actualiza, si no se crea un registro con el valor.
-            
+
             $parametro [self::SESIONID] = $this->sesionId;
             $parametro ["variable"] = $variable;
             $parametro ["valor"] = $valor;
             $parametro [self::EXPIRACION] = $expiracion;
             $cadenaSql = $this->miSql->getCadenaSql("buscarValorSesion", $parametro);
 
-            
             $resultado = $this->miConexion->ejecutarAcceso($cadenaSql, self::BUSCAR);
-			
+
             if ($resultado) {
 
                 $cadenaSql = $this->miSql->getCadenaSql("actualizarValorSesion", $parametro);
             } else {
-            	
                 $cadenaSql = $this->miSql->getCadenaSql("insertarValorSesion", $parametro);
             }
 
@@ -318,7 +311,7 @@ class Sesion extends SesionBase {
      */
     function borrarSesionExpirada() {
 
-        $cadenaSql = $this->miSql->getCadenaSql("borrarSesionesExpiradas");
+        $cadenaSql = $cadenaSql = $this->miSql->getCadenaSql("borrarSesionesExpiradas");
         return !$this->miConexion->ejecutarAcceso($cadenaSql);
     }
 

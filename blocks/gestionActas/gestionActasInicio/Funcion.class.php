@@ -74,7 +74,16 @@ class Funcion {
         include_once ($this->ruta . "funcion/modificarActaInicio.php");
     }
     
+    function RegistrarActaInicioNov() {
+        include_once ($this->ruta . "funcion/registrarActaInicioNov.php");
+    }
     
+    function modificarActaInicioNov() {
+        include_once ($this->ruta . "funcion/modificarActaInicioNov.php");
+    }
+
+
+
     
     function cambiarEstado() {
 
@@ -95,6 +104,10 @@ class Funcion {
     function generarDocumento() {
 
         include_once ($this->ruta . "funcion/documentoActaInicioPdf.php");
+    }
+    function generarDocumentoNovedad() {
+
+        include_once ($this->ruta . "funcion/documentoActaInicioNovedadPdf.php");
     }
 
     function action() {
@@ -145,9 +158,21 @@ class Funcion {
                 case 'modificarActaInicio' :
                     $this->modificarActaInicio();
                     break;
+
+                case 'registrarActaInicioNov' :
+                    $this->RegistrarActaInicioNov();
+                    break;
+                
+                case 'modificarActaInicioNov' :
+                    $this->modificarActaInicioNov();
+                    break;
                 
                 case 'generarDocumento' :
                     $this->generarDocumento();
+                    break;
+
+                case 'generarDocumentoNovedad' :
+                    $this->generarDocumentoNovedad();
                     break;
 
             }

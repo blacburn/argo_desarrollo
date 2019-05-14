@@ -6,6 +6,12 @@
  * 
  * */
 
+$this->idioma ["vigencia"] = "Vigencia : ";
+$this->idioma ["vigenciaTitulo"] = "Seleccione Vigencia Socilitud Necesidad";
+
+$this->idioma ["numero_contrato"] = "Consecutivo Orden : ";
+$this->idioma ["numero_contratoTitulo"] = "Seleccione Consecutivo de Orden";
+
 $this->idioma ["unidad_ejecutora"] = "Unidad Ejecutora: ";
 $this->idioma ["unidad_ejecutoraTitulo"] = "Selecciones Unidad Ejecutora";
 

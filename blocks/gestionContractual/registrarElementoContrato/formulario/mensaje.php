@@ -104,7 +104,7 @@ class registrarForm {
 				
 				if (isset ( $_REQUEST ['mensaje'] ) && $_REQUEST ['mensaje'] == 'datosVacios') {
 					
-					$mensaje = "Verifique el Archivo .xlsx. <br>Existen Datos Vacios";
+					$mensaje = "Verifique el Archivo .xlsx. <br>Existen ".$_REQUEST['respuesta'];
 					
 					// ---------------- CONTROL: Cuadro de Texto --------------------------------------------------------
 					$esteCampo = 'mensajeRegistro';

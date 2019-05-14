@@ -112,13 +112,13 @@ class registrarForm {
 
                 if ($_REQUEST ['mensaje'] == 'registroActa') {
 
-                    $mensaje = "<h3>SE REGISTRO EL ACTA DE INICO</h3> <br>"
-                            . " <h4>NUMERO  DE CONTRATO: " . $_REQUEST['numero_contrato_suscrito'] . "<br>"
+                    $mensaje = "<h3>SE REGISTRÓ EL ACTA DE INICIO</h3> <br>"
+                            . " <h4>NÚMERO  DE CONTRATO: " . $_REQUEST['numero_contrato_suscrito'] . "<br>"
                             . " VIGENCIA: " . $_REQUEST['vigencia'] . "<br>"
                             . " FECHA DE REGISTRO: " . date("Y-m-d") . "<br>"
-                            . " USUARIO QUE REALIZO EL REGISTRO: " . $_REQUEST['usuario'] . "</h4><br>";
+                            . " USUARIO QUE REALIZÓ EL REGISTRO: " . $_REQUEST['usuario'] . "</h4><br>";
 
-                    $mensaje .="<h2> EL ESTADO DEL CONTRATO SE ACTUALIZO A 'EN EJECUCIÓN'<br>";
+                    $mensaje .="<h2> EL ESTADO DEL CONTRATO SE ACTUALIZÓ A 'EN EJECUCIÓN'<br>";
 
 
                     // ---------------- CONTROL: Cuadro de Texto --------------------------------------------------------
@@ -140,6 +140,8 @@ class registrarForm {
                     if (isset($_REQUEST ['accesoCondor']) && $_REQUEST ['accesoCondor'] == 'true') {
 
                         $variable .= "&accesoCondor=true";
+                        $variable .= "&usuario=".$_REQUEST['usuario'];
+                        $variable .= "&identificacion=".$_REQUEST['usuario'];
                     }
                  
                     $variable = $this->miConfigurador->fabricaConexiones->crypto->codificar_url($variable, $directorio);
@@ -149,8 +151,8 @@ class registrarForm {
                 }
                 if ($_REQUEST ['mensaje'] == 'noRegistroActa') {
 
-                    $mensaje = "<h3>NO SE REGISTRO EL ACTA DE INICO</h3> <br>"
-                            . " <h4>NUMERO  DE CONTRATO: " . $_REQUEST['numero_contrato_suscrito'] . "<br>"
+                    $mensaje = "<h3>NO SE REGISTRÓ EL ACTA DE INICIO</h3> <br>"
+                            . " <h4>NÚMERO  DE CONTRATO: " . $_REQUEST['numero_contrato_suscrito'] . "<br>"
                             . " VIGENCIA: " . $_REQUEST['vigencia'] . "<br>";
 
 
@@ -173,6 +175,8 @@ class registrarForm {
                     if (isset($_REQUEST ['accesoCondor']) && $_REQUEST ['accesoCondor'] == 'true') {
 
                         $variable .= "&accesoCondor=true";
+                        $variable .= "&usuario=".$_REQUEST['usuario'];
+                        $variable .= "&identificacion=".$_REQUEST['usuario'];
                     }
                     $variable = $this->miConfigurador->fabricaConexiones->crypto->codificar_url($variable, $directorio);
 
@@ -181,11 +185,11 @@ class registrarForm {
 
                 if ($_REQUEST ['mensaje'] == 'modificoActa') {
 
-                    $mensaje = "<h3>SE REGISTRO LA MODIFICACIÓN AL ACTA DE INICO</h3> <br>"
-                            . " <h4>NUMERO  DE CONTRATO: " . $_REQUEST['numero_contrato_suscrito'] . "<br>"
+                    $mensaje = "<h3>SE REGISTRÓ LA MODIFICACIÓN DEL ACTA DE INICIO</h3> <br>"
+                            . " <h4>NÚMERO  DE CONTRATO: " . $_REQUEST['numero_contrato_suscrito'] . "<br>"
                             . " VIGENCIA: " . $_REQUEST['vigencia'] . "<br>"
                             . " FECHA DE REGISTRO: " . date("Y-m-d") . "<br>"
-                            . " USUARIO QUE REALIZO EL REGISTRO: " . $_REQUEST['usuario'] . "</h4><br>";
+                            . " USUARIO QUE REALIZÓ EL REGISTRO: " . $_REQUEST['usuario'] . "</h4><br>";
 
 
 
@@ -208,6 +212,8 @@ class registrarForm {
                     if (isset($_REQUEST ['accesoCondor']) && $_REQUEST ['accesoCondor'] == 'true') {
 
                         $variable .= "&accesoCondor=true";
+                        $variable .= "&usuario=".$_REQUEST['usuario'];
+                        $variable .= "&identificacion=".$_REQUEST['usuario'];
                     }
                     $variable = $this->miConfigurador->fabricaConexiones->crypto->codificar_url($variable, $directorio);
 
@@ -216,8 +222,8 @@ class registrarForm {
                 }
                 if ($_REQUEST ['mensaje'] == 'noModificoActa') {
 
-                    $mensaje = "<h3>NO SE REGISTRO LA MODIFICACIÓN AL ACTA DE INICO</h3> <br>"
-                            . " <h4>NUMERO  DE CONTRATO: " . $_REQUEST['numero_contrato_suscrito'] . "<br>"
+                    $mensaje = "<h3>NO SE REGISTRÓ LA MODIFICACIÓN DEL ACTA DE INICIO</h3> <br>"
+                            . " <h4>NÚMERO  DE CONTRATO: " . $_REQUEST['numero_contrato_suscrito'] . "<br>"
                             . " VIGENCIA: " . $_REQUEST['vigencia'] . "<br>";
 
 
@@ -240,6 +246,8 @@ class registrarForm {
                     if (isset($_REQUEST ['accesoCondor']) && $_REQUEST ['accesoCondor'] == 'true') {
 
                         $variable .= "&accesoCondor=true";
+                        $variable .= "&usuario=".$_REQUEST['usuario'];
+                        $variable .= "&identificacion=".$_REQUEST['usuario'];
                     }
                     $variable = $this->miConfigurador->fabricaConexiones->crypto->codificar_url($variable, $directorio);
 
@@ -270,8 +278,8 @@ class registrarForm {
                     }
                     $nombre = $_REQUEST['nombrePoliza'];
 
-                    $mensaje = "SE ACTUALIZO EL ESTADO DEL AMPARO: " . $nombreAmparo[0][0] . " <br> "
-                            . "ASOCIADO A LA POLIZA: " . $_REQUEST['id_poliza'] . " DEL CONTRATO NUMERO: " .
+                    $mensaje = "SE ACTUALIZÓ EL ESTADO DEL AMPARO: " . $nombreAmparo[0][0] . " <br> "
+                            . "ASOCIADO A LA POLIZA: " . $_REQUEST['id_poliza'] . " DEL CONTRATO NÚMERO: " .
                             $_REQUEST['numero_contrato_suscrito'] . " CON VIGENCIA: " . $_REQUEST['vigencia'] . " "
                             . "<br>   DE <h4>$estadoAnterior</h4> a <h4>$estadoNuevo</h4> CON EXITÓ. ";
 
@@ -342,8 +350,8 @@ class registrarForm {
                     }
                     $numero = $_REQUEST['numero_poliza'];
 
-                    $mensaje = "SE ACTUALIZO EL ESTADO DE LA POLIZA NUMERO: $numero <br> "
-                            . "ASOCIADA AL CONTRATO NUMERO: " . $_REQUEST['numero_contrato_suscrito'] . " CON VIGENCIA: " . $_REQUEST['vigencia'] . " "
+                    $mensaje = "SE ACTUALIZÓ EL ESTADO DE LA POLIZA NÚMERO: $numero <br> "
+                            . "ASOCIADA AL CONTRATO NÚMERO: " . $_REQUEST['numero_contrato_suscrito'] . " CON VIGENCIA: " . $_REQUEST['vigencia'] . " "
                             . "<br>   DE <h4>$estadoAnterior</h4> a <h4>$estadoNuevo</h4> CON EXITÓ. ";
 
                     // ---------------- CONTROL: Cuadro de Texto --------------------------------------------------------
@@ -373,7 +381,7 @@ class registrarForm {
 
 
                     $numero = $_REQUEST['numero_poliza'];
-                    $mensaje = "NO SE PUDO CAMBIAR EL ESTADO DE LA POLIZA NUMERO: $numero  <br> <h4>$estadoAnterior</h4> a <h4>$estadoNuevo</h4>. ERROR, VERIFIQUE E INTENTE DE NUEVO.";
+                    $mensaje = "NO SE PUDO CAMBIAR EL ESTADO DE LA POLIZA NÚMERO: $numero  <br> <h4>$estadoAnterior</h4> a <h4>$estadoNuevo</h4>. ERROR, VERIFIQUE E INTENTE DE NUEVO.";
 
                     // ---------------- CONTROL: Cuadro de Texto --------------------------------------------------------
                     $esteCampo = 'mensajeRegistro';
@@ -403,11 +411,11 @@ class registrarForm {
 
 
 
-                    $mensaje = "SE REGISTRO LA POLIZA AL CONTRATO " . $_REQUEST['numero_contrato_suscrito'] . " CON VIGENCIA"
+                    $mensaje = "SE REGISTRÓ LA POLIZA AL CONTRATO " . $_REQUEST['numero_contrato_suscrito'] . " CON VIGENCIA"
                             . " " . $_REQUEST['vigencia'] . "  EXITOSAMENTE, DATOS:  <br> "
                             . "  <b>IDENTIFICACOR:</b>" . $_REQUEST['id_poliza'] . "<br> "
-                            . "  <b>NUMERO DE LA POLIZA:</b>" . $_REQUEST['numero_poliza'] . "<br> "
-                            . "  <b>DESCRIPCION:</b>" . $_REQUEST['descripcion'] . "<br> "
+                            . "  <b>NÚMERO DE LA POLIZA:</b>" . $_REQUEST['numero_poliza'] . "<br> "
+                            . "  <b>DESCRIPCIÓN:</b>" . $_REQUEST['descripcion'] . "<br> "
                             . "  <b>USUARIO:</b>" . $_REQUEST['usuario'] . " <br>"
                             . "  <b>FECHA:</b>" . date("Y") . ". ";
 
@@ -436,9 +444,9 @@ class registrarForm {
                     $variable .= "&mensaje_titulo=" . $_REQUEST['mensaje_titulo'];
                     $variable = $this->miConfigurador->fabricaConexiones->crypto->codificar_url($variable, $directorio);
 
-                    $mensaje = "NO SE REGISTRO LA POLIZA, DATOS:  <br> "
-                            . "  <b>NUMERO DE LA POLIZA:</b>" . $_REQUEST['numero_poliza'] . "<br> "
-                            . "  <b>DESCRIPCION:</b>" . $_REQUEST['descripcion'] . "<br> "
+                    $mensaje = "NO SE REGISTRÓ LA POLIZA, DATOS:  <br> "
+                            . "  <b>NÚMERO DE LA POLIZA:</b>" . $_REQUEST['numero_poliza'] . "<br> "
+                            . "  <b>DESCRIPCIÓN:</b>" . $_REQUEST['descripcion'] . "<br> "
                             . "  <b>USUARIO:</b>" . $_REQUEST['usuario'] . "<br> "
                             . "  <b>FECHA:</b>" . date("Y") . ". ";
                     // ---------------- CONTROL: Cuadro de Texto --------------------------------------------------------
@@ -466,11 +474,11 @@ class registrarForm {
                     $variable .= "&mensaje_titulo=" . $_REQUEST['mensaje_titulo'];
                     $variable = $this->miConfigurador->fabricaConexiones->crypto->codificar_url($variable, $directorio);
 
-                    $mensaje = "SE ACTUALIZO LA POLIZA DEL CONTRATO " . $_REQUEST['numero_contrato_suscrito'] . " CON VIGENCIA "
+                    $mensaje = "SE ACTUALIZÓ LA POLIZA DEL CONTRATO " . $_REQUEST['numero_contrato_suscrito'] . " CON VIGENCIA "
                             . "  " . $_REQUEST['vigencia'] . "  EXITOSAMENTE, DATOS:  <br> "
                             . "  <b>IDENTIFICACOR:</b>" . $_REQUEST['id_poliza'] . "<br> "
-                            . "  <b>NUMERO DE LA POLIZA:</b>" . $_REQUEST['numero_poliza'] . "<br> "
-                            . "  <b>DESCRIPCION:</b>" . $_REQUEST['descripcion'] . "<br> "
+                            . "  <b>NÚMERO DE LA POLIZA:</b>" . $_REQUEST['numero_poliza'] . "<br> "
+                            . "  <b>DESCRIPCIÓN:</b>" . $_REQUEST['descripcion'] . "<br> "
                             . "  <b>USUARIO:</b>" . $_REQUEST['usuario'] . " <br>"
                             . "  <b>FECHA:</b>" . date("Y") . ". ";
 
@@ -500,10 +508,10 @@ class registrarForm {
                     $variable = $this->miConfigurador->fabricaConexiones->crypto->codificar_url($variable, $directorio);
 
 
-                    $mensaje = "NO SE ACTUALIZO LA POLIZA, DATOS:  <br> "
+                    $mensaje = "NO SE ACTUALIZÓ LA POLIZA, DATOS:  <br> "
                             . "  <b>IDENTIFICACOR:</b>" . $_REQUEST['id_poliza'] . "<br> "
-                            . "  <b>NUMERO DE LA POLIZA:</b>" . $_REQUEST['numero_poliza'] . "<br> "
-                            . "  <b>DESCRIPCION:</b>" . $_REQUEST['descripcion'] . "<br> "
+                            . "  <b>NÚMERO DE LA POLIZA:</b>" . $_REQUEST['numero_poliza'] . "<br> "
+                            . "  <b>DESCRIPCIÓN:</b>" . $_REQUEST['descripcion'] . "<br> "
                             . "  <b>USUARIO:</b>" . $_REQUEST['usuario'] . "<br> "
                             . "  <b>FECHA:</b>" . date("Y") . ". ";
                     // ---------------- CONTROL: Cuadro de Texto --------------------------------------------------------
@@ -551,8 +559,8 @@ class registrarForm {
                         $valorAmparo = "VALOR AMPARO</b>: " . number_format($_REQUEST['unidad_amparo'] * $minimoVigente[0][0], 2, ",", ".");
                     }
 
-                    $mensaje = "SE ACTUALIZO EL AMPARO NUMERO: " . $_REQUEST['id_amparo'] . " ASOCIADO"
-                            . " A LA POLIZA NUMERO: " . $_REQUEST['id_poliza'] . "  DEL CONTRATO " . $_REQUEST['numero_contrato_suscrito'] . " CON VIGENCIA "
+                    $mensaje = "SE ACTUALIZÓ EL AMPARO NÚMERO: " . $_REQUEST['id_amparo'] . " ASOCIADO"
+                            . " A LA POLIZA NÚMERO: " . $_REQUEST['id_poliza'] . "  DEL CONTRATO " . $_REQUEST['numero_contrato_suscrito'] . " CON VIGENCIA "
                             . "  " . $_REQUEST['vigencia'] . "  EXITOSAMENTE, DATOS:  <br> "
                             . "  <b>AMPARO:</b>" . $nombreAmparo[0][0] . "<br> "
                             . "  <b>" . $valorAmparo . "<br> "
@@ -586,8 +594,8 @@ class registrarForm {
                     $variable .= "&mensaje_titulo=" . $_REQUEST['mensaje_titulo'];
                     $variable = $this->miConfigurador->fabricaConexiones->crypto->codificar_url($variable, $directorio);
 
-                    $mensaje = "NO SE ACTUALIZO EL AMPARO NUMERO: " . $_REQUEST['id_amparo'] . " ASOCIADO"
-                            . " A LA POLIZA NUMERO: " . $_REQUEST['id_poliza'] . "  DEL CONTRATO " . $_REQUEST['numero_contrato_suscrito'] . " CON VIGENCIA "
+                    $mensaje = "NO SE ACTUALIZÓ EL AMPARO NÚMERO: " . $_REQUEST['id_amparo'] . " ASOCIADO"
+                            . " A LA POLIZA NÚMERO: " . $_REQUEST['id_poliza'] . "  DEL CONTRATO " . $_REQUEST['numero_contrato_suscrito'] . " CON VIGENCIA "
                             . "  " . $_REQUEST['vigencia'] . ", DATOS:  <br> "
                             . "  <b>USUARIO:</b>" . $_REQUEST['usuario'] . " <br>"
                             . "  <b>FECHA:</b>" . date("Y") . ". ";
@@ -661,7 +669,7 @@ class registrarForm {
                         $nombreAmparo = $DBCore->ejecutarAcceso($cadenaObtenerNombre, "busqueda");
                         $valorAmparo = ($datos[0]['unidad_amparo'] * $minimoVigente[0][0]);
                         $mensajeInfo = "<br> <h4>Información del Amparo Registrado <br><br> ";
-                        $mensajeInfo .= " <p>AMPARO: " . $nombreAmparo[0][0] . "| NUMERO DE SMLV: " . $datos[0]['unidad_amparo'] . " | VALOR AMPARADO: " . number_format($valorAmparo, 2, ",", ".") . " | FECHA INCIO DEL AMPARO: " . $datos[0]['fecha_inicio'] . " | FECHA FINAL DEL AMPARO: " . $datos[0]['fecha_final'] . " </p>";
+                        $mensajeInfo .= " <p>AMPARO: " . $nombreAmparo[0][0] . "| NÚMERO DE SMLV: " . $datos[0]['unidad_amparo'] . " | VALOR AMPARADO: " . number_format($valorAmparo, 2, ",", ".") . " | FECHA INCIO DEL AMPARO: " . $datos[0]['fecha_inicio'] . " | FECHA FINAL DEL AMPARO: " . $datos[0]['fecha_final'] . " </p>";
                     }
 
                     $esteCampo = 'mensajeInfoAmparos';

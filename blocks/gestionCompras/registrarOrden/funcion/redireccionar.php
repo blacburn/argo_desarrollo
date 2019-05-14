@@ -28,6 +28,9 @@ class redireccion {
                 $variable = "pagina=" . $miPaginaActual;
                 $variable .= "&opcion=mensaje";
                 $variable .= "&mensaje=error";
+                if(isset($valor ['caso'])){
+                    $variable .= "&caso=" . $valor ['caso'];
+                }
 
                 break;
             case "ErrorRegistroSociedadTemporal" :

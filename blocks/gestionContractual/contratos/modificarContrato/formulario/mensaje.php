@@ -25,6 +25,8 @@ class registrarForm {
     }
 
     function miForm() {
+
+
         // Rescatar los datos de este bloque
         $esteBloque = $this->miConfigurador->getVariableConfiguracion("esteBloque");
 
@@ -43,6 +45,9 @@ class registrarForm {
 
         $conexion = "contractual";
         $esteRecursoDB = $this->miConfigurador->fabricaConexiones->getRecursoDB($conexion);
+
+        $conexionAgora = "agora";
+        $esteRecursoDBAgora = $this->miConfigurador->fabricaConexiones->getRecursoDB($conexionAgora);
 
         // -------------------------------------------------------------------------------------------------
         // Limpia Items Tabla temporal
@@ -77,16 +82,36 @@ class registrarForm {
             $directorio .= $this->miConfigurador->getVariableConfiguracion("site") . "/index.php?";
             $directorio .= $this->miConfigurador->getVariableConfiguracion("enlace");
 
-            $variable = "pagina=" . $miPaginaActual;
-            $variable .= "&usuario=" . $_REQUEST ['usuario'];
-            $variable = $this->miConfigurador->fabricaConexiones->crypto->codificar_url($variable, $directorio);
+            if(isset($_REQUEST ['miPaginaAct'])){
+                $variable = "pagina=" . $_REQUEST ['miPaginaAct'];
+                $variable .= "&usuario=" . $_REQUEST ['usuario'];
+                $variable = $this->miConfigurador->fabricaConexiones->crypto->codificar_url($variable, $directorio);
+            }else{
+                $variable = "pagina=" . $miPaginaActual;
+                $variable .= "&usuario=" . $_REQUEST ['usuario'];
+                $variable = $this->miConfigurador->fabricaConexiones->crypto->codificar_url($variable, $directorio);
+            }
 
             $esteCampo = "marcoDatosBasicos";
             $atributos ['id'] = $esteCampo;
             $atributos ["estilo"] = "jqueryui";
             $atributos ['tipoEtiqueta'] = 'inicio';
+
+            $mensajeElimino = 0;
+
             echo $this->miFormulario->marcoAgrupacion('inicio', $atributos);
             {
+
+                $esteCampo = 'botonRegresar';
+                $atributos ['id'] = $esteCampo;
+                $atributos ['enlace'] = $variable;
+                $atributos ['tabIndex'] = 1;
+                $atributos ['estilo'] = 'textoSubtitulo';
+                $atributos ['enlaceTexto'] = $this->lenguaje->getCadena($esteCampo);
+                $atributos ['ancho'] = '10%';
+                $atributos ['alto'] = '10%';
+                $atributos ['redirLugar'] = true;
+                echo $this->miFormulario->enlace($atributos);
 
                 switch ($_REQUEST ['mensaje']) {
 
@@ -94,6 +119,12 @@ class registrarForm {
 
                         $atributos ['tipo'] = 'success';
                         $atributos ['mensaje'] = "<h3>SE ACTUALIZO EL ELEMENTO ASOCIADO AL CONTRATO.</h3>";
+
+                        $mensaje = "<h3>SE ACTUALIZO ITEM DE LA ORDEN.</h3>";
+
+
+                        $mensajeElimino = 1;
+
 
                         break;
                     case "noActualizoElemento" :
@@ -130,7 +161,7 @@ class registrarForm {
                     case "eliminoElemento" :
 
                         $atributos ['tipo'] = 'success';
-                        $atributos ['mensaje'] = "<h3>SE ELIMINO EL ELEMENTO ASOCIADO AL CONTRATO.</h3>";
+                        $atributos ['mensaje'] = "<h3>SE ELIMINO EL ITEM ASOCIADO AL CONTRATO.</h3>";
 
                         break;
                     case "noeliminoElemento" :
@@ -141,9 +172,15 @@ class registrarForm {
                         break;
                     case "Actualizo" :
 
-                        $atributos ['tipo'] = 'success';
-                        $atributos ['mensaje'] = "<h3>Se Actualizo la Información del contrato con Exito.<br>Contrato con Consecutivo de Elaboración:  " . $_REQUEST ['numero_contrato'] . " <br>  Vigencia: " . $_REQUEST ['vigencia'] . ".<h3>";
+                        if(isset($_REQUEST ['miPaginaAct'])){
+                            $atributos ['tipo'] = 'success';
+                            $atributos ['mensaje'] = "<h3>SE ACTUALIZO LA INFORMACIÓN DEL CONTRATO CON EXITO.<br>CONTRATO <b>SUSCRITO</b>:  " . $_REQUEST ['numero_contrato_suscrito'] . " <br>  VIGENCIA: " . $_REQUEST ['vigencia'] . ".<h3>";
+                        }else{
+                            $atributos ['tipo'] = 'success';
+                            $atributos ['mensaje'] = "<h3>SE ACTUALIZO LA INFORMACIÓN DEL CONTRATO CON EXITO.<br>CONTRATO CON <b>CONSECUTIVO DE ELABORACIÓN</b>:  " . $_REQUEST ['numero_contrato'] . " <br>  VIGENCIA: " . $_REQUEST ['vigencia'] . ".<h3>";
+                        }
 
+                        
                         break;
                     case "novedaddeModificacion" :
 
@@ -163,11 +200,25 @@ class registrarForm {
                                 . " Usuario: " . $infoNovedadModificacion['usuario'] . ".<br>";
 
                         break;
-
-                    case "NoActualizo" :
+                    case "noInsertoContratoExiste" :
+                        $sqlTipoPersona = $this->miSql->getCadenaSql('buscar_info_proveedor_contrato', $_REQUEST['contratista']);
+                        $infoTipoPersona = $esteRecursoDBAgora->ejecutarAcceso($sqlTipoPersona, "busqueda");
                         $atributos ['tipo'] = 'error';
-                        $atributos ['mensaje'] = "<h3>Error al Actualizar la Información del  Contrato <br> Consecutivo de elabloración"
-                                . " " . $_REQUEST ['numero_contrato'] . " <br>  Vigencia " . $_REQUEST ['vigencia'] . ".</h3>";
+                        $atributos ['mensaje'] = "<h3>Error al Modificar Contrato.<br>El contratista " . $infoTipoPersona[0][0] . "<br> Ya posee un contrato vigente con la unidad ejecutora 1<br> hasta la siguente fecha: " . $_REQUEST['fecha_fin'] . ".</h3>";
+                        break;
+                    case "NoActualizo" :
+
+                                if(isset($_REQUEST ['miPaginaAct'])){
+                                    $atributos ['tipo'] = 'error';
+                                    $atributos ['mensaje'] = "<h3>ERROR AL ACTUALIZAR LA INFORMACIÓN DEL CONTRATO <b>SUSCRITO</b>"
+                                            . " " . $_REQUEST ['numero_contrato_suscrito'] . " <br>  VIGENCIA " . $_REQUEST ['vigencia'] . ".</h3>";
+                                }else{
+                                    $atributos ['tipo'] = 'error';
+                                    $atributos ['mensaje'] = "<h3>ERROR AL ACTUALIZAR LA INFORMACIÓN DEL CONTRATO <b>CONSECUTIVO DE ELABORACIÓN</b>"
+                                            . " " . $_REQUEST ['numero_contrato'] . " <br>  VIGENCIA " . $_REQUEST ['vigencia'] . ".</h3>";
+                                }
+                                $atributos ['mensaje'] .= "<br><br>Puede comunicarse con el Administrador del Sistema y reportar el caso <br> (" . $_REQUEST['caso'] . ")";
+
                         break;
 
                     case "ErrorRegistroSociedadTemporal" :
@@ -188,6 +239,22 @@ class registrarForm {
                                 . "<h1>" . $_REQUEST['numero_contrato_suscrito'] . "</h1> </h2>";
 
                         $atributos ['tipo'] = 'success';
+                        $atributos ['mensaje'] = $mensaje;
+
+                        break;
+
+                    case "modificoElemento" :
+
+                        $mensaje = "<h3>EL CONTRATO No. " . $_REQUEST['numero_contrato'] . " CON VIGENCIA " . $_REQUEST['vigencia'] . " FUE MODIFICADO, <br> ITEM MODIFICADO CON ÉXITO.</h3>";
+                        $atributos ['tipo'] = 'success';
+                        $atributos ['mensaje'] = $mensaje;
+
+                        break;
+
+                    case "noModificoElemento" :
+
+                        $mensaje = "<h3>EL CONTRATO No. " . $_REQUEST['numero_contrato'] . " CON VIGENCIA " . $_REQUEST['vigencia'] . " NO FUE MODIFICADO, <br> ITEM NO PUDO SER MODIFICADO.</h3>";
+                        $atributos ['tipo'] = 'error';
                         $atributos ['mensaje'] = $mensaje;
 
                         break;
@@ -234,33 +301,32 @@ class registrarForm {
                         $datos = stripslashes($_REQUEST['datos']);
                         $datos = urldecode($datos);
                         $datos = unserialize($datos);
-                       
-                        
+
+
                         $mensaje = "<h1>LA TRANSACCION PRESENTO PROBLEMAS, <br> LOS INCONVENIENTES SE REFIEREN A CONTINUACIÓN:</h1>";
-                        
+
                         $mensaje .= "<h2>RESULTADO DE LA OPERACION de SUSCRIPCIÓN MULTIPLE:</h2> <br>"
                                 . "<h3>A continuación se listan los Contratos, y el resultado obtenido con cada uno de ellos:.</h3>";
 
-                        for ($j = 0; $j < count($datos)-1; $j++) {
-                            if(isset($datos[$j]['numero_contrato_suscrito'])){
-                            $mensaje .= " <p><h5>El CONTRATO CON CONSECUTIVO DE ELABORACIÓN: <>" . $datos[$j]['numero_contrato'] . ""
-                                    . " VIGENCIA: " . $datos[$j]['vigencia'] . ",<b> FUE SUSCRITO CON EXITO</b>.</h5>";
-
-                            $mensaje .="<p> EL ESTADO DEL CONTRATO SE ACTUALIZO  Y EL "
-                                    . " NUMERO UNICO DE CONTRATO ASIGNADO ES: " . $datos[$j]['numero_contrato_suscrito'] . " </p>";
-                            }else{
+                        for ($j = 0; $j < count($datos) - 1; $j++) {
+                            if (isset($datos[$j]['numero_contrato_suscrito'])) {
                                 $mensaje .= " <p><h5>El CONTRATO CON CONSECUTIVO DE ELABORACIÓN: <>" . $datos[$j]['numero_contrato'] . ""
-                                    . " VIGENCIA: " . $datos[$j]['vigencia'] . ", <b>NO FUE SUSCRITO CON EXITO</b>.</h5>";
+                                        . " VIGENCIA: " . $datos[$j]['vigencia'] . ",<b> FUE SUSCRITO CON EXITO</b>.</h5>";
+
+                                $mensaje .="<p> EL ESTADO DEL CONTRATO SE ACTUALIZO  Y EL "
+                                        . " NUMERO UNICO DE CONTRATO ASIGNADO ES: " . $datos[$j]['numero_contrato_suscrito'] . " </p>";
+                            } else {
+                                $mensaje .= " <p><h5>El CONTRATO CON CONSECUTIVO DE ELABORACIÓN: <>" . $datos[$j]['numero_contrato'] . ""
+                                        . " VIGENCIA: " . $datos[$j]['vigencia'] . ", <b>NO FUE SUSCRITO CON EXITO</b>.</h5>";
                             }
-                            
                         }
-                        
+
 
                         $mensaje .= " <br> FECHA DE SUSCRIPCIÓN: " . $datos[count($datos) - 1] . ""
                                 . " USUARIO QUE REALIZO LA SUSCRIPCIÓN: " . $_REQUEST['usuario'] . "</p>";
-                        
-                        
-                       
+
+
+
                         $atributos ['tipo'] = 'information';
                         $atributos ['mensaje'] = $mensaje;
 
@@ -281,53 +347,75 @@ class registrarForm {
                 $atributos = array_merge($atributos, $atributosGlobales);
                 echo $this->miFormulario->cuadroMensaje($atributos);
                 // --------------- FIN CONTROL : Cuadro de Texto --------------------------------------------------
+                // ------------------Division para los botones-------------------------
+                $atributos ["id"] = "botones";
+                $atributos ["estilo"] = "marcoBotones";
+                echo $this->miFormulario->division("inicio", $atributos);
+
+                // -----------------CONTROL: Botón ----------------------------------------------------------------
+                $esteCampo = 'botonContinuar';
+                $atributos ["id"] = $esteCampo;
+                $atributos ["tabIndex"] = $tab;
+                $atributos ["tipo"] = 'boton';
+                // submit: no se coloca si se desea un tipo button genérico
+                $atributos ['submit'] = true;
+                $atributos ["estiloMarco"] = '';
+                $atributos ["estiloBoton"] = 'jqueryui';
+                // verificar: true para verificar el formulario antes de pasarlo al servidor.
+                $atributos ["verificar"] = '';
+                $atributos ["tipoSubmit"] = 'jquery'; // Dejar vacio para un submit normal, en este caso se ejecuta la función submit declarada en ready.js
+                $atributos ["valor"] = $this->lenguaje->getCadena($esteCampo);
+                $atributos ['nombreFormulario'] = $esteBloque ['nombre'];
+                $tab ++;
+
+                // Aplica atributos globales al control
+                $atributos = array_merge($atributos, $atributosGlobales);
+                echo $this->miFormulario->campoBoton($atributos);
+                // -----------------FIN CONTROL: Botón -----------------------------------------------------------
             }
 
-            // ------------------Division para los botones-------------------------
-            $atributos ["id"] = "botones";
-            $atributos ["estilo"] = "marcoBotones";
-            echo $this->miFormulario->division("inicio", $atributos);
-
-            // -----------------CONTROL: Botón ----------------------------------------------------------------
-            $esteCampo = 'botonContinuar';
-            $atributos ["id"] = $esteCampo;
-            $atributos ["tabIndex"] = $tab;
-            $atributos ["tipo"] = 'boton';
-            // submit: no se coloca si se desea un tipo button genérico
-            $atributos ['submit'] = true;
-            $atributos ["estiloMarco"] = '';
-            $atributos ["estiloBoton"] = 'jqueryui';
-            // verificar: true para verificar el formulario antes de pasarlo al servidor.
-            $atributos ["verificar"] = '';
-            $atributos ["tipoSubmit"] = 'jquery'; // Dejar vacio para un submit normal, en este caso se ejecuta la función submit declarada en ready.js
-            $atributos ["valor"] = $this->lenguaje->getCadena($esteCampo);
-            $atributos ['nombreFormulario'] = $esteBloque ['nombre'];
-            $tab ++;
-
-            // Aplica atributos globales al control
-            $atributos = array_merge($atributos, $atributosGlobales);
-            echo $this->miFormulario->campoBoton($atributos);
-            // -----------------FIN CONTROL: Botón -----------------------------------------------------------
-
             echo $this->miFormulario->marcoAgrupacion('fin');
-
-            // ---------------- SECCION: División ----------------------------------------------------------
-            $esteCampo = 'division1';
-            $atributos ['id'] = $esteCampo;
-            $atributos ['estilo'] = 'general';
-            echo $this->miFormulario->division("inicio", $atributos);
-
-            // ---------------- FIN SECCION: División ----------------------------------------------------------
-            echo $this->miFormulario->division('fin');
 
             // ---------------- FIN SECCION: Controles del Formulario -------------------------------------------
             // ----------------FINALIZAR EL FORMULARIO ----------------------------------------------------------
             // Se debe declarar el mismo atributo de marco con que se inició el formulario.
         }
 
-        // -----------------FIN CONTROL: Botón -----------------------------------------------------------
-        // ------------------Fin Division para los botones-------------------------
+
         echo $this->miFormulario->division("fin");
+
+
+        if(isset($_REQUEST ['miPaginaAct'])){
+
+            $valorCodificado = "actionBloque=" . $esteBloque ["nombre"];
+            $valorCodificado .= "&pagina=" . $_REQUEST ['miPaginaAct'];
+            $valorCodificado .= "&bloque=" . $esteBloque ['nombre'];
+            $valorCodificado .= "&bloqueGrupo=" . $esteBloque ["grupo"];
+            $valorCodificado .= "&usuario=" . $_REQUEST['usuario'];
+
+        }else{
+
+            if ($mensajeElimino === 1) {
+                $valorCodificado = "actionBloque=" . $esteBloque ["nombre"];
+                $valorCodificado .= "&pagina=" . $this->miConfigurador->getVariableConfiguracion('pagina');
+                $valorCodificado .= "&bloque=" . $esteBloque ['nombre'];
+                $valorCodificado .= "&bloqueGrupo=" . $esteBloque ["grupo"];
+                $valorCodificado .= "&opcion=consultaElementos";
+                $valorCodificado .= "&id_elemento_acta=" . $_REQUEST ['id_elemento_acta'];
+                $valorCodificado .= "&numerocontrato=" . $_REQUEST ['numerocontrato'];
+                $valorCodificado .= "&mensaje_titulo=" . $_REQUEST ['mensaje_titulo'];
+                $valorCodificado .= "&arreglo=" . stripslashes($_REQUEST ['arreglo']);
+                $valorCodificado .= "&vigencia=" . $_REQUEST ['vigencia'];
+            } else {
+                $valorCodificado = "actionBloque=" . $esteBloque ["nombre"];
+                $valorCodificado .= "&pagina=" . $this->miConfigurador->getVariableConfiguracion('pagina');
+                $valorCodificado .= "&bloque=" . $esteBloque ['nombre'];
+                $valorCodificado .= "&bloqueGrupo=" . $esteBloque ["grupo"];
+                $valorCodificado .= "&opcion=paginaPrincipal";
+                $valorCodificado .= "&usuario=" . $_REQUEST['usuario'];
+            }
+        }
+
 
         // ------------------- SECCION: Paso de variables ------------------------------------------------
 
@@ -344,12 +432,7 @@ class registrarForm {
         // En este formulario se utiliza el mecanismo (b) para pasar las siguientes variables:
         // Paso 1: crear el listado de variables
 
-        $valorCodificado = "actionBloque=" . $esteBloque ["nombre"];
-        $valorCodificado .= "&pagina=" . $this->miConfigurador->getVariableConfiguracion('pagina');
-        $valorCodificado .= "&bloque=" . $esteBloque ['nombre'];
-        $valorCodificado .= "&bloqueGrupo=" . $esteBloque ["grupo"];
-        $valorCodificado .= "&opcion=paginaPrincipal";
-        $valorCodificado .= "&usuario=" . $_REQUEST['usuario'];
+
         /**
          * SARA permite que los nombres de los campos sean dinámicos.
          * Para ello utiliza la hora en que es creado el formulario para

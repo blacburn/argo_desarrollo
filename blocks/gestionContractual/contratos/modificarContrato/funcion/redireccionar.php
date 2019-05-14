@@ -26,6 +26,10 @@ class redireccion {
                 $variable .= "&numero_contrato=" . $valor ['numero_contrato'];
                 $variable .= "&vigencia=" . $valor ['vigencia'];
                 $variable .= "&usuario=" . $_REQUEST ['usuario'];
+                if(isset($valor ['miPaginaAct'])){
+                    $variable .= "&miPaginaAct=" . $valor ['miPaginaAct'];
+                    $variable .= "&numero_contrato_suscrito=" . $valor ['numero_contrato_suscrito'];
+                }
 
                 break;
 
@@ -77,6 +81,13 @@ class redireccion {
                 $variable .= "&numero_contrato=" . $valor ['numero_contrato'];
                 $variable .= "&vigencia=" . $valor ['vigencia'];
                 $variable .= "&usuario=" . $_REQUEST ['usuario'];
+                if(isset($valor ['miPaginaAct'])){
+                    $variable .= "&miPaginaAct=" . $valor ['miPaginaAct'];
+                    $variable .= "&numero_contrato_suscrito=" . $valor ['numero_contrato_suscrito'];
+                }
+                if(isset($valor ['caso'])){
+                    $variable .= "&caso=" . $valor ['caso'];
+                }
 
                 break;
 
@@ -155,16 +166,30 @@ class redireccion {
 
                 break;
 
-            case "ActualizoElemento" :
+//            case "ActualizoElemento" :
+//                $variable = "pagina=" . $miPaginaActual;
+//                $variable .= "&opcion=mensaje";
+//                $variable .= "&mensaje=ActualizoElemento";
+//                $variable .= "&id_orden=" . $valor[0];
+//                $variable .= "&mensaje_titulo=" . $valor[1];
+//                $variable .= "&arreglo=" . $valor[2];
+//                $variable .= "&id_elemento_acta=" . $valor[3];
+//
+//                break;
+            
+            
+             case "modificoElementos" :
                 $variable = "pagina=" . $miPaginaActual;
                 $variable .= "&opcion=mensaje";
                 $variable .= "&mensaje=ActualizoElemento";
-                $variable .= "&id_orden=" . $valor[0];
-                $variable .= "&mensaje_titulo=" . $valor[1];
-                $variable .= "&arreglo=" . $valor[2];
-                $variable .= "&id_elemento_acta=" . $valor[3];
+                $variable .= "&id_elemento_acta=" . $valor ['id_elemento_acta'];
+                $variable .= "&numerocontrato=" . $valor ['numerocontrato'];
+                $variable .= "&vigencia=" . $valor ['vigencia'];
+                $variable .= "&arreglo=" . stripslashes($valor ['arreglo']);
+                $variable .= "&mensaje_titulo=" . $valor ['mensaje_titulo'];
 
                 break;
+
 
             case "noActualizoElemento" :
                 $variable = "pagina=" . $miPaginaActual;
@@ -173,9 +198,16 @@ class redireccion {
 
                 break;
 
-            case "eliminoElemento" :
+            
+            
+              case "eliminoElemento" :
                 $variable = "pagina=" . $miPaginaActual;
                 $variable .= "&opcion=mensaje";
+                $variable .= "&id_elemento_acta=" . $valor ['id_elemento_acta'];
+                $variable .= "&numerocontrato=" . $valor ['numerocontrato'];
+                $variable .= "&vigencia=" . $valor ['vigencia'];
+                $variable .= "&arreglo=" . stripslashes($valor ['arreglo']);
+                $variable .= "&mensaje_titulo=" . $valor ['mensaje_titulo'];
                 $variable .= "&mensaje=eliminoElemento";
 
                 break;
@@ -186,6 +218,57 @@ class redireccion {
                 $variable .= "&mensaje=noeliminoElemento";
 
                 break;
+            case "ErrorRegistroContratoExiste" :
+                $variable = "pagina=" . $miPaginaActual;
+                $variable .= "&bloque=" . $_REQUEST ['bloque'];
+                $variable .= "&bloqueGrupo=" . $_REQUEST ["bloqueGrupo"];
+                $variable .= "&opcion=mensaje";
+                $variable .= "&mensaje=noInsertoContratoExiste";
+                $variable .= "&contratista=" . $valor ['contratista'];
+                $variable .= "&fecha_fin=" . $valor ['fin_contrato_actual'];
+
+                break;
+            
+//            case "modificoElementos" :
+//				
+//				$variable = "pagina=" . $miPaginaActual;
+//				$variable .= "&opcion=mensaje";
+//				$variable .= "&mensaje=modificoElemento";
+//				$variable .= "&mensaje_titulo=" . $valor [0];
+//				$variable .= "&id_orden=" . $valor [1];
+//				$variable .= "&fecha_orden=" . $valor [2];
+//				$variable .= "&numero_contrato=" . $valor [5];
+//				$variable .= "&vigencia=" . $valor [6];
+//				if ($valor [3] == '\'true\'') {
+//					$variable .= "&registroOrden=true";
+//				} else {
+//					
+//					$variable .= "&arreglo=" . $valor [3];
+//				}
+//				$variable .= "&usuario=" . $valor [4];
+//				
+//	    break;
+            
+             case "noModificoElementos" :
+				
+			$variable = "pagina=" . $miPaginaActual;
+				$variable .= "&opcion=mensaje";
+				$variable .= "&mensaje=noModificoElemento";
+				$variable .= "&mensaje_titulo=" . $valor [0];
+				$variable .= "&id_orden=" . $valor [1];
+                                $variable .= "&numero_contrato=" . $valor [5];
+				$variable .= "&vigencia=" . $valor [6];
+
+				if ($valor [3] == '') {
+					$variable .= "&registroOrden=true";
+				} else {
+						
+					$variable .= "&arreglo=" . $valor [3];
+				}
+				
+				break;
+                                
+                                
         }
 
         foreach ($_REQUEST as $clave => $valor) {

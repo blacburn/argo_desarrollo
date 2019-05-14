@@ -358,3 +358,8 @@ dayNamesMin: ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa']
 
 
 
+$("#<?php echo $this->campoSeguro('vigencia_por_contrato') ?>").width(150);
+$("#<?php echo $this->campoSeguro('vigencia_por_contrato') ?>").select2();
+
+$("#<?php echo $this->campoSeguro('consecutivo_por_contrato') ?>").width(150);
+$("#<?php echo $this->campoSeguro('consecutivo_por_contrato') ?>").select2();

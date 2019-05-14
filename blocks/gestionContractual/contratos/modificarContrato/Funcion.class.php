@@ -59,12 +59,31 @@ class Funcion {
 
     function generarDocumento() {
 
+    if ($_REQUEST['tipo_contrato'] == 'Contrato Interadministrativo') {
+            include_once ($this->ruta . "funcion/documentoPdfInteradministrativo.php");
+            exit;
+    }     
+    if ($_REQUEST['tipo_contrato'] == 'Contrato de Obra') {
+            include_once ($this->ruta . "funcion/documentoPdfObra.php");
+            exit;
+        } 
+    if ($_REQUEST['tipo_contrato'] == 'Contrato de Suministro') {
+            include_once ($this->ruta . "funcion/documentoPdfSuministro.php");
+            exit;
+        }       
 	if ($_REQUEST['tipo_contrato'] == 'Contrato de  Arrendamiento') {
             include_once ($this->ruta . "funcion/documentoPdfContratoArrendamiento.php");
+            exit;
         }
+    if ($_REQUEST['tipo_contrato'] == 'Contrato de Compra-Venta') {
+            include_once ($this->ruta . "funcion/documentoPdfContratoCompraVenta.php");
+            exit;
+        }    
 	if ($_REQUEST['tipo_contrato'] == 'Contrato de Prestación de Servicios' || $_REQUEST['tipo_contrato'] =='Contrato de Prestación de Servicios Profesionales o Apoyo a la Gestión') {
             include_once ($this->ruta . "funcion/documentoPdfContratoPrestacionServicios" . $_REQUEST['unidad'] . ".php");
-        } else {
+            exit;
+        } 
+    else {
             include_once ($this->ruta . "funcion/documentoPdfSinFormato.php");
         }
 

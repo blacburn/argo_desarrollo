@@ -482,6 +482,26 @@ $cadenadocumento = $this->miConfigurador->fabricaConexiones->crypto->codificar_u
 
 // URL definitiva
 $urlDocumento = $url . $cadenadocumento;
+
+
+// Variables NUEVOOOO
+$cadenaACodificarCN = "pagina=" . $this->miConfigurador->getVariableConfiguracion("pagina");
+$cadenaACodificarCN .= "&procesarAjax=true";
+$cadenaACodificarCN .= "&action=index.php";
+$cadenaACodificarCN .= "&bloqueNombre=" . $esteBloque ["nombre"];
+$cadenaACodificarCN .= "&bloqueGrupo=" . $esteBloque ["grupo"];
+$cadenaACodificarCN .= "&funcion=consultaContratoConsecutivo";
+$cadenaACodificarCN .= "&usuario=" . $_REQUEST['usuario'];
+$cadenaACodificarCN .="&tiempo=" . $_REQUEST['tiempo'];
+
+
+// Codificar las variables
+$enlace = $this->miConfigurador->getVariableConfiguracion("enlace");
+$cadena = $this->miConfigurador->fabricaConexiones->crypto->codificar_url($cadenaACodificarCN, $enlace);
+
+// URL definitiva
+$urlConsecutivoContrato = $url . $cadena;
+
 ?>
 <script type='text/javascript'>
 
@@ -1914,16 +1934,16 @@ $urlDocumento = $url . $cadenadocumento;
                             + "Documento: " + data[1] + " <br><br>"
                             + "Tipo Persona: " + data[0] + " <br><br>"
                             + "Ciudad de Contacto: " + data[2] + " <br><br>"
-                            + "Direccion: " + data[3] + " <br><br>"
+                            + "Dirección: " + data[3] + " <br><br>"
                             + "Correo: " + data[4] + " <br><br>"
                             + "Sitio WEB: " + data[5] + " <br><br>"
                             + "Estado: " + data[8] + " <br><br>"
                             + "Tipo Cuenta: " + data[9] + " <br><br>"
-                            + "Numero de Cuenta: " + data[10] + " <br><br>"
+                            + "Número de Cuenta: " + data[10] + " <br><br>"
                             + "Entidad Bancaria: " + data[11] + " <br><br>"
                             + "Fecha Registro: " + data[12] + " <br><br>"
-                            + "Punatje: " + data[6] + " <br><br>";
-                    $("#ventanaEmergenteContratista").dialog('option', 'title', 'Unico Contratista');
+                            + "Puntaje: " + data[6] + " <br><br>";
+                    $("#ventanaEmergenteContratista").dialog('option', 'title', 'Único Contratista');
                     $("#ventanaEmergenteContratista").dialog("open");
 
 
@@ -1954,12 +1974,12 @@ $urlDocumento = $url . $cadenadocumento;
                             + "Documento: " + data[0][1] + " <br><br>"
                             + "Tipo Sociedad: " + data[0][0] + " <br><br>"
                             + "Ciudad de Contacto: " + data[0][2] + " <br><br>"
-                            + "Direccion: " + data[0][3] + " <br><br>"
+                            + "Dirección: " + data[0][3] + " <br><br>"
                             + "Correo: " + data[0][4] + " <br><br>"
                             + "Sitio WEB: " + data[0][5] + " <br><br>"
                             + "Estado: " + data[0][8] + " <br><br>"
                             + "Tipo Cuenta: " + data[0][9] + " <br><br>"
-                            + "Numero de Cuenta: " + data[0][10] + " <br><br>"
+                            + "Número de Cuenta: " + data[0][10] + " <br><br>"
                             + "Entidad Bancaria: " + data[0][11] + " <br><br>"
                             + "Fecha Registro: " + data[0][12] + " <br><br>"
                             + "Puntaje: " + data[0][6] + " <br><br>"
@@ -2004,6 +2024,46 @@ $urlDocumento = $url . $cadenadocumento;
     function CerrarMensajeATC() {
         $("#mensajeATC").css('display', 'none');
     }
+
+    consultaNumeroContrato($("#<?php echo $this->campoSeguro('vigencia') ?>").val());
+
+		$("#<?php echo $this->campoSeguro('vigencia') ?>").change(function () {
+
+            if ($("#<?php echo $this->campoSeguro('vigencia') ?>").val() != '') {
+                $("#<?php echo $this->campoSeguro('numero_contrato') ?>").select2("val", "");
+                consultaNumeroContrato($("#<?php echo $this->campoSeguro('vigencia') ?>").val());
+            }else{
+                $("#<?php echo $this->campoSeguro('numero_contrato') ?>").select2("val", "");
+                $("#<?php echo $this->campoSeguro('numero_contrato') ?>").attr('disabled', '');
+            }
+
+        });
+        
+        
+        function consultaNumeroContrato(vigencia) {
+
+        $.ajax({
+            url: "<?php echo $urlConsecutivoContrato ?>",
+            dataType: "json",
+            data: {vigencia: vigencia, unidad:$("#<?php echo $this->campoSeguro('unidad_ejecutora_consulta') ?>").val()},
+            success: function (data) {
+                if (data[0] != " ") {
+                    $("#<?php echo $this->campoSeguro('numero_contrato') ?>").html('');
+                    $("<option value=''>Seleccione  ....</option>").appendTo("#<?php echo $this->campoSeguro('numero_contrato') ?>");
+                    $.each(data, function (indice, valor) {
+
+                        $("<option value='" + data[ indice ].data + "'>" + data[ indice ].data + "</option>").appendTo("#<?php echo $this->campoSeguro('numero_contrato') ?>");
+                    });
+                    $("#<?php echo $this->campoSeguro('numero_contrato') ?>").removeAttr('disabled');
+                }
+            }
+
+        });
+    }
+
+
+
+
 
 </script> 
 

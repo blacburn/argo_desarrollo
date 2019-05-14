@@ -199,16 +199,16 @@ $urlInformacionRPFinal = $url . $urlInformacionRP;
                             + "Documento: " + data[1] + " <br><br>"
                             + "Tipo Persona: " + data[0] + " <br><br>"
                             + "Ciudad de Contacto: " + data[2] + " <br><br>"
-                            + "Direccion: " + data[3] + " <br><br>"
+                            + "Dirección: " + data[3] + " <br><br>"
                             + "Correo: " + data[4] + " <br><br>"
                             + "Sitio WEB: " + data[5] + " <br><br>"
                             + "Estado: " + data[8] + " <br><br>"
                             + "Tipo Cuenta: " + data[9] + " <br><br>"
-                            + "Numero de Cuenta: " + data[10] + " <br><br>"
+                            + "Número de Cuenta: " + data[10] + " <br><br>"
                             + "Entidad Bancaria: " + data[11] + " <br><br>"
                             + "Fecha Registro: " + data[12] + " <br><br>"
-                            + "Punatje: " + data[6] + " <br><br>";
-                    $("#ventanaEmergenteContratista").dialog('option', 'title', 'Unico Contratista');
+                            + "Puntaje: " + data[6] + " <br><br>";
+                    $("#ventanaEmergenteContratista").dialog('option', 'title', 'Único Contratista');
                     $("#ventanaEmergenteContratista").dialog("open");
 
 

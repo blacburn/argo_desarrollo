@@ -73,25 +73,25 @@ class registrarForm {
             $directorio .= $this->miConfigurador->getVariableConfiguracion("site") . "/index.php?";
             $directorio .= $this->miConfigurador->getVariableConfiguracion("enlace");
 
-            switch ($_REQUEST ['mensaje']) {
-                case 'actualizo' :
-                    $opcion = "&opcion=modificarOrden";
-                    $opcion .= "&id_orden=" . $_REQUEST ['numero_orden'];
-                    $opcion .= "&mensaje_titulo=" . $_REQUEST ['mensaje_titulo'];
-                    $opcion .= "&arreglo=" . $_REQUEST ['arreglo'];
-
-                    break;
-
-                case 'ActualizoElemento' :
-
-                    $opcion = "&opcion=modificarElementos";
-                    $opcion .= "&id_orden=" . $_REQUEST ['id_orden'];
-                    $opcion .= "&mensaje_titulo=" . $_REQUEST ['mensaje_titulo'];
-                    $opcion .= "&arreglo=" . $_REQUEST ['arreglo'];
-                    $opcion .= "&id_elemento_acta=" . $_REQUEST ['id_elemento_acta'];
-
-                    break;
-            }
+           //            switch ($_REQUEST ['mensaje']) {
+//                case 'actualizo' :
+//                    $opcion = "&opcion=modificarOrden";
+//                    $opcion .= "&id_orden=" . $_REQUEST ['numero_orden'];
+//                    $opcion .= "&mensaje_titulo=" . $_REQUEST ['mensaje_titulo'];
+//                    $opcion .= "&arreglo=" . $_REQUEST ['arreglo'];
+//
+//                    break;
+//
+//                case 'ActualizoElemento' :
+//
+//                    $opcion = "&opcion=modificarElementos";
+//                    $opcion .= "&id_orden=" . $_REQUEST ['id_orden'];
+//                    $opcion .= "&mensaje_titulo=" . $_REQUEST ['mensaje_titulo'];
+//                    $opcion .= "&arreglo=" . $_REQUEST ['arreglo'];
+//                    $opcion .= "&id_elemento_acta=" . $_REQUEST ['id_elemento_acta'];
+//
+//                    break;
+//            }
 
             $variable = "pagina=" . $miPaginaActual;
             if (isset($opcion) == true) {
@@ -100,12 +100,24 @@ class registrarForm {
             $variable = $this->miConfigurador->fabricaConexiones->crypto->codificar_url($variable, $directorio);
 
 
+            if(isset($_REQUEST ['miPaginaAct'])){
+                $variable = "pagina=" . $_REQUEST ['miPaginaAct'];
+                $variable .= "&usuario=" . $_REQUEST ['usuario'];
+                $variable = $this->miConfigurador->fabricaConexiones->crypto->codificar_url($variable, $directorio);
+            }else{
+                $variable = "pagina=" . $miPaginaActual;
+                $variable .= "&usuario=" . $_REQUEST ['usuario'];
+                $variable = $this->miConfigurador->fabricaConexiones->crypto->codificar_url($variable, $directorio);
+            }
+
 
             $esteCampo = "marcoDatosBasicos";
             $atributos ['id'] = $esteCampo;
             $atributos ["estilo"] = "jqueryui";
             $atributos ['tipoEtiqueta'] = 'inicio';
             echo $this->miFormulario->marcoAgrupacion('inicio', $atributos);
+
+            $mensajeElimino = 0;
 
             // ---------------- CONTROL: Cuadro de Texto --------------------------------------------------------
             $esteCampo = 'botonRegresar';
@@ -176,7 +188,7 @@ class registrarForm {
                 }
                 if ($_REQUEST ['mensaje'] == 'ActualizoElemento') {
 
-                    $mensaje = "<h3>SE ACTUALIZO EL ELEMENTO DE LA ORDEN.</h3>";
+                    $mensaje = "<h3>SE ACTUALIZO ITEM DE LA ORDEN.</h3>";
 
                     // ---------------- CONTROL: Cuadro de Texto --------------------------------------------------------
                     $esteCampo = 'mensajeRegistro';
@@ -186,6 +198,8 @@ class registrarForm {
                     $atributos ['mensaje'] = $mensaje;
 
                     $tab ++;
+
+                    $mensajeElimino = 1;
 
                     // Aplica atributos globales al control
                     $atributos = array_merge($atributos, $atributosGlobales);
@@ -370,8 +384,11 @@ class registrarForm {
                 }
                 if ($_REQUEST ['mensaje'] == 'actualizoOrden') {
 
-                    $mensaje = "<h3>SE ACTUALIZO LA ORDEN EXITOSAMENTE. "
-                            . "<br>CONSECUTIVO DE ELABORACIÓN: " . $_REQUEST['numero_contrao'] . " <br> VIGENCIA: " . $_REQUEST['vigencia'] . "</h3>";
+                    if(isset($_REQUEST ['miPaginaAct'])){
+                        $mensaje = "<h3>SE ACTUALIZO LA ORDEN CON EXITO.<br>CONTRATO <b>SUSCRITO</b>:  " . $_REQUEST ['numero_contrato_suscrito'] . " <br>  VIGENCIA: " . $_REQUEST ['vigencia'] . ".<h3>";
+                    }else{
+                        $mensaje = "<h3>SE ACTUALIZO LA ORDEN CON EXITO.<br>CONTRATO CON <b>CONSECUTIVO DE ELABORACIÓN</b>:  " . $_REQUEST ['numero_contrato'] . " <br>  VIGENCIA: " . $_REQUEST ['vigencia'] . ".<h3>";
+                    }
 
                     // ---------------- CONTROL: Cuadro de Texto --------------------------------------------------------
                     $esteCampo = 'mensajeActualizo';
@@ -389,9 +406,15 @@ class registrarForm {
                 }
                 if ($_REQUEST ['mensaje'] == 'noactualizoOrden') {
 
-                    $mensaje = "<h3>NO SE PUDO ACTUALIZAR LA ORDEN EXITOSAMENTE. "
-                            . "<br>CONSECUTIVO DE ELABORACIÓN: " . $_REQUEST['numero_contrao'] . " <br> VIGENCIA: " . $_REQUEST['vigencia'] . "</h3>";
-
+                    if(isset($_REQUEST ['miPaginaAct'])){
+                        $mensaje = "<h3>ERROR AL ACTUALIZAR LA ORDEN <b>SUSCRITA</b>"
+                                . " " . $_REQUEST ['numero_contrato_suscrito'] . " <br>  VIGENCIA " . $_REQUEST ['vigencia'] . ".</h3>";
+                    }else{
+                        $mensaje = "<h3>ERROR AL ACTUALIZAR LA ORDEN <b>CONSECUTIVO DE ELABORACIÓN</b>"
+                                . " " . $_REQUEST ['numero_contrato'] . " <br>  VIGENCIA " . $_REQUEST ['vigencia'] . ".</h3>";
+                    }
+                    $mensaje .= "<br><br>Puede comunicarse con el Administrador del Sistema y reportar el caso <br> (" . $_REQUEST['caso'] . ")";
+                            
                     // ---------------- CONTROL: Cuadro de Texto --------------------------------------------------------
                     $esteCampo = 'mensajeActualizo';
                     $atributos ['id'] = $esteCampo;
@@ -409,7 +432,7 @@ class registrarForm {
 
                 if ($_REQUEST ['mensaje'] == 'eliminoElemento') {
 
-                    $mensaje = "<h3>SE ELIMINO EL ELEMENTO DE LA ORDEN.</h3>";
+                    $mensaje = "<h3>SE ELIMINO ITEM DE LA ORDEN.</h3>";
 
                     // ---------------- CONTROL: Cuadro de Texto --------------------------------------------------------
                     $esteCampo = 'mensajeRegistro';
@@ -419,6 +442,8 @@ class registrarForm {
                     $atributos ['mensaje'] = $mensaje;
 
                     $tab ++;
+
+                    $mensajeElimino = 1;
 
                     // Aplica atributos globales al control
                     $atributos = array_merge($atributos, $atributosGlobales);
@@ -544,7 +569,7 @@ class registrarForm {
             echo $this->miFormulario->division("inicio", $atributos);
 
             // -----------------CONTROL: Botón ----------------------------------------------------------------
-            $esteCampo = 'botonContinuar';
+            $esteCampo = 'botonSiguiente';
             $atributos ["id"] = $esteCampo;
             $atributos ["tabIndex"] = $tab;
             $atributos ["tipo"] = 'boton';
@@ -563,17 +588,6 @@ class registrarForm {
             $atributos = array_merge($atributos, $atributosGlobales);
             echo $this->miFormulario->campoBoton($atributos);
             // -----------------FIN CONTROL: Botón -----------------------------------------------------------
-
-            echo $this->miFormulario->marcoAgrupacion('fin');
-
-            // ---------------- SECCION: División ----------------------------------------------------------
-            $esteCampo = 'division1';
-            $atributos ['id'] = $esteCampo;
-            $atributos ['estilo'] = 'general';
-            echo $this->miFormulario->division("inicio", $atributos);
-
-            // ---------------- FIN SECCION: División ----------------------------------------------------------
-            echo $this->miFormulario->division('fin');
 
             // ---------------- FIN SECCION: Controles del Formulario -------------------------------------------
             // ----------------FINALIZAR EL FORMULARIO ----------------------------------------------------------
@@ -599,11 +613,36 @@ class registrarForm {
         // En este formulario se utiliza el mecanismo (b) para pasar las siguientes variables:
         // Paso 1: crear el listado de variables
 
-        $valorCodificado = "action=" . $esteBloque ["nombre"];
-        $valorCodificado .= "&pagina=" . $this->miConfigurador->getVariableConfiguracion('pagina');
-        $valorCodificado .= "&bloque=" . $esteBloque ['nombre'];
-        $valorCodificado .= "&bloqueGrupo=" . $esteBloque ["grupo"];
-        $valorCodificado .= "&opcion=registrarOrden";
+        if(isset($_REQUEST ['miPaginaAct'])){
+
+            $valorCodificado = "actionBloque=" . $esteBloque ["nombre"];
+            $valorCodificado .= "&pagina=" . $_REQUEST ['miPaginaAct'];
+            $valorCodificado .= "&bloque=" . $esteBloque ['nombre'];
+            $valorCodificado .= "&bloqueGrupo=" . $esteBloque ["grupo"];
+            $valorCodificado .= "&usuario=" . $_REQUEST['usuario'];
+
+        }else{
+            if ($mensajeElimino === 1) {
+                $valorCodificado = "actionBloque=" . $esteBloque ["nombre"];
+                $valorCodificado .= "&pagina=" . $this->miConfigurador->getVariableConfiguracion('pagina');
+                $valorCodificado .= "&bloque=" . $esteBloque ['nombre'];
+                $valorCodificado .= "&bloqueGrupo=" . $esteBloque ["grupo"];
+                $valorCodificado .= "&opcion=consultaElementos";
+                $valorCodificado .= "&id_elemento_acta=" . $_REQUEST ['id_elemento_acta'];
+                $valorCodificado .= "&id_orden=" . $_REQUEST ['id_orden'];
+                $valorCodificado .= "&id_contratista=" . $_REQUEST ['id_contratista'];
+                $valorCodificado .= "&numerocontrato=" . $_REQUEST ['numerocontrato'];
+                $valorCodificado .= "&mensaje_titulo=" . $_REQUEST ['mensaje_titulo'];
+                $valorCodificado .= "&arreglo=" . stripslashes($_REQUEST ['arreglo']);
+                $valorCodificado .= "&vigencia=" . $_REQUEST ['vigencia'];
+            }
+            else{
+                $valorCodificado = "actionBloque=" . $esteBloque ["nombre"];
+                $valorCodificado .= "&pagina=" . $this->miConfigurador->getVariableConfiguracion('pagina');
+                $valorCodificado .= "&bloque=" . $esteBloque ['nombre'];
+                $valorCodificado .= "&bloqueGrupo=" . $esteBloque ["grupo"];
+            }
+        }
         /**
          * SARA permite que los nombres de los campos sean dinámicos.
          * Para ello utiliza la hora en que es creado el formulario para

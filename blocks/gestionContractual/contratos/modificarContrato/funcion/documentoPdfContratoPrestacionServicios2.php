@@ -306,6 +306,9 @@ class RegistradorOrden {
         $conexionFrameWork = "estructura";
         $DBFrameWork = $this->miConfigurador->fabricaConexiones->getRecursoDB($conexionFrameWork);
 
+        $conexionCore = "core";
+        $DBCore = $this->miConfigurador->fabricaConexiones->getRecursoDB($conexionCore);
+
         $directorio = $this->miConfigurador->getVariableConfiguracion('rutaUrlBloque');
 
 
@@ -362,6 +365,10 @@ class RegistradorOrden {
         $plazo = $esteRecursoDB->ejecutarAcceso($cadenaSql, "busqueda");
         $plazo = $plazo[0][0];
 
+
+        $cadenaSql = $this->miSql->getCadenaSql('consultaParametro', $contrato ['modalidad_seleccion']);
+        $modalidad_seleccion = $esteRecursoDB->ejecutarAcceso($cadenaSql, "busqueda");
+        $modalidad_seleccion = $modalidad_seleccion[0][0];
 
         if ($contrato ['unidad_ejecucion'] == '205') {
             $meses = $contrato['plazo_ejecucion'] / 30;
@@ -451,7 +458,7 @@ class RegistradorOrden {
         else{
                 $parametros = array(
                 'ordenador_gasto' => $contrato ['ordenador_gasto'],
-                'fecha_suscripcion' =>  $contrato ['fecha_registro'],
+                'fecha_suscripcion' =>  date('Y-m-d'),
                );
            
             $cadenaSql = $this->miSql->getCadenaSql('ordenadorArgoDocumento', $parametros);
@@ -489,10 +496,14 @@ class RegistradorOrden {
 
         $cadenaSql = $this->miSql->getCadenaSql('ObtenerInfosupervisor', $contrato ['supervisor']);
         $supervisor = $esteRecursoDB->ejecutarAcceso($cadenaSql, "busqueda");
+        $supervisor_contrato = " Cargo: " . $supervisor [0]['cargo'];
         $supervisor = strtoupper($supervisor [0]['cargo']);
 
 
-
+        //obtener jefe juridica para firma
+        $cadenaSql = $this->miSql->getCadenaSql('buscar_jefe_juridica');
+        $jefe_juridica = $esteRecursoDB->ejecutarAcceso($cadenaSql, "busqueda"); 
+        
         $funcionLetras = new EnLetras ();
 
         $valorContrato = $funcionLetras->ValorEnLetras($contrato['valor_contrato'], ' Pesos ');
@@ -505,7 +516,7 @@ class RegistradorOrden {
             $tipoDocumento = $esteRecursoDBAgora->ejecutarAcceso($cadenaSql, "busqueda");
 
             $InfoContratista = strtoupper($contratista['nom_proveedor']) . "</b> persona NATURAL mayor de edad, identificado(a) 
-                         con " . $tipoDocumento[0][0] . " <b>N°. " . $contratista['num_documento'] . "</b> de " . $tipoDocumento[0][1] . " ";
+                         con " . $tipoDocumento[0][0] . " <b>N°. " . $contratista['num_documento'] . "</b> expedida en " . $tipoDocumento[0][1] . " ";
         } elseif ($contratista['tipopersona'] == 'JURIDICA') {
              $cadenaSql = $this->miSql->getCadenaSql('consultaRepresentanteLegal', $contrato ['contratista']);
             $representanteLegal = $esteRecursoDBAgora->ejecutarAcceso($cadenaSql, "busqueda");
@@ -572,6 +583,435 @@ class RegistradorOrden {
         }
 
 
+
+        $cadenaSql = $this->miSql->getCadenaSql('consultaArrendamientoAmparo', $datosContrato);
+        $arrendamientoGeneral = $esteRecursoDB->ejecutarAcceso($cadenaSql, "busqueda");
+
+
+        $tablaDeAmparos = ' <table align="center" style="width:100% ;border: 1px solid black;"> 
+            <tr>            
+              <td style="text-align:center;font-weight:bold;border: 1px solid black;">AMPARO</td> 
+              <td style="text-align:center;font-weight:bold;border: 1px solid black;">SUFICIENCIA</td> 
+              <td style="text-align:center;font-weight:bold;border: 1px solid black;">DESCRIPCION</td> 
+           </tr> 
+          ';
+
+        $contadorArrend = 0;
+
+        while ($contadorArrend < count($arrendamientoGeneral)) {
+
+            $cadenaAmparosParametros = $this->miSql->getCadenaSql("obtenerAmparosParametros2", $arrendamientoGeneral[$contadorArrend]['tipo_amparo']);
+            $amparosParametros = $DBCore->ejecutarAcceso($cadenaAmparosParametros, "busqueda");
+            $tablaDeAmparos.= '<tr> ';
+            $tablaDeAmparos.= '<td>' . $amparosParametros[0]['nombre'] . '</td> ';
+            $tablaDeAmparos.= '<td>' . $arrendamientoGeneral[$contadorArrend]['suficiencia'] . "%" . '</td> ';
+            $tablaDeAmparos.= '<td>' . $arrendamientoGeneral[$contadorArrend]['vigencia'] . '</td> ';
+            $tablaDeAmparos.= '</tr>  ';
+            $contadorArrend++;
+        }
+
+
+        $tablaDeAmparos.='</table>';
+
+        // ELEMENTOS Y SERVICIOS PARA CONTRATO
+        
+        
+        if ($ElementosOrden) {
+            $elementosyservicios .= "<table align='left' style='width:100%;PAGE-BREAK-AFTER: always' >
+
+            <tr>
+            <td style='width:100%;text-align:center;'><font size='1px'><b></b></font></td>
+            </tr>
+
+            </table><br><br>";
+
+
+            $elementosyservicios .= "<table align='left' style='width:100%;' >
+
+            <tr>
+            <td style='width:100%;text-align:center;'><font size='1px'><p><b>ANEXOS</b></p></font></td>
+            </tr>
+
+        </table><br><br>";
+
+            $elementosyservicios .= "<table align='left' style='width:100%;' >
+
+            <tr>
+            <td style='width:100%;text-align:left;'><font size='1px'><p><b>".strtoupper($tipo_contrato). " NUMERO  _________</b></font></p></td>
+            </tr>
+
+        </table><br><br>";
+
+             $elementosyservicios .= "<table align='left' style='width:100%;' >
+
+            <tr>
+            <td style='width:100%;text-align:left;'><font size='1px'><p><b>".strtoupper($tipo_contrato). " CELEBRADA ENTRE LA UNIVERSIDAD DISTRITAL FRANCISCO JOSÉ DE CALDAS Y ".strtoupper($contratista['tipopersona'])."</b></font></p></td>
+            </tr>
+
+        </table><br><br>";
+
+
+
+
+
+            $elementosyservicios .= "
+        <table style='width:100%;'>
+        <tr>
+        <td  style='width:100%;text-align=center;'><p><b>ELEMENTOS ASOCIADOS</b></p></td><br>
+        </tr>
+        </table>
+        <table style='width:100%;'>
+        <tr>
+        <td style='width:5%;text-align=center;'><b><center>No.</center></b></td>
+                <td style='width:13%;text-align=center;'><b><center>Nombre</center></b></td>
+                <td style='width:23%;text-align=center;'><b><center>Descripción</center></b></td>
+        <td style='width:7%;text-align=center;'><b><center>Unidad</center></b></td>
+        <td style='width:7%;text-align=center;'><b><center>Cantidad</center></b></td>       
+        <td style='width:20%;text-align=center;'><b><center>Valor Unitario($)</center></b></td>
+        <td style='width:5%;text-align=center;'><b><center>Iva</center></b></td>
+        <td style='width:20%;text-align=center;'><b><center>Total</center></b></td>
+        </tr>
+        </table>
+        <table class='mainelementos' style='width:100%;'>";
+
+            $sumatoriaTotal = 0;
+
+            $sumatoriaIva = 0;
+            $sumatoriaSubtotal = 0;
+            $j = 1;
+
+
+            
+
+            foreach ($ElementosOrden as $valor => $it) {
+                
+                $valor_total=$it ['valor'] * $it ['cantidad'];
+                
+                $valor_total_iva= $valor_total * ($it ['nombre_iva']/100);
+                $valor_final=$valor_total_iva + $valor_total;
+                
+                
+                $elementosyservicios .= "<tr>";
+                $elementosyservicios .= "<td style='width:5%;text-align=center;'><p><center>" . $j . "</center></p></td>";
+                $elementosyservicios .= "<td style='width:13%;text-align=center;'><p><center>" . $it ['nombre'] . "</center></p></td>";
+                $elementosyservicios .= "<td style='width:23%;text-align=center;'><p><center>" . $it ['descripcion'] . "</center></p></td>";
+                $elementosyservicios .= "<td style='width:7%;text-align=center;'><p><center>" . $it ['unidad'] . "</center></p></td>";
+                $elementosyservicios .= "<td style='width:7%;text-align=center;'><p><center>" . $it ['cantidad'] . "</center></p></td>";
+                $elementosyservicios .= "<td style='width:20%;text-align=center;'><p><center>$ " . number_format($it ['valor'], 2, ",", ".") . "</center></p></td>";
+                $elementosyservicios .= "<td style='width:5%;text-align=center;'><p><center>" . $it ['nombre_iva'] . "</center></p></td>";
+                $elementosyservicios .= "<td style='width:20%;text-align=center;'><p><center>$ " . number_format($valor_final, 2, ",", ".") . "</center></p></td>";
+                $elementosyservicios .= "</tr>";
+
+                $sumatoriaTotal = $sumatoriaTotal +  $valor_final;
+                $sumatoriaSubtotal = $sumatoriaSubtotal +  $valor_total;
+                $sumatoriaIva = $sumatoriaIva + $valor_total_iva;
+                $j ++;
+            }
+            
+     
+
+        //------------- Redondeo Valores Totales --------------------------------------
+
+        $sumatoriaTotal = round($sumatoriaTotal);
+        $sumatoriaSubtotal = round($sumatoriaSubtotal);
+        $sumatoriaIva = round($sumatoriaIva);
+
+        //-----------------------------------------------------------------------------
+
+            $elementosyservicios .= "</table>";
+
+            $elementosyservicios .= "       <table class='mainelementos' style='width:100%;'>
+        <tr>
+
+        <td style='width:75%;text-align=left;'><p><b>SUBTOTAL  : </b></p></td>
+        <td style='width:25%;text-align=center;'><p><b>$" . number_format($sumatoriaSubtotal, 2, ",", ".") . "</b></p></td>
+        </tr>
+        <tr>
+
+        <td style='width:75%;text-align=left;'><p><b>TOTAL IVA  : </b></p></td>
+        <td style='width:25%;text-align=center;'><p><b>$" . number_format($sumatoriaIva, 2, ",", ".") . "</b></p></td>
+        </tr>
+
+        <tr>
+
+        <td style='width:75%;text-align=center;'><p><b>TOTAL  : </b></p></td>
+        <td style='width:25%;text-align=center;'><p><b>$" . number_format($sumatoriaTotal, 2, ",", ".") . "</b></p></td>
+        </tr>
+
+
+    </table>
+                ";
+
+            $funcionLetras = new EnLetras ();
+
+            $Letras = $funcionLetras->ValorEnLetras($sumatoriaTotal, ' Pesos ');
+
+            $elementosyservicios .= "<table class='mainelementos' style='width:100%;'>
+        <tr>
+        <td style='width:100%;text-align=right;text-transform:uppercase;'><p><b>" . $Letras . "</b></p></td>
+        </tr>
+
+        </table><br><br><br>";
+
+             $elementosyservicios .="
+
+            <table align='left' style='width:100%;'>
+        <tr>
+        <td style='width:100%;text-align:justify;'>Para constancia se firma, a los, </td>
+        </tr>
+
+        </table>";
+
+             $elementosyservicios .=" <table style='width:100%; background:#FFFFFF ; border: 0px  #FFFFFF;'>
+
+                         <tr>
+            <td class='sinespacionInferior' style='width:50%;text-align:left;background:#FFFFFF ; border: 0px  #FFFFFF;'>_______________________________</td>
+            <td class='sinespacionInferior' style='width:50%;text-align:left;background:#FFFFFF ; border: 0px  #FFFFFF;'>_______________________________</td>
+            </tr>
+            <tr>
+            <td class='sinespacionInferior' style='width:50%;text-align:left;background:#FFFFFF ; border: 0px  #FFFFFF;'>".$contratista['num_documento']."-".strtoupper($contratista['nom_proveedor'])."</td>
+            <td class='sinespacionInferior' style='width:50%;text-align:left;background:#FFFFFF ; border: 0px  #FFFFFF; text-transform:capitalize;'>".$ordenadorInfoExtra[0]['documento']."-".$ordenador['NOMBRE']."</td>
+            </tr>
+            <tr>
+
+                        <td class='sinespacionInferior' style='width:50%;text-align:left;background:#FFFFFF ; border: 0px  #FFFFFF; text-transform:capitalize;'> CONTRASTISTA</td>
+            <td class='sinespacionInferior' style='width:50%;text-align:left;background:#FFFFFF ; border: 0px  #FFFFFF;'>ORDENADOR GASTO - ".$ordenador['ORDENADOR']."</td>
+            </tr>
+            </table><br><br><br><br><table class='bordes'>
+                        <tr>
+                        <td class='sinespacionInferior' style='width:50%;text-align:left;background:#FFFFFF ; '>Elaborado por</td>
+            <td class='sinespacionInferior' style='width:50%;text-align:left;background:#FFFFFF ; '>".strtoupper($usuario[0]['nombre'])." ". strtoupper($usuario[0]['apellido'])."</td>
+            <td class='sinespacionInferior' style='width:50%;text-align:left;background:#FFFFFF ; '>                        </td>
+            <td class='sinespacionInferior' style='width:50%;text-align:left;background:#FFFFFF ; '>                        </td>
+            </tr>
+             <tr>
+                        <td class='sinespacionInferior' style='width:50%;text-align:left;background:#FFFFFF ; '>Aprobado por </td>
+            <td class='sinespacionInferior' style='width:50%;text-align:left;background:#FFFFFF ; '>TULIO BERNARDO ISAZA SANTAMARIA</td>
+            <td class='sinespacionInferior' style='width:50%;text-align:left;background:#FFFFFF ; '>JEFE SECCIÓN DE COMPRAS</td>
+            <td class='sinespacionInferior' style='width:50%;text-align:left;background:#FFFFFF ; '>                          </td></tr>
+            </table><br><br>
+            <p class='pie'>
+
+                            UNIVERSIDAD DISTRITAL FRANCISCO JOSÉ DE CALDAS NIT: 899.999.230-7
+                            CARRERA 7 No. 40-53 PISO 7. TELEFONO 3239300 EXT. 2609 -2605<br>
+                            Institución Acreditada de Alta Calidad según Resolución 23096 del
+                            15 de Diciembre de 2016 del Ministerio de Educación Nacional<br>
+                            www.udistrital.edu.co
+
+                        </p> ";
+        }
+        if ($ServiciosOrden) {
+
+            $elementosyservicios .= "<table align='left' style='width:100%;PAGE-BREAK-AFTER: always' >
+
+            <tr>
+            <td style='width:100%;text-align:center;'><font size='1px'><b></b></font></td>
+            </tr>
+
+            </table><br><br>";
+
+
+            $elementosyservicios .= "<table align='left' style='width:100%;' >
+
+            <tr>
+            <td style='width:100%;text-align:center;'><font size='1px'><p><b>ANEXOS</b></p></font></td>
+            </tr>
+
+        </table><br><br>";
+
+             $elementosyservicios .= "<table align='left' style='width:100%;' >
+
+            <tr>
+            <td style='width:100%;text-align:left;'><font size='1px'><p><b>".strtoupper($tipo_contrato). " NUMERO  _________</b></font></p></td>
+            </tr>
+
+        </table><br><br>";
+
+             $elementosyservicios .= "<table align='left' style='width:100%;' >
+
+            <tr>
+            <td style='width:100%;text-align:left;'><font size='1px'><p><b>".strtoupper($tipo_contrato). " CELEBRADA ENTRE LA UNIVERSIDAD DISTRITAL FRANCISCO JOSÉ DE CALDAS Y ".strtoupper($contratista['tipopersona'])."</b></font></p></td>
+            </tr>
+
+        </table><br><br>";
+
+
+
+            $elementosyservicios .= "<br>
+        <table class='mainelementos' style='width:100%;'>
+        <tr>
+        <td style='width:100%;text-align=center;'><p><b>SERVICIOS </b></p></td><br>
+        </tr>
+        </table>
+        <table class='mainelementos' style='width:100%;'>
+        <tr>
+        <td style='width:2%;text-align=center;'><b><center>No.</center></b></td>
+                <td style='width:13%;text-align=center;'><b><center>Nombre</center></b></td>
+                <td style='width:20%;text-align=center;'><b><center>Descripción</center></b></td>
+                <td style='width:7%;text-align=center;'><b><center>Tiempo<br>Ejecución<br>(Días)</center></b></td>
+        <td style='width:7%;text-align=center;'><b><center>Unidad</center></b></td>
+        <td style='width:7%;text-align=center;'><b><center>Cantidad</center></b></td>       
+        <td style='width:19%;text-align=center;'><b><center>Valor Unitario($)</center></b></td>
+        <td style='width:5%;text-align=center;'><b><center>Iva</center></b></td>
+        <td style='width:19%;text-align=center;'><b><center>Total</center></b></td>
+        </tr>
+        </table>
+        <table class='mainelementos' style='width:100%;'>";
+
+
+
+
+            $sumatoriaTotalServicios = 0;
+            $sumatoriaSubtotalServicios = 0;
+            $sumatoriaIvaServicios = 0;
+
+            $c = 1;
+
+
+            foreach ($ServiciosOrden as $valor => $it) {
+                
+                $valor_total=$it ['valor'] * $it ['cantidad'];
+                
+                $valor_total_iva= $valor_total * ($it ['nombre_iva']/100);
+                $valor_final=$valor_total_iva + $valor_total;
+                
+                $elementosyservicios .= "<tr>";
+                $elementosyservicios .= "<td style='width:2%;text-align=center;'><p><center>" . $c . "</center></p></td>";
+                $elementosyservicios .= "<td style='width:13%;text-align=center;'><p><center>" . $it ['nombre'] . "</center></p></td>";
+                $elementosyservicios .= "<td style='width:20%;text-align=center;'><p><center>" . $it ['descripcion'] . "</center></p></td>";
+                $elementosyservicios .= "<td style='width:7%;text-align=center;'><p><center>" . $it ['tiempo_ejecucion'] . "</center></p></td>";
+                $elementosyservicios .= "<td style='width:7%;text-align=center;'><p><center>" . $it ['unidad'] . "</center></p></td>";
+                $elementosyservicios .= "<td style='width:7%;text-align=center;'><p><center>" . $it ['cantidad'] . "</center></p></td>";
+                $elementosyservicios .= "<td style='width:19%;text-align=center;'><p><center>$ " . number_format($it ['valor'], 2, ",", ".") . "</center></p></td>";
+                $elementosyservicios .= "<td style='width:5%;text-align=center;'><p><center>" . $it ['nombre_iva'] . "</center></p></td>";
+                $elementosyservicios .= "<td style='width:19%;text-align=center;'><p><center>$ " . number_format($valor_final, 2, ",", ".") . "</center></p></td>";
+                $elementosyservicios .= "</tr>";
+
+                $sumatoriaTotalServicios = $sumatoriaTotalServicios + $valor_final;
+                $sumatoriaSubtotalServicios = $sumatoriaSubtotalServicios +  $valor_total;
+                $sumatoriaIvaServicios = $sumatoriaIvaServicios + $valor_total_iva;
+                $c ++;
+            }
+
+
+        //------------- Redondeo Valores Totales --------------------------------------
+
+        $sumatoriaTotalServicios = round($sumatoriaTotalServicios);
+
+        //-----------------------------------------------------------------------------
+
+            $elementosyservicios .= "</table>";
+
+            $elementosyservicios .= "       <table class='mainelementos' style='width:100%;'>
+    
+<tr>
+
+        <td style='width:75%;text-align=left;'><p><b>SUBTOTAL  : </b></p></td>
+        <td style='width:25%;text-align=center;'><p><b>$" . number_format($sumatoriaSubtotalServicios, 2, ",", ".") . "</b></p></td>
+        </tr>
+        <tr>
+
+        <td style='width:75%;text-align=left;'><p><b>TOTAL IVA  : </b></p></td>
+        <td style='width:25%;text-align=center;'><p><b>$" . number_format($sumatoriaIvaServicios, 2, ",", ".") . "</b></p></td>
+        </tr>
+
+        <tr>
+
+        <td style='width:75%;text-align=center;'><p><b>TOTAL  : </b></p></td>
+        <td style='width:25%;text-align=center;'><p><b>$" . number_format($sumatoriaTotalServicios, 2, ",", ".") . "</b></p></td>
+        </tr>
+                
+
+
+
+    </table>
+                ";
+
+            $LetrastotalServicios = $funcionLetras->ValorEnLetras($sumatoriaTotalServicios, ' Pesos ');
+
+            $elementosyservicios .= "<table class='mainelementos' style='width:100%;'>
+        <tr>
+
+        <td style='width:100%;text-align=center;text-transform:uppercase;'><p><b>" . $LetrastotalServicios . "</b></p></td>
+        </tr>
+
+
+                
+        </table>";
+
+
+
+
+
+
+            $elementosyservicios .= "<br><br><table class='mainelementos' style='width:100%;'>
+        <tr>
+
+        <td style='width:75%;text-align=left;'><p><b>TOTAL ORDEN: </b></p></td>
+        <td style='width:25%;text-align=center;'><p><b>$" . number_format($sumatoriaTotalServicios + $sumatoriaTotal, 2, ",", ".") . "</b></p></td>
+        </tr>
+
+
+    </table>
+                ";
+
+            $LetrasTotalOrden = $funcionLetras->ValorEnLetras($sumatoriaTotalServicios + $sumatoriaTotal, ' Pesos ');
+
+            $elementosyservicios .= "<table class='mainelementos' style='width:100%;'>
+        <tr>
+
+        <td style='width:100%;text-align=left;text-transform:uppercase;'><p><b>" . $LetrasTotalOrden . "</b></p></td>
+        </tr>
+
+        </table>";
+              $elementosyservicios .="<br><br>
+
+            <table align='left' style='width:100%;'>
+        <tr>
+        <td style='width:100%;text-align:justify;'>Para constancia se firma, a los, </td>
+        </tr>
+
+        </table>";
+
+             $elementosyservicios .=" <table style='width:100%; background:#FFFFFF ; border: 0px  #FFFFFF;'>
+
+                         <tr>
+            <td class='sinespacionInferior' style='width:50%;text-align:left;background:#FFFFFF ; border: 0px  #FFFFFF;'>_______________________________</td>
+            <td class='sinespacionInferior' style='width:50%;text-align:left;background:#FFFFFF ; border: 0px  #FFFFFF;'>_______________________________</td>
+            </tr>
+            <tr>
+            <td class='sinespacionInferior' style='width:50%;text-align:left;background:#FFFFFF ; border: 0px  #FFFFFF;'>".$contratista['num_documento']."-".strtoupper($contratista['nom_proveedor'])."</td>
+            <td class='sinespacionInferior' style='width:50%;text-align:left;background:#FFFFFF ; border: 0px  #FFFFFF; text-transform:capitalize;'>".$ordenadorInfoExtra[0]['documento']."-".$ordenador['NOMBRE']."</td>
+            </tr>
+            <tr>
+
+                        <td class='sinespacionInferior' style='width:50%;text-align:left;background:#FFFFFF ; border: 0px  #FFFFFF; text-transform:capitalize;'> CONTRASTISTA</td>
+            <td class='sinespacionInferior' style='width:50%;text-align:left;background:#FFFFFF ; border: 0px  #FFFFFF;'>ORDENADOR GASTO - ".$ordenador['ORDENADOR']."</td>
+            </tr>
+            </table><br><br><br><br><table class='bordes'>
+                        <tr>
+                        <td class='sinespacionInferior' style='width:50%;text-align:left;background:#FFFFFF ; '>Elaborado por</td>
+            <td class='sinespacionInferior' style='width:50%;text-align:left;background:#FFFFFF ; '>".strtoupper($usuario[0]['nombre'])." ". strtoupper($usuario[0]['apellido'])."</td>
+            <td class='sinespacionInferior' style='width:50%;text-align:left;background:#FFFFFF ; '>                        </td>
+            <td class='sinespacionInferior' style='width:50%;text-align:left;background:#FFFFFF ; '>                        </td>
+            </tr>
+             <tr>
+                        <td class='sinespacionInferior' style='width:50%;text-align:left;background:#FFFFFF ; '>Aprobado por </td>
+            <td class='sinespacionInferior' style='width:50%;text-align:left;background:#FFFFFF ; '>TULIO BERNARDO ISAZA SANTAMARIA</td>
+            <td class='sinespacionInferior' style='width:50%;text-align:left;background:#FFFFFF ; '>JEFE SECCIÓN DE COMPRAS</td>
+            <td class='sinespacionInferior' style='width:50%;text-align:left;background:#FFFFFF ; '>                          </td></tr>
+            </table><br><br>
+            <p class='pie'>
+
+                            UNIVERSIDAD DISTRITAL FRANCISCO JOSÉ DE CALDAS NIT: 899.999.230-7
+                            CARRERA 7 No. 40-53 PISO 7. TELEFONO 3239300 EXT. 2609 -2605<br>
+                            Institución Acreditada de Alta Calidad según Resolución 23096 del
+                            15 de Diciembre de 2016 del Ministerio de Educación Nacional<br>
+                            www.udistrital.edu.co
+
+                        </p> ";
+        }
+
         $contenidoPagina = "<table align='center' style='width:100%;' >
            
             <tr>
@@ -604,17 +1044,34 @@ class RegistradorOrden {
         } else {
             $prefijo = "SOCIEDAD TEMPORAL: ";
         }
+
+        $lugarEjecucion = $contrato['lugar_ejecucion'];
+
+        $cadenaSql = $this->miSql->getCadenaSql('consultaLugarEjecucion', $lugarEjecucion);
+        $direccionEjecucion = $esteRecursoDB->ejecutarAcceso($cadenaSql, "busqueda");
         
-        if($contrato['fecha_registro']<'2017-06-02'){
-            $cadenaSql = $this->miSql->getCadenaSql('consultaPlantilla', array('tipo_contrato' => $contrato['tipo_contrato'], 'tipo_plantilla' => 'plantillaIdexud'));
-            $plantilla = $esteRecursoDB->ejecutarAcceso($cadenaSql, "busqueda");
-            
+        if($ordenadorInfoExtra[0]['rol_ordenador']=='RECTOR'){
+             $RevisoRectoria= '   <tr> 
+                        <td style="border-width: 1px;text-align:center;"><b>REVISÓ</b> </td> 
+                        <td style="border-width: 1px;text-align:center;">Milena Isabel Rubiano Rojas </td> 
+                        <td style="border-width: 1px;text-align:center;">Asesora de rectoría</td> 
+                        <td style="border-width: 1px;text-align:center;"></td> 
+                       </tr>  ';
+
+             $ParagrafoResponsabilidad= '<table align="center" style="width:75% ; border: 1  ;"> 
+                       <tr> 
+                       <td style="border-width: 1px;text-align:center;">Los arriba firmantes declaramos que hemos revisado el presente documento y lo encontramos ajustado a las normas y disposiciones, legales y/o técnicas aplicables y vigentes y, por lo tanto, bajo nuestra responsabilidad, lo presentamos para la firma del remitente. </td>
+                       </tr> 
+                       </table></p>';
         }
         else{
-           $cadenaSql = $this->miSql->getCadenaSql('consultaPlantilla', array('tipo_contrato' => $contrato['tipo_contrato'], 'tipo_plantilla' => 'plantillaIdexud2'));
-            $plantilla = $esteRecursoDB->ejecutarAcceso($cadenaSql, "busqueda"); 
-           
+            $RevisoRectoria='';
+             $ParagrafoResponsabilidad='';
         }
+        
+        $cadenaSql = $this->miSql->getCadenaSql('consultaPlantilla', array('tipo_contrato' => $contrato['tipo_contrato'], 'tipo_plantilla' => 'plantillaIdexud',  'fecha_vigencia' => $contrato['fecha_registro']));
+        $plantilla = $esteRecursoDB->ejecutarAcceso($cadenaSql, "busqueda");
+
         $plantilla = $plantilla[0];
         $parametros = array(
             'P[ENCABEZADOTIPOCONTRATO]' => $encabezadotipocontrato,
@@ -643,7 +1100,16 @@ class RegistradorOrden {
             'P[ELABORO_NOMBRE]' => strtoupper($usuario[0]['nombre']),
             'P[ELABORO_APELLIDO]' => strtoupper($usuario[0]['apellido']),
             'P[FECHA_SUSCRIPCION]' => $fechaSucripcion,
-	    'P[FORMA_PAGO]' => $contrato['descripcion_forma_pago'],
+            'P[TABLAAMPAROS]' => $tablaDeAmparos,
+	        'P[FORMA_PAGO]' => $contrato['descripcion_forma_pago'],
+            'P[MODALIDAD_SELECCION]' => $modalidad_seleccion,
+            'P[ELEMENTOS_SERVICIO]' => $elementosyservicios,
+            'P[REVISO_RECTORIA]' => $RevisoRectoria,
+            'P[PARAGRAFO_RESPONSABILIDAD]' => $ParagrafoResponsabilidad,
+            'P[INFO_SUPERVISOR]' => $supervisor_contrato,
+            'P[CARGO_JEFE_JURIDICA]' => ucwords(strtolower($jefe_juridica[0]['cargo'])),
+            'P[NOMBRE_JEFE_JURIDICA]' => ucwords(strtolower($jefe_juridica[0]['nombre'])),
+            'P[DOCUMENTO_JEFE:JURIDICA]' => $jefe_juridica[0]['documento'],
         );
 
         foreach ($parametros as $clave => $valor) {

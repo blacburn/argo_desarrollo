@@ -275,6 +275,8 @@ class EnLetras {
 
 }
 
+
+
 if ($_REQUEST ['funcion'] == 'letrasNumeros') {
 
     $funcionLetras = new EnLetras ();
@@ -465,6 +467,18 @@ if ($_REQUEST ['funcion'] == 'consultarDependencia') {
     $resultado = json_encode($resultado);
     echo $resultado;
 }
+//-------------------------Obtener Supervisores  de acuerdo a la Dependencia---------------------------------
+if ($_REQUEST ['funcion'] == 'consultarSuperxDependencia') {
+    
+    $cadenaSql = $this->sql->getCadenaSql('supervisoresConsultados', $_REQUEST ['valor']);
+    $resultado = $esteRecursoDB->ejecutarAcceso($cadenaSql, "busqueda");
+    
+    $resultado = json_encode($resultado);
+    echo $resultado;
+}
+
+
+
 //-------------------------Obtener Direccion de la Sede---------------------------------
 if ($_REQUEST ['funcion'] == 'consultarDireccionSede') {
 
@@ -476,10 +490,8 @@ if ($_REQUEST ['funcion'] == 'consultarDireccionSede') {
 //-------------------------Obtener Cargo de Supervisor-----------------------------------------------
 if ($_REQUEST ['funcion'] == 'consultarCargoSuper') {
 
-
-
-    $cadenaSql = $this->sql->getCadenaSql('cargoSuper', explode("-", $_REQUEST ['valor'])[0]);
-    $resultado = $DBSICA->ejecutarAcceso($cadenaSql, "busqueda");
+    $cadenaSql = $this->sql->getCadenaSql('cargoSuper', $_REQUEST ['valor']);
+    $resultado = $esteRecursoDB->ejecutarAcceso($cadenaSql, "busqueda");
     $resultado = json_encode($resultado [0]);
 
     echo $resultado;

@@ -523,5 +523,12 @@ $('#<?php echo $this->campoSeguro('fecha_inicio_consulta') ?>').attr("class", "c
 });
 
 
+$("#<?php echo $this->campoSeguro('vigencia') ?>").width(150);
+$("#<?php echo $this->campoSeguro('vigencia') ?>").select2();
+
+$("#<?php echo $this->campoSeguro('numero_contrato') ?>").width(150);
+$("#<?php echo $this->campoSeguro('numero_contrato') ?>").select2();
+
+
 
 

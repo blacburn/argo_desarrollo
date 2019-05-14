@@ -244,6 +244,7 @@ class registrarForm {
                 if (isset($_REQUEST ['mensaje']) && $_REQUEST ['mensaje'] == 'error') {
 
                     $mensaje = "<h3>NO SE PUDO REGISTRAR ORDEN.</h3>";
+                    $mensaje .= "<br><br>Puede comunicarse con el Administrador del Sistema y reportar el caso <br> (" . $_REQUEST['caso'] . ")";
 
                     // ---------------- CONTROL: Cuadro de Texto --------------------------------------------------------
                     $esteCampo = 'mensajeRegistro';

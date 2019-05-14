@@ -1,3 +1,14 @@
+
+#botonesGestActa{
+    display: none;
+}
+#marcoContratos{
+    display: none;
+}
+#marcoNovedades{
+    display: none;
+}
+
 #Mensaje {
     width: 778px;
     position: fixed;

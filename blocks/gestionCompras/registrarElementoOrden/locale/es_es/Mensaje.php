@@ -7,6 +7,11 @@
  * 
  * */
 
+
+$this->idioma ["tipo_consulta"] = "Item a Registrar: ";
+$this->idioma ["tipo_consultaTitulo"] = "Item a Registrar  ";
+
+
 $this->idioma ["unidad_ejecutora"] = "Unidad Ejecutora: ";
 $this->idioma ["unidad_ejecutoraTitulo"] = "Selecciones Unidad Ejecutora";
 
@@ -43,6 +48,9 @@ $this->idioma ["placaTitulo"] = "Ingrese Placa ";
 $this->idioma ["observaciones"] = "Observaciones :";
 $this->idioma ["observacionesTitulo"] = "Ingrese Observaciones";
 
+
+$this->idioma ["nombre"] = "Nombre : ";
+$this->idioma ["nombreTitulo"] = "Ingrese Nombre ELemento o Servicio";
 
 //------------------------------------
 
@@ -109,7 +117,7 @@ $this->idioma ["numero_entradaTitulo"] = "Ingrese Número Entrada";
 
 $this->idioma ["numero_entradaTitulo"] = "Ingrese Número Entrada";
 
-$this->idioma ["tipo_registro"] = "Tipo de Registro	";
+$this->idioma ["tipo_registro"] = "Tipo de Registro		";
 
 $this->idioma ["documentos_elementos"] = "Archivo de Elementos";
 
@@ -140,17 +148,18 @@ $this->idioma ["tipo_bienTitulo"] = "Seleccione Tipo de Bien";
 $this->idioma ["descripcion"] = "Descripción: ";
 $this->idioma ["descripcionTitulo"] = "Ingrese Descripción";
 
+$this->idioma ["tiempo_ejecucion"] = "Tiempo de Ejecución en Días: ";
+$this->idioma ["tiempo_ejecucionTitulo"] = "Ingrese tiempo de  Ejecución en días";
+
 $this->idioma ["cantidad"] = "Cantidad: ";
 $this->idioma ["cantidadTitulo"] = "Ingrese Cantidad";
 
 $this->idioma ["unidad"] = "Unidad de Medida: ";
 $this->idioma ["unidadTitulo"] = "Ingrese Unidad de Medida";
 
-$this->idioma ["valor"] = "Valor del Elemento: ";
+$this->idioma ["valor"] = "Valor Unitario <br> del Elemento<br> ó Servicio: ";
 $this->idioma ["valorTitulo"] = "Ingrese Valor del Elemento";
 
-$this->idioma ["valor"] = "Valor del Elemento: ";
-$this->idioma ["valorTitulo"] = "Ingrese Valor del Elemento";
 
 $this->idioma ["iva"] = "IVA : ";
 $this->idioma ["ivaTitulo"] = "Seleccione IVA";
@@ -360,9 +369,14 @@ $this->idioma ["botonElemento"] = "Cargar Elementos";
 $this->idioma ["botonRegresar"] = "<< Regresar";
 
 // ________________________________________________
-$this->idioma ["botonAceptar"] = "Guardar";
+$this->idioma ["botonGuardarItems"] = "Guardar";
 $this->idioma ["botonCancelar"] = "Cancelar";
 
 $this->idioma ["division1Titulo"] = "Seleccione Fecha Disponibilidad Presupuestal";
 
+$this->idioma ["nombre"] = "Nombre : ";
+$this->idioma ["nombreTitulo"] = "Ingrese Nombre ELemento o Servicio";
+
+$this->idioma ["tiempo_ejecucion"] = "Tiempo de Ejecución en Días: ";
+$this->idioma ["tiempo_ejecucionTitulo"] = "Ingrese tiempo de  Ejecución en días";
 ?>

@@ -72,13 +72,56 @@ class TextArea extends HtmlBase {
 		}
 		$this->mi_cuadro .= "</textarea>\n";
 		
-		if (isset ( $this->atributos [self::TEXTOENRIQUECIDO] ) && $this->atributos [self::TEXTOENRIQUECIDO]) {
+/*		if (isset ( $this->atributos [self::TEXTOENRIQUECIDO] ) && $this->atributos [self::TEXTOENRIQUECIDO]) {
 			$this->mi_cuadro .= "<script type=\"text/javascript\">\n";
 			$this->mi_cuadro .= "mis_botones='" . $datosConfiguracion ["host"] . $datosConfiguracion ["site"] . $datosConfiguracion ["grafico"] . "/textarea/';\n";
 			$this->mi_cuadro .= "archivo_css='" . $datosConfiguracion ["host"] . $datosConfiguracion ["site"] . $datosConfiguracion ["estilo"] . "/basico/estilo.php';\n";
 			$this->mi_cuadro .= "editor_html('" . $this->atributos [self::ID] . "', 'bold italic underline | left center right | number bullet | wikilink');";
 			$this->mi_cuadro .= "\n</script>";
-		}
+		}*/
+
+		if (isset ( $this->atributos [self::TEXTOENRIQUECIDO] ) && $this->atributos [self::TEXTOENRIQUECIDO]) {
+        	
+        	
+        	if (isset ( $this->atributos [self::DESHABILITADO] ) && $this->atributos [self::DESHABILITADO]) {
+        		$this->mi_cuadro .= '<script src="plugin/tinymce/tinymce.min.js"></script>
+  										<script>tinymce.init({ 		mode : "textareas",
+    																editor_deselector : "NOTanEditor",
+        															height : "280",
+        															
+        															setup: function(ed) {
+																        if ($(\'#\'+ed.id).prop(\'readonly\')) {
+																            ed.settings.readonly = true;
+																        }
+        																ed.on("change", function(e){
+        																	$(\'#\'+ed.id).html(tinymce.activeEditor.getContent());
+																        });
+																        ed.on("keyup", function(){
+        																	$(\'#\'+ed.id).html(tinymce.activeEditor.getContent());
+																        });
+																    }
+        				
+        													});</script>';
+        	}else{
+        		$this->mi_cuadro .= '<script src="plugin/tinymce/tinymce.min.js"></script>
+  										<script>tinymce.init({ 		mode : "textareas",
+    																editor_deselector : "NOTanEditor",
+        															height : "280",
+        															
+        															setup : function(ed) {
+																        ed.on("change", function(e){
+        																	$(\'#\'+ed.id).html(tinymce.activeEditor.getContent());
+																        });
+																        ed.on("keyup", function(){
+        																	$(\'#\'+ed.id).html(tinymce.activeEditor.getContent());
+																        });
+																   }
+        				
+        													});</script>';
+        	}
+        	
+           
+        }
 		
 		return $this->mi_cuadro;
 	}

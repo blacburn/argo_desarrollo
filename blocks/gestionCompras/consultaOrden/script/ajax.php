@@ -1,5 +1,4 @@
-
-	<?php
+<?php
 /**
  *
  * Los datos del bloque se encuentran en el arreglo $esteBloque.
@@ -610,6 +609,9 @@ $urlDocumento = $url . $cadenadocumento;
         transitionEffect: "slideLeft",
         onStepChanging: function (event, currentIndex, newIndex) {
             $resultado = $("#consultaOrden").validationEngine("validate");
+
+
+
             if (currentIndex === 0 && ($("#<?php echo $this->campoSeguro('poliza') ?>").val()) === 'Si Aplica' && $("#ventanaA").find('section').length === 8)
             {
                 $("#ventanaA").steps("insert", 1, {
@@ -662,6 +664,8 @@ $urlDocumento = $url . $cadenadocumento;
                     content: "<p>Step Body</p>"
                 });
             }
+
+
             if ($resultado) {
                 return true;
             } else {
@@ -671,7 +675,7 @@ $urlDocumento = $url . $cadenadocumento;
             }
         },
         onFinished: function (event, currentIndex) {
-        	 var camposA = '';
+            var camposA = '';
             var camposS = '';
             var camposV = '';
 
@@ -681,9 +685,9 @@ $urlDocumento = $url . $cadenadocumento;
 
 
 
-                camposA = camposA + $('#amparo' + index).val() + ',',
-                        camposS = camposS + $('#porcentajeamparo' + index).val() + ',',
-                        camposV = camposV + $('#valoramparo' + index).val() + ',';
+                camposA = camposA + $('#amparo' + index).val() + '~',
+                        camposS = camposS + $('#porcentajeamparo' + index).val() + '~',
+                        camposV = camposV + $('#valoramparo' + index).val() + '~';
 
 
             });
@@ -706,7 +710,6 @@ $urlDocumento = $url . $cadenadocumento;
     });
 
 
-    
     var i;
     var numeracion;
 
@@ -722,7 +725,7 @@ $urlDocumento = $url . $cadenadocumento;
             $('#tab_amparos tr:last').after('<tr id="addr' + (i + 1) + '">' +
                     lista +
                     '<td>' + "<input id='porcentajeamparo" + (i + 1) + "' name='porcentajeamparo" + (i + 1) + "' type='text' placeholder='Porcentaje(%)-> 10%' maxlength='3' class='form-control   custom[number]'>" + '</td>' +
-                    '<td>' + "<input id='valoramparo" + (i + 1) + "'  name='valoramparo" + (i + 1) + "' type='text' placeholder='Vigencia'  maxlength='50' class='form-control input-md  '>" + '</td>' +
+                    '<td>' + "<input id='valoramparo" + (i + 1) + "'  name='valoramparo" + (i + 1) + "' type='text' placeholder='Descripción'  maxlength='500' class='form-control input-md   '>" + '</td>' +
                     '</tr>');
 
             var data = jQuery.parseJSON($("#amparosOculto").val());
@@ -730,7 +733,8 @@ $urlDocumento = $url . $cadenadocumento;
             if (data[0][0] != " ") {
                 $("<option value=''>Seleccione  ....</option>").appendTo("#amparo" + (i + 1));
                 $.each(data, function (indice, valor) {
-                	 var camposA = '';
+                    
+                    var camposA = '';
                                 var validacion=1;
 
                                $('#tab_amparos tr').each(function (index, element) {
@@ -760,7 +764,7 @@ $urlDocumento = $url . $cadenadocumento;
                                     
                                     $("<option value='" + data[ indice ].id + "'>" + data[ indice ].nombre + "</option>").appendTo("#amparo" + (i + 1));
                                 }
-                    
+             
 
                 });
 
@@ -848,7 +852,6 @@ $urlDocumento = $url . $cadenadocumento;
     }
 
 
-
 //----------------------------Fin Configuracion Paso a Paso--------------------------------------
 
 
@@ -918,7 +921,7 @@ $urlDocumento = $url . $cadenadocumento;
                             data[0][i] = "SIN INFORMACIÓN";
                         }
                     }
-                    var infoProveedor = '<b>TIPO PERSONA:</b> ' + data[0].tipopersona + '<br>' +
+                    var infoProveedor = '<b>TIPO PERSONA: </b> ' + data[0].tipopersona + '<br>' +
                             '<b>NOMBRE:</b> ' + data[0].nom_proveedor + '<br>' +
                             '<b>DOCUMENTO:</b> ' + data[0].num_documento + '<br>' +
                             '<b>CIUDAD DE CONTACTO:</b> ' + data[0].nombreciudad + '<br>' +
@@ -926,11 +929,11 @@ $urlDocumento = $url . $cadenadocumento;
                             '<b>CORREO:</b> ' + data[0].correo + '<br>' +
                             '<b>SITIO WEB:</b> ' + data[0].web + '<br>' +
                             '<b>ASESOR:</b> ' + data[0].nom_asesor + '<br>' +
-                            '<b>TELEFONO ASESOR:</b> ' + data[0].tel_asesor + '<br>' +
+                            '<b>TELÉFONO ASESOR:</b> ' + data[0].tel_asesor + '<br>' +
                             '<b>DESCRIPCIÓN:</b> ' + data[0].descripcion + '<br>' +
                             '<b>PUNTAJE DE EVALUACIÓN:</b> ' + data[0].puntaje_evaluacion + '<br>' +
                             '<b>TIPO CUENTA BANCARIA:</b> ' + data[0].tipo_cuenta_bancaria + '<br>' +
-                            '<b>NUMERO CUENTA :</b> ' + data[0].num_cuenta_bancaria + '<br>' +
+                            '<b>NÚMERO CUENTA:</b> ' + data[0].num_cuenta_bancaria + '<br>' +
                             '<b>ENTIDAD BANCARIA:</b> ' + data[0].nombrebanco;
 
                     infoProveedor = String(infoProveedor);
@@ -983,7 +986,7 @@ $urlDocumento = $url . $cadenadocumento;
                             '<b>REPRESENTANTE SUPLENTE:</b> ' + data[0].inforepresentantesuplente + '<br>' +
                             '<b>PUNTAJE DE EVALUACIÓN:</b> ' + data[0].puntaje_evaluacion + '<br>' +
                             '<b>TIPO CUENTA BANCARIA:</b> ' + data[0].tipo_cuenta_bancaria + '<br>' +
-                            '<b>NUMERO CUENTA :</b> ' + data[0].num_cuenta_bancaria + '<br>' +
+                            '<b>NÚMERO CUENTA:</b> ' + data[0].num_cuenta_bancaria + '<br>' +
                             '<b>ENTIDAD BANCARIA:</b> ' + data[0].nombrebanco;
 
                     var infoProveedor = infoProveedor.replace("null", "SIN INFORMACIÓN");
@@ -2502,16 +2505,16 @@ $urlDocumento = $url . $cadenadocumento;
                             + "Documento: " + data[1] + " <br><br>"
                             + "Tipo Persona: " + data[0] + " <br><br>"
                             + "Ciudad de Contacto: " + data[2] + " <br><br>"
-                            + "Direccion: " + data[3] + " <br><br>"
+                            + "Dirección: " + data[3] + " <br><br>"
                             + "Correo: " + data[4] + " <br><br>"
                             + "Sitio WEB: " + data[5] + " <br><br>"
                             + "Estado: " + data[8] + " <br><br>"
                             + "Tipo Cuenta: " + data[9] + " <br><br>"
-                            + "Numero de Cuenta: " + data[10] + " <br><br>"
+                            + "Número de Cuenta: " + data[10] + " <br><br>"
                             + "Entidad Bancaria: " + data[11] + " <br><br>"
                             + "Fecha Registro: " + data[12] + " <br><br>"
-                            + "Punatje: " + data[6] + " <br><br>";
-                    $("#ventanaEmergenteContratista").dialog('option', 'title', 'Unico Contratista');
+                            + "Puntaje: " + data[6] + " <br><br>";
+                    $("#ventanaEmergenteContratista").dialog('option', 'title', 'Único Contratista');
                     $("#ventanaEmergenteContratista").dialog("open");
 
 
@@ -2541,12 +2544,12 @@ $urlDocumento = $url . $cadenadocumento;
                             + "Documento: " + data[0][1] + " <br><br>"
                             + "Tipo Sociedad: " + data[0][0] + " <br><br>"
                             + "Ciudad de Contacto: " + data[0][2] + " <br><br>"
-                            + "Direccion: " + data[0][3] + " <br><br>"
+                            + "Dirección: " + data[0][3] + " <br><br>"
                             + "Correo: " + data[0][4] + " <br><br>"
                             + "Sitio WEB: " + data[0][5] + " <br><br>"
                             + "Estado: " + data[0][8] + " <br><br>"
                             + "Tipo Cuenta: " + data[0][9] + " <br><br>"
-                            + "Numero de Cuenta: " + data[0][10] + " <br><br>"
+                            + "Número de Cuenta: " + data[0][10] + " <br><br>"
                             + "Entidad Bancaria: " + data[0][11] + " <br><br>"
                             + "Fecha Registro: " + data[0][12] + " <br><br>"
                             + "Puntaje: " + data[0][6] + " <br><br>"

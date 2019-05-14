@@ -1,9 +1,48 @@
 window.onload = detectarCarga;
 
 function detectarCarga() {
-    $('#marcoDatos').show('slow');
+    if(!$("#suscritoMod").val()){
+		$('#marcoDatos').show('slow');
+	}
 }
 
+
+if($("#suscritoMod").val()){
+
+			swal({
+			    title: 'Importante <br>MODIFICACIÓN CONTRATO SUSCRITO',
+			    type: 'info',
+			    html:
+		                        'Para el evento de realizar una modificación sobre un contrato SUSCRITO,'
+		                        +' es requerido que relacione una justificación.',
+			    input: 'textarea',
+			    showCancelButton: false,
+			    confirmButtonText: 'Enviar',
+			    showLoaderOnConfirm: true,
+			    focusConfirm: false,
+			    allowOutsideClick: false,
+			    preConfirm: function (justi) {
+			        return new Promise(function (resolve, reject) {
+			            setTimeout(function () {
+			                if (justi === '' || justi.length < 20) {
+			                    reject('Error en el registro de Información. Mínimo 20 caracteres')
+			                    $('#marcoDatos').fadeOut(300);
+			                } else {
+			                    resolve()
+			                    $('#marcoDatos').fadeIn(300);
+			                    $("#<?php echo $this->campoSeguro('justificacion_hidden') ?>").val(justi);
+			                    var site = "<?php echo $this->miConfigurador->getVariableConfiguracion("site") ?>";
+			                    var host = "<?php echo $this->miConfigurador->getVariableConfiguracion("host") ?>";
+			                    var fileRemove = "/blocks/gestionCompras/consultaOrden/css/estiloBloqueAlert.css";
+			                    var cssFile = host + site + fileRemove;
+			                    $('link[rel=stylesheet][href~="'+cssFile+'"]').remove();
+			                }
+			            }, 2000)
+			        })
+			    },
+			});
+
+}
 
 <?php ?>
 
@@ -137,6 +176,9 @@ $("#<?php echo $this->campoSeguro('clase_contratista') ?>").select2();
 
 $('#<?php echo $this->campoSeguro('unidad_ejecucion') ?>').width(200);
 $("#<?php echo $this->campoSeguro('unidad_ejecucion') ?>").select2();
+
+ $('#<?php echo $this->campoSeguro('unidad')?>').width(240);
+ $("#<?php echo $this->campoSeguro('unidad')?>").select2();
 
 $('#<?php echo $this->campoSeguro('dependencia_supervisor') ?>').width(250);
 $("#<?php echo $this->campoSeguro('dependencia_supervisor') ?>").select2(); 
@@ -864,12 +906,3 @@ break;
 }
 
 });  
-
-
-
-
-
-
-
-
-

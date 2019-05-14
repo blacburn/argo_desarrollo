@@ -128,7 +128,6 @@ onSelect: function(dateText, inst) {
 var lockDate = new Date($('#<?php echo $this->campoSeguro('fecha_inicio') ?>').datepicker('getDate'));
 $('input#<?php echo $this->campoSeguro('fecha_final') ?>').datepicker('option', 'minDate', lockDate);
 $('input#<?php echo $this->campoSeguro('fecha_aprobacion') ?>').datepicker('option', 'minDate', lockDate);
-$('input#<?php echo $this->campoSeguro('fecha_expedicion') ?>').datepicker('option', 'minDate', lockDate);
 },
 });
 
@@ -328,3 +327,9 @@ $("#<?php echo $this->campoSeguro('tipo_amparo_registro')?>").change(function() 
 		}
 		
  });
+
+$("#<?php echo $this->campoSeguro('vigencia_por_contrato') ?>").width(150);
+$("#<?php echo $this->campoSeguro('vigencia_por_contrato') ?>").select2();
+
+$("#<?php echo $this->campoSeguro('consecutivo_por_contrato') ?>").width(150);
+$("#<?php echo $this->campoSeguro('consecutivo_por_contrato') ?>").select2();

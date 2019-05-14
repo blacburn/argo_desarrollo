@@ -16,6 +16,8 @@ $estilo[$indice++] = "bootstrap-theme.min.css";
 $estilo[$indice++] = "bootstrap.css";
 $estilo[$indice++] = "bootstrap.min.css";
 
+$estilo[$indice++]="sweetalert2.min.css";
+
 $estilo[$indice++] = "estiloBloque.css";
 
 

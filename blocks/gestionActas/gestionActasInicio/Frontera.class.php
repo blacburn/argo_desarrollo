@@ -73,6 +73,13 @@ class Frontera {
                 case "modactainicio" :
                     include_once ($this->ruta . "/formulario/modificarActa.php");
                    break;
+
+                case "actainicioNov" :
+                    include_once ($this->ruta . "/formulario/registroActaNov.php");
+                   break;
+                case "modactainicioNov" :
+                    include_once ($this->ruta . "/formulario/modificarActaNov.php");
+                   break;   
                
                case "consultar" :
                     include_once ($this->ruta . "/formulario/consulta.php");

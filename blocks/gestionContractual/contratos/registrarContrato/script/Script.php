@@ -14,6 +14,8 @@ $funcion [$indice ++] = "jquery.steps.min.js";
 $funcion [$indice ++] = "tablaParticipantes.js";
 $funcion [$indice ++] = "modal.js";
 
+$funcion [$indice++]  = "sweetalert2.min.js";
+
 
 $rutaBloque = $this->miConfigurador->getVariableConfiguracion ( "host" );
 $rutaBloque .= $this->miConfigurador->getVariableConfiguracion ( "site" );

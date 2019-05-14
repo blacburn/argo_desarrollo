@@ -29,6 +29,8 @@ class RegistradorContrato {
 
     function procesarFormulario() {
 
+        $conexionFrame = "estructura";
+        $frameRecursoDB = $this->miConfigurador->fabricaConexiones->getRecursoDB($conexionFrame);
         $conexion = "contractual";
         $esteRecursoDB = $this->miConfigurador->fabricaConexiones->getRecursoDB($conexion);
         $conexionAgora = "agora";
@@ -57,7 +59,7 @@ class RegistradorContrato {
             $tasa_cambio = "null";
         }
 	//Validacion para verificar si contratista posee contratos activos
-        if($_REQUEST ['unidad_ejecutora_hidden']==1 && $_REQUEST ['tipo_contrato']==6){
+       /* if($_REQUEST ['unidad_ejecutora_hidden']==1 && $_REQUEST ['tipo_contrato']==6){
         if(isset($_REQUEST ['id_proveedor'])){
              $sqlFechaFinContratista = $this->miSql->getCadenaSql('obtenerFechaTerminoContratista', $_REQUEST['id_proveedor']);
              $infoFechaTerminoContratista = $esteRecursoDB->ejecutarAcceso($sqlFechaFinContratista, "busqueda");
@@ -72,7 +74,7 @@ class RegistradorContrato {
            redireccion::redireccionar("ErrorRegistroContratoExiste", $datos);
             exit;
         }
-        }
+        }*/
         //validacion campos (observaciones, condiciones y especificaciones tecnicas)
         if (isset($_REQUEST ['especificaciones_tecnicas']) && $_REQUEST ['especificaciones_tecnicas'] != "") {
             $_REQUEST ['especificaciones_tecnicas'] = $_REQUEST ['especificaciones_tecnicas'];
@@ -112,13 +114,15 @@ class RegistradorContrato {
         } else {
             $_REQUEST ['clase_contratista'] = 33;
         }
+        
+
         //Validar Tipo de supervisor para determinar registro
 
-        if ($_REQUEST['tipo_supervisor'] == 1) {
-            $supervisor = $_REQUEST['nombre_supervisor'];
-        } else {
-            $supervisor = $_REQUEST['nombre_supervisor_interventor'];
-        }
+//        if ($_REQUEST['tipo_supervisor'] == 1) {
+         $supervisor = $_REQUEST['nombre_supervisor'];
+//        } else {
+//            $supervisor = $_REQUEST['nombre_supervisor_interventor'];
+//        }
 
         $infoSupervisor = explode("-", $supervisor);
         //Validar Existencia Supervisor 
@@ -157,8 +161,10 @@ class RegistradorContrato {
         }
 
 
+        $infoSupervisor[0] = $_REQUEST ['id_supervisor_hidden'];
 
-//Registro Ejecucion del contrato
+
+        //Registro Ejecucion del contrato
         if (isset($_REQUEST['sede_ejecucion'])) {
             $_REQUEST['sede_ejecucion'] = $_REQUEST['sede_ejecucion'];
         } else {
@@ -358,9 +364,9 @@ class RegistradorContrato {
             }
             
              
-            $arrayAmparos = explode(",", $_REQUEST['tablAmparos_hidden']);
-            $arraySuficiencia = explode(",", $_REQUEST['tablaSuficiencia_hidden']);
-            $arrayVigencia = explode(",", $_REQUEST['tablaVigencia_hidden']);
+            $arrayAmparos = explode("~", $_REQUEST['tablAmparos_hidden']);
+            $arraySuficiencia = explode("~", $_REQUEST['tablaSuficiencia_hidden']);
+            $arrayVigencia = explode("~", $_REQUEST['tablaVigencia_hidden']);
            
             
             $count = 0;
@@ -396,9 +402,99 @@ class RegistradorContrato {
         
         if ($trans_Registro_contrato != false) {
 
+
+                if (!empty($_SERVER['HTTP_CLIENT_IP'])){
+                    $ip = $_SERVER['HTTP_CLIENT_IP'];
+                }elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])){
+                    $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+                }else{
+                    $ip = $_SERVER['REMOTE_ADDR'];
+                }
+                $c = 0;
+                while ($c < count($SQLs)){
+                    $SQLsDec[$c] = $this->miConfigurador->fabricaConexiones->crypto->codificar($SQLs[$c]['sql']);
+                    $c++;
+                }
+
+
+                $query = json_encode($SQLsDec);
+
+
+                $cadenaSQL = $this->miSql->getCadenaSql("tipo_contrato_find", $_REQUEST ['tipo_contrato']);
+                $resultadoTipo = $esteRecursoDB->ejecutarAcceso($cadenaSQL, 'busqueda');
+
+                $contratoIden= array(
+                    0 => $datos['numero_contrato'],
+                    1 => $datos['vigencia']
+                );
+
+                $cadenaSQL = $this->miSql->getCadenaSql("consultarEstadoContrato", $contratoIden);
+                $resultadoEst = $esteRecursoDB->ejecutarAcceso($cadenaSQL, 'busqueda');
+                
+                $datosLog = array (
+                        'tipo_log' => 'REGISTRO',
+                        'tipo_contrato' => mb_strtoupper($resultadoTipo[0]['tipo_contrato'],'utf-8'),
+                        'estado_contrato' => mb_strtoupper($resultadoEst[0]['nombre_estado'],'utf-8'),
+                        'consecutivo_contrato' => $datos['numero_contrato'],
+                        'vigencia' => $datos['vigencia'],
+                        'query' => $query,
+                        'host' => $ip,
+                        'fecha_log' => date("Y-m-d H:i:s"),
+                        'usuario' => $_REQUEST['usuario']
+                );
+
+                $cadenaSQL = $this->miSql->getCadenaSql("insertarLogContratoSuccess", $datosLog);
+                $resultadoLog = $frameRecursoDB->ejecutarAcceso($cadenaSQL, 'busqueda');
+
             redireccion::redireccionar("Inserto", $datos);
             exit;
         } else {
+
+                if (!empty($_SERVER['HTTP_CLIENT_IP'])){
+                    $ip = $_SERVER['HTTP_CLIENT_IP'];
+                }elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])){
+                    $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+                }else{
+                    $ip = $_SERVER['REMOTE_ADDR'];
+                }
+                $c = 0;
+                while ($c < count($SQLs)){
+                    $SQLsDec[$c] = $this->miConfigurador->fabricaConexiones->crypto->codificar($SQLs[$c]['sql']);
+                    $c++;
+                }
+
+
+                $query = json_encode($SQLsDec);
+                $error = json_encode(error_get_last());
+
+                $cadenaSQL = $this->miSql->getCadenaSql("tipo_contrato_find", $_REQUEST ['tipo_contrato']);
+                $resultadoTipo = $esteRecursoDB->ejecutarAcceso($cadenaSQL, 'busqueda');
+
+                $contratoIden= array(
+                    0 => $datos['numero_contrato'],
+                    1 => $datos['vigencia']
+                );
+
+                $cadenaSQL = $this->miSql->getCadenaSql("consultarEstadoContrato", $contratoIden);
+                $resultadoEst = $esteRecursoDB->ejecutarAcceso($cadenaSQL, 'busqueda');
+
+                $datosLog = array (
+                        'tipo_log' => 'REGISTRO',
+                        'tipo_contrato' => mb_strtoupper($resultadoTipo[0]['tipo_contrato'],'utf-8'),
+                        'estado_contrato' => mb_strtoupper($resultadoEst[0]['nombre_estado'],'utf-8'),
+                        'consecutivo_contrato' => $datos['numero_contrato'],
+                        'vigencia' => $datos['vigencia'],
+                        'query' => $query,
+                        'error' => $error,
+                        'host' => $ip,
+                        'fecha_log' => date("Y-m-d H:i:s"),
+                        'usuario' => $_REQUEST['usuario']
+                );
+
+                $cadenaSQL = $this->miSql->getCadenaSql("insertarLogContratoError", $datosLog);
+                $resultadoLog = $frameRecursoDB->ejecutarAcceso($cadenaSQL, 'busqueda');
+                $caso = "RC-" . date("Y") . "-" . $resultadoLog[0][0];
+                $datos['caso'] = $caso;
 
             redireccion::redireccionar("ErrorRegistro", $datos);
             exit;

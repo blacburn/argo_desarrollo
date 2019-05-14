@@ -72,6 +72,11 @@ $this->idioma ["numero_minimos"] = "Numero de SMLV:";
 $this->idioma ["numero_minimosTitulo"] = "Ingrese el numero de minimos legales vigentes.";
 
 
+$this->idioma ["vigencia_por_contrato"] = "Vigencia : ";
+$this->idioma ["vigencia_por_contratoTitulo"] = "Seleccione Vigencia";
+
+$this->idioma ["consecutivo_por_contrato"] = "Consecutivo Contrato : ";
+$this->idioma ["consecutivo_por_contratoTitulo"] = "Seleccione Consecutivo Contrato";
 
 
 

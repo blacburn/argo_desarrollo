@@ -26,7 +26,7 @@ class registrarForm {
 
     function miForm() {
 
-        // var_dump ( $_REQUEST );
+   
         // exit ();
         // Rescatar los datos de este bloque
         $esteBloque = $this->miConfigurador->getVariableConfiguracion("esteBloque");
@@ -57,20 +57,34 @@ class registrarForm {
         $esteRecursoDB = $this->miConfigurador->fabricaConexiones->getRecursoDB($conexion);
         $conexionAgora = "agora";
         $esteRecursoDBAgora = $this->miConfigurador->fabricaConexiones->getRecursoDB($conexionAgora);
+        $conexionSICA = "sicapital";
+        $DBSICA = $this->miConfigurador->fabricaConexiones->getRecursoDB($conexionSICA);
+        
+        $conexion = "agora";
+        $esteRecursoAgora = $this->miConfigurador->fabricaConexiones->getRecursoDB($conexion);
 
-        $datos = array(
+        $datosElemento = array(
             $_REQUEST['numerocontrato'],
-            $_REQUEST['vigencia']
+            $_REQUEST['vigencia'],
+            'ELEMENTO'
         );
 
 
-        $cadenaSql = $this->miSql->getCadenaSql('consultarElementosOrden', $datos);
+
+        
+        $cadenaSql = $this->miSql->getCadenaSql('consultarElementosServiciosOrden', $datosElemento);
+       
         $ElementosOrden = $esteRecursoDB->ejecutarAcceso($cadenaSql, "busqueda");
+        
+         $datosServicio = array(
+            $_REQUEST['numerocontrato'],
+            $_REQUEST['vigencia'],
+            'SERVICIO'
+        );
+        
+        $cadenaSql = $this->miSql->getCadenaSql('consultarElementosServiciosOrden', $datosServicio);
+        $ServiciosOrden = $esteRecursoDB->ejecutarAcceso($cadenaSql, "busqueda");
 
-
-
-        $cadenaSqlServicios = $this->miSql->getCadenaSql('consultarServiciosOrden', $datos);
-        $ServiciosOrden = $esteRecursoDB->ejecutarAcceso($cadenaSqlServicios, "busqueda");
 
 
 
@@ -99,23 +113,19 @@ class registrarForm {
         $directorio .= $this->miConfigurador->getVariableConfiguracion("site") . "/index.php?";
         $directorio .= $this->miConfigurador->getVariableConfiguracion("enlace");
 
-       
+      
         $_REQUEST['arreglo'] = preg_replace('!s:(\d+):"(.*?)";!e', "'s:'.strlen('$2').':\"$2\";'", $_REQUEST['arreglo']);
+  
         $arreglo = unserialize($_REQUEST ['arreglo']);
-        foreach ($arreglo as $clave => $valor) {
-            $clave = str_replace("\\", "", $clave);
-            $arreglo[$clave] = $clave;
-            $arreglo[$clave] = $valor;
-        }
-        $variable = "pagina=" . $miPaginaActual;
-        $variable .= "&opcion=ConsultarContratos";
-        $variable .= "&id_contrato=" . $arreglo ['numero_contrato'] . "-(" . $arreglo ['vigencia'] . ")";
-        $variable .= "&clase_contrato=" . $arreglo ['clase_contrato'];
+
+         $variable = "pagina=" . $miPaginaActual;
+        $variable .= "&opcion=ConsultarOrden";
+        $variable .= "&id_contrato=" . $arreglo ['numero\_contrato'] . "-(" . $arreglo ['vigencia'] . ")";
+        $variable .= "&clase_contrato=" . $arreglo ['clase\_contrato'];
         $variable .= "&id_contratista=" . $arreglo ['nit'];
-        $variable .= "&fecha_inicio_sub=" . $arreglo ['fecha_inicial'];
-        $variable .= "&fecha_final_sub=" . $arreglo ['fecha_final'];
+        $variable .= "&fecha_inicio_consulta=" . $arreglo ['fecha\_inicial'];
+        $variable .= "&fecha_final_consulta=" . $arreglo ['fecha\_final'];
         $variable .= "&usuario=" . $_REQUEST ['usuario'];
-        $variable .= "&arreglo=";
         $variable = $this->miConfigurador->fabricaConexiones->crypto->codificar_url($variable, $directorio);
 
         // ---------------- CONTROL: Cuadro de Texto --------------------------------------------------------
@@ -150,16 +160,17 @@ class registrarForm {
 
             echo "<thead>
                              <tr>
-                                <th>Nivel<br>Inventarios</th>
-                    		<th>Tipo de Bien</th>            
-            			<th>Descripción</th>
-                                <th>Cantidad</th>
-                                 <th>Valor($)</th>
-                                <th>Iva Aplicado</th>
-                                <th>Dependencia</th>
-                                <th>Funcionario</th>
-			        <th>Modificar</th>
-                                <th>Eliminar</th>
+                                <th width='1%'><center>Numeración</center></th>
+                                <th width='15%'><center>Nombre</center></th>
+                    		<th width='15%'><center>Descripcion</center></th>            
+            			<th width='7%'><center>Unidad</center></th>
+                                <th width='2%'><center>Cantidad</center></th>
+                                <th width='7%'><center>Valor($)</center></th>
+                                <th width='7%'><center>Iva Aplicado</center></th>
+                                <th width='19%'><center>Dependencia</center></th>
+                                <th width='19%'><center>Funcionario</center></th>
+			        <th width='4%'><center>Modificar</center></th>
+                                <th width='4%'><center>Eliminar</center></th>
                              </tr>
                              </thead>
                                 <tbody>";
@@ -167,37 +178,48 @@ class registrarForm {
             for ($i = 0; $i < count($ElementosOrden); $i ++) {
 
 
+               
+
 
 
                 $variable = "pagina=" . $miPaginaActual; // pendiente la pagina para modificar parametro
                 $variable .= "&opcion=modificarElementos";
-                $variable .= "&id_elemento_acta=" . $ElementosOrden [$i] ['id_elemento_ac'];
+                $variable .= "&id_elemento_acta=" . $ElementosOrden [$i] ['id'];
                 $variable .= "&arreglo=" . $_REQUEST ['arreglo'];
                 $variable .= "&vigencia=" . $_REQUEST['vigencia'];
                 $variable .= "&numerocontrato=" . $_REQUEST['numerocontrato'];
+//                $variable .= "&id_contratista=" . $_REQUEST['id_contratista'];
                 $variable .= "&usuario=" . $_REQUEST['usuario'];
                 $variable .= "&mensaje_titulo=" . $_REQUEST ['mensaje_titulo'];
                 $variable = $this->miConfigurador->fabricaConexiones->crypto->codificar_url($variable, $directorio);
 
                 $variable1 = "pagina=" . $miPaginaActual; // pendiente la pagina para modificar parametro
                 $variable1 .= "&opcion=eliminarElementos";
-                $variable1 .= "&id_elemento_acta=" . $ElementosOrden [$i] ['id_elemento_ac'];
+                $variable1 .= "&id_elemento_acta=" . $ElementosOrden [$i] ['id'];
                 $variable1 .= "&arreglo=" . $_REQUEST ['arreglo'];
                 $variable1 .= "&vigencia=" . $_REQUEST['vigencia'];
                 $variable1 .= "&numerocontrato=" . $_REQUEST['numerocontrato'];
+//                $variable1 .= "&id_contratista=" . $_REQUEST['id_contratista'];
                 $variable1 .= "&usuario=" . $_REQUEST['usuario'];
                 $variable1 .= "&mensaje_titulo=" . $_REQUEST ['mensaje_titulo'];
                 $variable1 = $this->miConfigurador->fabricaConexiones->crypto->codificar_url($variable1, $directorio);
-
+                $contador=$i+1;
+                $cadenaSql = $this->miSql->getCadenaSql('buscar_funcionario', $ElementosOrden [$i] ['funcionario']);
+                $resultadoFuncionario = $DBSICA->ejecutarAcceso($cadenaSql, "busqueda");
+                
+                $atributos ['cadena_sql'] = $cadenaSql = $this->miSql->getCadenaSql('unidadUdistrital2', $ElementosOrden [$i] ['unidad']);
+                $matrizItemsUnidad = $esteRecursoAgora->ejecutarAcceso($cadenaSql, "busqueda");
+                
                 $mostrarHtml = "<tr>
-                    <td><center>" . $ElementosOrden [$i] ['nivel_nombre'] . "</center></td>
-                    <td><center>" . $ElementosOrden [$i] ['nombre_tipo'] . "</center></td>		
-                    <td><center>" . $ElementosOrden [$i] ['descripcion'] . "</center></td>
+                    <td><center>" . $contador . "</center></td>
+                    <td><center>" . $ElementosOrden [$i] ['nombre'] . "</center></td>
+                    <td><center>" . $ElementosOrden [$i] ['descripcion'] . "</center></td>		
+                    <td><center>" . $matrizItemsUnidad[0][0] . " - " . $matrizItemsUnidad[0][1] . "</center></td>
                     <td><center>" . $ElementosOrden [$i] ['cantidad'] . "</center></td>
                     <td><center>" . $ElementosOrden [$i] ['valor'] . "</center></td>
                     <td><center>" . $ElementosOrden [$i] ['nombre_iva'] . "</center></td>
-                    <td><center>" . $ElementosOrden [$i] ['ESF_DEP_ENCARGADA'] . "</center></td>
-                    <td><center>" . $ElementosOrden [$i] ['funcionario'] . "</center></td>
+                    <td><center>" . $ElementosOrden [$i] ['nombre_dependencia'] . "</center></td>
+                    <td><center>" . $resultadoFuncionario[0][1] . "</center></td>
                     <td><center>
                     	<a href='" . $variable . "'>
                             <img src='" . $rutaBloque . "/css/images/edit.png' width='15px'>
@@ -245,45 +267,65 @@ class registrarForm {
             echo "<table id='tablaServicios'>";
 
             echo "<thead>
-                             <tr>
-                                <th>Numeracion</th>
-                    		<th>Servicio</th>
-                                <th>Nombre del Servicio (Resumen)</th>
-                                <th>Descripcion del Servicio</th>
-                                <th>Fecha de Registro</th>
-                                <th>Modificar</th>
-                                <th>Eliminar</th>
+                              <tr>
+                                <th><center>Numeración</center></th>
+                                <th><center>Nombre</center></th>
+                    		<th><center>Descripcion</center></th>
+                                <th><center>Tiempo Ejecución en Días</center></th>
+            			<th><center>Unidad</center></th>
+                                <th><center>Cantidad</center></th>
+                                <th><center>Valor($)</center></th>
+                                <th><center>Iva Aplicado</center></th>
+                                <th><center>Dependencia</center></th>
+                                <th><center>Funcionario</center></th>
+			        <th><center>Modificar</center></th>
+                                <th><center>Eliminar</center></th>
                              </tr>
                              </thead>
                                 <tbody>";
 
             for ($i = 0; $i < count($ServiciosOrden); $i ++) {
                 $variable = "pagina=" . $miPaginaActual; // pendiente la pagina para modificar parametro
-                $variable .= "&opcion=modificarServicios";
+                $variable .= "&opcion=modificarElementos";
                 $variable .= "&id_servicio=" . $ServiciosOrden [$i] ['id'];
                 $variable .= "&arreglo=" . $_REQUEST ['arreglo'];
                 $variable .= "&usuario=" . $_REQUEST['usuario'];
+                $variable .= "&id_elemento_acta=" . $ServiciosOrden [$i] ['id'];
                 $variable .= "&numerocontrato=" . $_REQUEST['numerocontrato'];
                 $variable .= "&vigencia=" . $_REQUEST['vigencia'];
                 $variable .= "&mensaje_titulo=" . $_REQUEST ['mensaje_titulo'];
                 $variable = $this->miConfigurador->fabricaConexiones->crypto->codificar_url($variable, $directorio);
 
                 $variable1 = "pagina=" . $miPaginaActual; // pendiente la pagina para modificar parametro
-                $variable1 .= "&opcion=eliminarServicio";
-                $variable1 .= "&id_servicio=" . $ServiciosOrden [$i] ['id'];
+                $variable1 .= "&opcion=eliminarElementos";
+                $variable1 .= "&id_elemento_acta=" . $ServiciosOrden [$i] ['id'];
                 $variable1 .= "&arreglo=" . $_REQUEST ['arreglo'];
-                $variable1 .= "&usuario=" . $_REQUEST['usuario'];
+                $variable1 .= "&vigencia=" . $_REQUEST['vigencia'];
                 $variable1 .= "&numerocontrato=" . $_REQUEST['numerocontrato'];
-                $variable1.= "&vigencia=" . $_REQUEST['vigencia'];
+//                $variable1 .= "&id_contratista=" . $_REQUEST['id_contratista'];
+                $variable1 .= "&usuario=" . $_REQUEST['usuario'];
                 $variable1 .= "&mensaje_titulo=" . $_REQUEST ['mensaje_titulo'];
                 $variable1 = $this->miConfigurador->fabricaConexiones->crypto->codificar_url($variable1, $directorio);
+                $contador2=$i+1;
+                
+                $cadenaSql = $this->miSql->getCadenaSql('buscar_funcionario', $ServiciosOrden [$i] ['funcionario']);
+                $resultadoFuncionario = $DBSICA->ejecutarAcceso($cadenaSql, "busqueda");
+                
+                $atributos ['cadena_sql'] = $cadenaSql = $this->miSql->getCadenaSql('unidadUdistrital2', $ServiciosOrden [$i] ['unidad']);
+                $matrizItemsUnidadSer= $esteRecursoAgora->ejecutarAcceso($cadenaSql, "busqueda");
 
+                         
                 $mostrarHtml = "<tr>
-                    <td><center>" . $i . "</center></td>
-                    <td><center>" . $ServiciosOrden [$i] ['codigo_ciiu'] . "</center></td>		
-                    <td><center>" . $ServiciosOrden [$i] ['nombre'] . "</center></td>		
+                   <td><center>" . $contador2 . "</center></td>
+                    <td><center>" . $ServiciosOrden [$i] ['nombre'] . "</center></td>
                     <td><center>" . $ServiciosOrden [$i] ['descripcion'] . "</center></td>
-                    <td><center>" . $ServiciosOrden [$i] ['fecha_registro'] . "</center></td>
+                    <td><center>" . $ServiciosOrden [$i] ['tiempo_ejecucion'] . "</center></td>
+                    <td><center>" . $matrizItemsUnidadSer[0][0] . " - " . $matrizItemsUnidadSer[0][1] . "</center></td>
+                    <td><center>" . $ServiciosOrden [$i] ['cantidad'] . "</center></td>
+                    <td><center>" . $ServiciosOrden [$i] ['valor'] . "</center></td>
+                    <td><center>" . $ServiciosOrden [$i] ['nombre_iva'] . "</center></td>
+                    <td><center>" . $ServiciosOrden [$i] ['nombre_dependencia'] . "</center></td>
+                    <td><center>" . $resultadoFuncionario[0][1] . "</center></td>
                                        
                     <td><center>
                     	<a href='" . $variable . "'>

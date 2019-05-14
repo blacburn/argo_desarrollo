@@ -325,7 +325,25 @@ if ($_REQUEST ['funcion'] == 'consultarInfoSociedadTemporal') {
     echo $resultado;
 }
 
+if ($_REQUEST ['funcion'] == 'consultaContratoConsecutivo') {
+    
+    
+    if($_REQUEST ['unidad']=='209'){
+        $unidad=1;
+    }
+    else{
+         $unidad=2;
+    }
 
+    $cadenaSql = $this->sql->getCadenaSql('buscar_contrato2', array('unidad' => $unidad
+        , 'identificacion' => $unidad[0]['identificacion'], 'vigencia_curso' => $_REQUEST ['vigencia']));
+
+ 
+    $resultadoItems = $esteRecursoDB->ejecutarAcceso($cadenaSql, "busqueda");
+     
+
+    echo json_encode($resultadoItems);
+}
 
 
 //------------------------obtener Numero de Ordenes a partit de la calsificacion tipo de orden -------------------------

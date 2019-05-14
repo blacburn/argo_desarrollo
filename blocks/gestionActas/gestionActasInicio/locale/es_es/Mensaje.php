@@ -4,6 +4,9 @@ $this->idioma ["noDefinido"] = "";
 
 //-------------Consulta de Contratos --------------------------------------
 
+$this->idioma ["tipo_acta_inicio"] = "Tipo de Acta de Inicio : ";
+$this->idioma ["tipo_acta_inicioTitulo"] = "Seleccione Tipo de Acta de Inicio";
+
 $this->idioma ["fecha_inicio_acta"] = "Fecha Inicial : ";
 $this->idioma ["fecha_inicio_actaTitulo"] = "Seleccione Fecha Inicial";
 
@@ -11,7 +14,11 @@ $this->idioma ["fecha_inicio_actaTitulo"] = "Seleccione Fecha Inicial";
 $this->idioma ["vigencia_por_contrato"] = "Vigencia : ";
 $this->idioma ["vigencia_por_contratoTitulo"] = "Seleccione Vigencia";
 
+$this->idioma ["vigencia_por_contrato_nov"] = "Vigencia : ";
+$this->idioma ["vigencia_por_contrato_novTitulo"] = "Seleccione Vigencia";
 
+$this->idioma ["plazo_ejecucion"] = "Plazo de Ejecución : ";
+$this->idioma ["plazo_ejecucionTitulo"] = "Informacion Plazo de Ejecución";
 
 
 
@@ -39,10 +46,10 @@ $this->idioma ["clase_contratoTitulo"] = "Seleccione Tipo de Contrato";
 $this->idioma ["contratista"] = "Contratista: ";
 $this->idioma ["contratistaTitulo"] = "Selecciones Contratistas(Identificación - Nombre)";
 
-$this->idioma ["fecha_inicio_sub"] = "Fecha Inicial:<br>Registro Contrato  ";
+$this->idioma ["fecha_inicio_sub"] = "Fecha Inicial<br>Registro Contrato:  ";
 $this->idioma ["fecha_inicio_subTitulo"] = "Seleccione Fecha Inicial";
 
-$this->idioma ["fecha_final_sub"] = "Fecha Final:<br>Registro Contrato ";
+$this->idioma ["fecha_final_sub"] = "Fecha Final<br>Registro Contrato: ";
 $this->idioma ["fecha_final_subTitulo"] = "Seleccione Fecha Final";
 
 $this->idioma ["fecha_inicio"] = "Fecha Inicial:  ";
@@ -100,9 +107,9 @@ $this->idioma ["numero_minimosTitulo"] = "Ingrese el numero de minimos legales v
 
 $this->idioma ["registrarPoliza"] = "Registrar";
 
-$this->idioma ["botonRegistrar"] = "Registrar Poliza";
 
-$this->idioma ["botonModificar"] = "Modificar Poliza";
+
+$this->idioma ["botonModificar"] = "Modificar";
 
 
 

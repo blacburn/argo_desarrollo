@@ -46,16 +46,7 @@ class loggerSql {
                 $this->cadena_sql [$indice].= ")  ";
                 $this->cadena_sql [$indice].= "VALUES  ";
                 $this->cadena_sql [$indice].= "(  ";
-                if(isset ( $parametro['id_usuario'] )){
-            		$this->cadena_sql [$indice].= "'".$parametro['id_usuario']."',  ";
-            	}else{
-                    if(isset ( $_REQUEST['usuario'] )){
-            		$this->cadena_sql [$indice].= "'".$_REQUEST['usuario']."',  ";
-                    }
-            		$this->cadena_sql [$indice].= "'',  ";
-            	}
-            	
-//                $this->cadena_sql [$indice].= "'".$parametro['id_usuario']."',  ";
+                $this->cadena_sql [$indice].= "'".$parametro['id_usuario']."',  ";
                 $this->cadena_sql [$indice].= "'".$parametro['accion']."',  ";
                 $this->cadena_sql [$indice].= "'".$parametro['id_registro']."',  ";
                 $this->cadena_sql [$indice].= "'".$parametro['tipo_registro']."',  ";

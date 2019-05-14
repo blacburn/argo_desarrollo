@@ -314,6 +314,23 @@ if ($_REQUEST ['funcion'] == 'consultarRegistroDisponibilidad') {
     $resultado = json_encode($resultadoItems);
     echo $resultado;
 }
+if ($_REQUEST ['funcion'] == 'consultaContratoConsecutivo') {
+    
+    
+    if($_REQUEST ['unidad']=='209'){
+        $unidad=1;
+    }
+    else{
+         $unidad=2;
+    }
+
+    $cadenaSql = $this->sql->getCadenaSql('buscar_contrato2', array('unidad' => $unidad
+        , 'identificacion' => $unidad[0]['identificacion'], 'vigencia_curso' => $_REQUEST ['vigencia']));
+ 
+    $resultadoItems = $esteRecursoDB->ejecutarAcceso($cadenaSql, "busqueda");
+
+    echo json_encode($resultadoItems);
+}
 if ($_REQUEST ['funcion'] == 'consultarInfoRP') {
 
     $datosRp = array(0 => explode("-", $_REQUEST['cdp'])[1], 1 => explode("-", $_REQUEST['cdp'])[2], 2 => $_REQUEST['unidad'], 3 => $_REQUEST['rp']);

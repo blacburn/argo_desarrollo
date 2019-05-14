@@ -495,7 +495,11 @@ $this->idioma ["funcionarioTitulo"] = "Funcionario a Cargo del Elemento";
 
 $this->idioma ["botonEliminar"] = "Eliminar Elemento ";
 
+$this->idioma ["nombre"] = "Nombre : ";
+$this->idioma ["nombreTitulo"] = "Ingrese Nombre ELemento o Servicio";
 
+$this->idioma ["tiempo_ejecucion"] = "Tiempo de Ejecución en Días: ";
+$this->idioma ["tiempo_ejecucionTitulo"] = "Ingrese tiempo de  Ejecución en días";
 
 //--------------------------------ELmentos COntrato---------------------------------------
 ?>

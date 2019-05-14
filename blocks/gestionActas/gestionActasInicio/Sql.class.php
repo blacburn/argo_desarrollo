@@ -32,16 +32,16 @@ class Sql extends \Sql {
         $idSesion = $this->miConfigurador->getVariableConfiguracion("id_sesion");
 
         switch ($tipo) {
-            
-            
+
+
               case "consultarLugarExpSiCapital" :
                 $cadenaSql = "  SELECT LED_LUGAR FROM SICAARKA.LUGAR_EXP_DOC  ";
                 $cadenaSql.= " WHERE LED_IDENTIFICACION=".$variable;
                 break;
-            
-            
-   
-            
+
+
+
+
             case "consultarRegistroDisponibilidad" :
                 $cadenaSql = " SELECT DISTINCT RP.NUMERO_REGISTRO VALOR, RP.NUMERO_REGISTRO  as INFORMACION ";
                 $cadenaSql.= " FROM PR.PR_REGISTRO_DISPONIBILIDAD RP, PR.PR_RUBRO RB  ";
@@ -49,7 +49,7 @@ class Sql extends \Sql {
                 $cadenaSql.=" and RP.VIGENCIA = $variable[1]  and RP.CODIGO_UNIDAD_EJECUTORA = '0$variable[2]' ";
                 $cadenaSql.=" and RP.NUMERO_DISPONIBILIDAD=  $variable[0]  ";
                 break;
-                
+
 
 
             case "ConsultarDisponibilidadesContratoRP" :
@@ -89,9 +89,41 @@ class Sql extends \Sql {
 
                 break;
 
-            case "consultarFechaFinActa2" :
-                $cadenaSql = " 	SELECT ";
-                $cadenaSql .= " CASE WHEN unidad_ejecucion=205 THEN (ai.fecha_inicio::date +CAST('\"' || (plazo_ejecucion/30) || 'months\"' AS INTERVAL) +CAST('\"' || (plazo_ejecucion%30) || 'days\"' AS INTERVAL) - CAST('\"' || 1 || 'days\"' AS INTERVAL)) ::date  ";
+
+            case "consultarFechaFinActa2Nov" :
+                $cadenaSql = "  SELECT ";
+                $cadenaSql .= " CASE WHEN unidad_ejecucion=205  ";
+                $cadenaSql .= "      THEN CASE  WHEN extract (day from date_trunc('month', (ai.fecha_inicio::date + CAST('\"' || (plazo_ejecucion/30) || 'months\"' AS INTERVAL)) ::timestamp  ) + INTERVAL '1 MONTH - 1 DAY') = 31  ";
+                $cadenaSql .= "                 THEN CASE WHEN  (extract(day from (ai.fecha_inicio::date +CAST('\"' || (plazo_ejecucion/30) || 'months\"' AS INTERVAL)))  + (plazo_ejecucion%30) ) >30  ";
+                $cadenaSql .= "                           THEN  (ai.fecha_inicio::date +CAST('\"' || (plazo_ejecucion/30) || 'months\"' AS INTERVAL) +CAST('\"' || (plazo_ejecucion%30) || 'days\"' AS INTERVAL) ) ::date  ";
+                $cadenaSql .= "                           WHEN (extract(day from (ai.fecha_inicio::date +CAST('\"' || (plazo_ejecucion/30) || 'months\"' AS INTERVAL)))  + (plazo_ejecucion%30) ) <= 30  ";
+                $cadenaSql .= "                           THEN  (ai.fecha_inicio::date +CAST('\"' || (plazo_ejecucion/30) || 'months\"' AS INTERVAL) +CAST('\"' || (plazo_ejecucion%30) || 'days\"' AS INTERVAL) - CAST('\"' || 1 || 'days\"' AS INTERVAL)) ::date  ";
+                $cadenaSql .= "                      END  ";
+                $cadenaSql .= "                 WHEN extract (day from date_trunc('month', (ai.fecha_inicio::date + CAST('\"' || (plazo_ejecucion/30) || 'months\"' AS INTERVAL)) ::timestamp  ) + INTERVAL '1 MONTH - 1 DAY') < 31  ";
+                $cadenaSql .= "                 THEN  (ai.fecha_inicio::date +CAST('\"' || (plazo_ejecucion/30) || 'months\"' AS INTERVAL) +CAST('\"' || (plazo_ejecucion%30) || 'days\"' AS INTERVAL)  +CAST('\"' || (extract (day from date_trunc('month', (ai.fecha_inicio::date + CAST('\"' || (plazo_ejecucion/30) || 'months\"' AS INTERVAL)) ::timestamp  ) + INTERVAL '1 MONTH - 1 DAY') - extract (day from date_trunc('month', (ai.fecha_inicio::date + CAST('\"' || (plazo_ejecucion/30) || 'months\"' AS INTERVAL)) ::timestamp  ) + INTERVAL '1 MONTH - 1 DAY')) || 'days\"' AS INTERVAL) - CAST('\"' || 1 || 'days\"' AS INTERVAL)) ::date  ";
+                $cadenaSql .= "           END  ";                      
+                $cadenaSql .= " WHEN unidad_ejecucion=206 THEN  (ai.fecha_inicio::date +CAST('\"' || (plazo_ejecucion) || 'months\"' AS INTERVAL) - CAST('\"' || 1 || 'days\"' AS INTERVAL)) ::date  ";
+                $cadenaSql .= " WHEN unidad_ejecucion=207 THEN (ai.fecha_inicio::date +CAST('\"' || (plazo_ejecucion) || 'years\"' AS INTERVAL) - CAST('\"' || 1 || 'days\"' AS INTERVAL)) ::date  ";
+                $cadenaSql .= " END as fecha_final_contrato  ";
+                //$cadenaSql .= " FROM argo.contrato_general cg  ";
+                $cadenaSql .= " FROM argo.novedad_postcontractual ai ";
+                $cadenaSql .= " WHERE ai.id=" . $variable . ";";
+
+              break;
+
+              
+              case "consultarFechaFinActa2" :
+                $cadenaSql = "  SELECT ";
+                $cadenaSql .= " CASE WHEN unidad_ejecucion=205  ";
+                $cadenaSql .= "      THEN CASE  WHEN extract (day from date_trunc('month', (ai.fecha_inicio::date + CAST('\"' || (plazo_ejecucion/30) || 'months\"' AS INTERVAL)) ::timestamp  ) + INTERVAL '1 MONTH - 1 DAY') = 31  ";
+                $cadenaSql .= "                 THEN CASE WHEN  (extract(day from (ai.fecha_inicio::date +CAST('\"' || (plazo_ejecucion/30) || 'months\"' AS INTERVAL)))  + (plazo_ejecucion%30) ) >30  ";
+                $cadenaSql .= "                           THEN  (ai.fecha_inicio::date +CAST('\"' || (plazo_ejecucion/30) || 'months\"' AS INTERVAL) +CAST('\"' || (plazo_ejecucion%30) || 'days\"' AS INTERVAL) ) ::date  ";
+                $cadenaSql .= "                           WHEN (extract(day from (ai.fecha_inicio::date +CAST('\"' || (plazo_ejecucion/30) || 'months\"' AS INTERVAL)))  + (plazo_ejecucion%30) ) <= 30  ";
+                $cadenaSql .= "                           THEN  (ai.fecha_inicio::date +CAST('\"' || (plazo_ejecucion/30) || 'months\"' AS INTERVAL) +CAST('\"' || (plazo_ejecucion%30) || 'days\"' AS INTERVAL) - CAST('\"' || 1 || 'days\"' AS INTERVAL)) ::date  ";
+                $cadenaSql .= "                      END  ";
+                $cadenaSql .= "                 WHEN extract (day from date_trunc('month', (ai.fecha_inicio::date + CAST('\"' || (plazo_ejecucion/30) || 'months\"' AS INTERVAL)) ::timestamp  ) + INTERVAL '1 MONTH - 1 DAY') < 31  ";
+                $cadenaSql .= "                 THEN  (ai.fecha_inicio::date +CAST('\"' || (plazo_ejecucion/30) || 'months\"' AS INTERVAL) +CAST('\"' || (plazo_ejecucion%30) || 'days\"' AS INTERVAL)  +CAST('\"' || (extract (day from date_trunc('month', (ai.fecha_inicio::date + CAST('\"' || (plazo_ejecucion/30) || 'months\"' AS INTERVAL)) ::timestamp  ) + INTERVAL '1 MONTH - 1 DAY') - extract (day from date_trunc('month', (ai.fecha_inicio::date + CAST('\"' || (plazo_ejecucion/30) || 'months\"' AS INTERVAL)) ::timestamp  ) + INTERVAL '1 MONTH - 1 DAY')) || 'days\"' AS INTERVAL) - CAST('\"' || 1 || 'days\"' AS INTERVAL)) ::date  ";
+                $cadenaSql .= "           END  ";                      
                 $cadenaSql .= " WHEN unidad_ejecucion=206 THEN  (ai.fecha_inicio::date +CAST('\"' || (plazo_ejecucion) || 'months\"' AS INTERVAL) - CAST('\"' || 1 || 'days\"' AS INTERVAL)) ::date  ";
                 $cadenaSql .= " WHEN unidad_ejecucion=207 THEN (ai.fecha_inicio::date +CAST('\"' || (plazo_ejecucion) || 'years\"' AS INTERVAL) - CAST('\"' || 1 || 'days\"' AS INTERVAL)) ::date  ";
                 $cadenaSql .= " END as fecha_final_contrato  ";
@@ -99,11 +131,21 @@ class Sql extends \Sql {
                 $cadenaSql .= " JOIN argo.acta_inicio as ai ON ai.numero_contrato=cg.numero_contrato  ";
                 $cadenaSql .= " WHERE ai.id=" . $variable . ";";
 
-                break;
-
-            case "consultarFechaFinActa" :
-                $cadenaSql = " 	SELECT ";
-                $cadenaSql .= " CASE WHEN unidad_ejecucion=205 THEN (ai.fecha_inicio::date +CAST('\"' || (plazo_ejecucion/30) || 'months\"' AS INTERVAL) +CAST('\"' || (plazo_ejecucion%30) || 'days\"' AS INTERVAL) - CAST('\"' || 1 || 'days\"' AS INTERVAL)) ::date  ";
+              break;
+            
+          
+           case "consultarFechaFinActa" :
+                $cadenaSql = "  SELECT ";
+                $cadenaSql .= " CASE WHEN unidad_ejecucion=205  ";
+                $cadenaSql .= "      THEN CASE  WHEN extract (day from date_trunc('month', (ai.fecha_inicio::date + CAST('\"' || (plazo_ejecucion/30) || 'months\"' AS INTERVAL)) ::timestamp  ) + INTERVAL '1 MONTH - 1 DAY') = 31  ";
+                $cadenaSql .= "                 THEN CASE WHEN  (extract(day from (ai.fecha_inicio::date +CAST('\"' || (plazo_ejecucion/30) || 'months\"' AS INTERVAL)))  + (plazo_ejecucion%30) ) >30  ";
+                $cadenaSql .= "                           THEN  (ai.fecha_inicio::date +CAST('\"' || (plazo_ejecucion/30) || 'months\"' AS INTERVAL) +CAST('\"' || (plazo_ejecucion%30) || 'days\"' AS INTERVAL) ) ::date  ";
+                $cadenaSql .= "                           WHEN (extract(day from (ai.fecha_inicio::date +CAST('\"' || (plazo_ejecucion/30) || 'months\"' AS INTERVAL)))  + (plazo_ejecucion%30) ) <= 30  ";
+                $cadenaSql .= "                           THEN  (ai.fecha_inicio::date +CAST('\"' || (plazo_ejecucion/30) || 'months\"' AS INTERVAL) +CAST('\"' || (plazo_ejecucion%30) || 'days\"' AS INTERVAL) - CAST('\"' || 1 || 'days\"' AS INTERVAL)) ::date  ";
+                $cadenaSql .= "                      END  ";
+                $cadenaSql .= "                 WHEN extract (day from date_trunc('month', (ai.fecha_inicio::date + CAST('\"' || (plazo_ejecucion/30) || 'months\"' AS INTERVAL)) ::timestamp  ) + INTERVAL '1 MONTH - 1 DAY') < 31  ";
+                $cadenaSql .= "                 THEN  (ai.fecha_inicio::date +CAST('\"' || (plazo_ejecucion/30) || 'months\"' AS INTERVAL) +CAST('\"' || (plazo_ejecucion%30) || 'days\"' AS INTERVAL)  +CAST('\"' || (extract (day from date_trunc('month', (ai.fecha_inicio::date + CAST('\"' || (plazo_ejecucion/30) || 'months\"' AS INTERVAL)) ::timestamp  ) + INTERVAL '1 MONTH - 1 DAY') - extract (day from date_trunc('month', (ai.fecha_inicio::date + CAST('\"' || (plazo_ejecucion/30) || 'months\"' AS INTERVAL)) ::timestamp  ) + INTERVAL '1 MONTH - 1 DAY')) || 'days\"' AS INTERVAL) - CAST('\"' || 1 || 'days\"' AS INTERVAL)) ::date  ";
+                $cadenaSql .= "           END  ";                      
                 $cadenaSql .= " WHEN unidad_ejecucion=206 THEN  (ai.fecha_inicio::date +CAST('\"' || (plazo_ejecucion) || 'months\"' AS INTERVAL) - CAST('\"' || 1 || 'days\"' AS INTERVAL)) ::date  ";
                 $cadenaSql .= " WHEN unidad_ejecucion=207 THEN (ai.fecha_inicio::date +CAST('\"' || (plazo_ejecucion) || 'years\"' AS INTERVAL) - CAST('\"' || 1 || 'days\"' AS INTERVAL)) ::date  ";
                 $cadenaSql .= " END as fecha_final_contrato  ";
@@ -112,6 +154,64 @@ class Sql extends \Sql {
                 $cadenaSql .= " WHERE cg.numero_contrato='" . $variable['numero_contrato'] . "'  and cg.vigencia=" . $variable['vigencia'] . ";";
 
                 break;
+            
+                case "consultarFechaFinActaAjax" :
+                $cadenaSql = "  SELECT ";
+                $cadenaSql .= " CASE WHEN unidad_ejecucion=205  ";
+                $cadenaSql .= "      THEN CASE  WHEN extract (day from date_trunc('month', ('".$variable['fecha_inicio']."'::date + CAST('\"' || (plazo_ejecucion/30) || 'months\"' AS INTERVAL)) ::timestamp  ) + INTERVAL '1 MONTH - 1 DAY') = 31  ";
+                $cadenaSql .= "                 THEN ";
+                $cadenaSql .= "                     CASE WHEN plazo_ejecucion<30 ";
+                $cadenaSql .= "                          THEN   ('".$variable['fecha_inicio']."'::date +CAST('\"' || (plazo_ejecucion) || 'days\"' AS INTERVAL) - CAST('\"' || 1 || 'days\"' AS INTERVAL)) ::date  ";
+                $cadenaSql .= "                          WHEN plazo_ejecucion>=30     ";
+                $cadenaSql .= "                          THEN     ";
+                $cadenaSql .= "                               CASE WHEN  (extract(day from ('".$variable['fecha_inicio']."'::date +CAST('\"' || (plazo_ejecucion/30) || 'months\"' AS INTERVAL)))  + (plazo_ejecucion%30) ) >30  ";
+                $cadenaSql .= "                                    THEN  ('".$variable['fecha_inicio']."'::date +CAST('\"' || (plazo_ejecucion/30) || 'months\"' AS INTERVAL) +CAST('\"' || (plazo_ejecucion%30) || 'days\"' AS INTERVAL) ) ::date  ";
+                $cadenaSql .= "                                    WHEN (extract(day from ('".$variable['fecha_inicio']."'::date +CAST('\"' || (plazo_ejecucion/30) || 'months\"' AS INTERVAL)))  + (plazo_ejecucion%30) ) <= 30  ";
+                $cadenaSql .= "                                    THEN  ('".$variable['fecha_inicio']."'::date +CAST('\"' || (plazo_ejecucion/30) || 'months\"' AS INTERVAL) +CAST('\"' || (plazo_ejecucion%30) || 'days\"' AS INTERVAL) - CAST('\"' || 1 || 'days\"' AS INTERVAL)) ::date  ";
+                $cadenaSql .= "                               END  ";
+                $cadenaSql .= "                     END  ";
+                $cadenaSql .= "                 WHEN extract (day from date_trunc('month', ('".$variable['fecha_inicio']."'::date + CAST('\"' || (plazo_ejecucion/30) || 'months\"' AS INTERVAL)) ::timestamp  ) + INTERVAL '1 MONTH - 1 DAY') < 31  ";
+                $cadenaSql .= "                 THEN  ('".$variable['fecha_inicio']."'::date +CAST('\"' || (plazo_ejecucion/30) || 'months\"' AS INTERVAL) +CAST('\"' || (plazo_ejecucion%30) || 'days\"' AS INTERVAL)  +CAST('\"' || (extract (day from date_trunc('month', ('".$variable['fecha_inicio']."'::date + CAST('\"' || (plazo_ejecucion/30) || 'months\"' AS INTERVAL)) ::timestamp  ) + INTERVAL '1 MONTH - 1 DAY') - extract (day from date_trunc('month', ('".$variable['fecha_inicio']."'::date + CAST('\"' || (plazo_ejecucion/30) || 'months\"' AS INTERVAL)) ::timestamp  ) + INTERVAL '1 MONTH - 1 DAY')) || 'days\"' AS INTERVAL) - CAST('\"' || 1 || 'days\"' AS INTERVAL)) ::date  ";
+                $cadenaSql .= "           END  ";
+                $cadenaSql .= "     WHEN unidad_ejecucion=206 THEN  ('".$variable['fecha_inicio']."'::date +CAST('\"' || (plazo_ejecucion) || 'months\"' AS INTERVAL) - CAST('\"' || 1 || 'days\"' AS INTERVAL)) ::date  ";
+                $cadenaSql .= "     WHEN unidad_ejecucion=207 THEN ('".$variable['fecha_inicio']."'::date +CAST('\"' || (plazo_ejecucion) || 'years\"' AS INTERVAL) - CAST('\"' || 1 || 'days\"' AS INTERVAL)) ::date ";
+                $cadenaSql .= " END as fecha_final_contrato  ";
+                $cadenaSql .= " FROM argo.contrato_general cg   ";
+                $cadenaSql .= " WHERE cg.numero_contrato='" . $variable['numero_contrato'] . "'  and cg.vigencia=" . $variable['vigencia_contrato'] . ";";
+
+                break;
+
+
+
+                case "consultarFechaFinActaAjaxNov" :
+                $cadenaSql = "  SELECT ";
+                $cadenaSql .= " CASE WHEN unidad_ejecucion=205  ";
+                $cadenaSql .= "      THEN CASE  WHEN extract (day from date_trunc('month', ('".$variable['fecha_inicio']."'::date + CAST('\"' || (plazo_ejecucion/30) || 'months\"' AS INTERVAL)) ::timestamp  ) + INTERVAL '1 MONTH - 1 DAY') = 31  ";
+                $cadenaSql .= "                 THEN ";
+                $cadenaSql .= "                     CASE WHEN plazo_ejecucion<30 "; 
+                $cadenaSql .= "                     THEN   ('".$variable['fecha_inicio']."'::date +CAST('\"' || (plazo_ejecucion) || 'days\"' AS INTERVAL) - CAST('\"' || 1 || 'days\"' AS INTERVAL)) ::date  ";
+                $cadenaSql .= "                          WHEN plazo_ejecucion>=30     ";
+                $cadenaSql .= "                          THEN     ";                
+                $cadenaSql .= "             CASE WHEN  (extract(day from ('".$variable['fecha_inicio']."'::date +CAST('\"' || (plazo_ejecucion/30) || 'months\"' AS INTERVAL)))  + (plazo_ejecucion%30) ) >30  ";
+                $cadenaSql .= "                           THEN  ('".$variable['fecha_inicio']."'::date +CAST('\"' || (plazo_ejecucion/30) || 'months\"' AS INTERVAL) +CAST('\"' || (plazo_ejecucion%30) || 'days\"' AS INTERVAL) ) ::date  ";
+                $cadenaSql .= "                           WHEN (extract(day from ('".$variable['fecha_inicio']."'::date +CAST('\"' || (plazo_ejecucion/30) || 'months\"' AS INTERVAL)))  + (plazo_ejecucion%30) ) <= 30  ";
+                $cadenaSql .= "                           THEN  ('".$variable['fecha_inicio']."'::date +CAST('\"' || (plazo_ejecucion/30) || 'months\"' AS INTERVAL) +CAST('\"' || (plazo_ejecucion%30) || 'days\"' AS INTERVAL) - CAST('\"' || 1 || 'days\"' AS INTERVAL)) ::date  ";
+                $cadenaSql .= "                          END  ";
+                $cadenaSql .= "                     END  ";
+                $cadenaSql .= "                 WHEN extract (day from date_trunc('month', ('".$variable['fecha_inicio']."'::date + CAST('\"' || (plazo_ejecucion/30) || 'months\"' AS INTERVAL)) ::timestamp  ) + INTERVAL '1 MONTH - 1 DAY') < 31  ";
+                $cadenaSql .= "                 THEN  ('".$variable['fecha_inicio']."'::date +CAST('\"' || (plazo_ejecucion/30) || 'months\"' AS INTERVAL) +CAST('\"' || (plazo_ejecucion%30) || 'days\"' AS INTERVAL)  +CAST('\"' || (extract (day from date_trunc('month', ('".$variable['fecha_inicio']."'::date + CAST('\"' || (plazo_ejecucion/30) || 'months\"' AS INTERVAL)) ::timestamp  ) + INTERVAL '1 MONTH - 1 DAY') - extract (day from date_trunc('month', ('".$variable['fecha_inicio']."'::date + CAST('\"' || (plazo_ejecucion/30) || 'months\"' AS INTERVAL)) ::timestamp  ) + INTERVAL '1 MONTH - 1 DAY')) || 'days\"' AS INTERVAL) - CAST('\"' || 1 || 'days\"' AS INTERVAL)) ::date  ";
+                $cadenaSql .= "           END  ";
+                $cadenaSql .= "    WHEN unidad_ejecucion=206 THEN  ('".$variable['fecha_inicio']."'::date +CAST('\"' || (plazo_ejecucion) || 'months\"' AS INTERVAL) - CAST('\"' || 1 || 'days\"' AS INTERVAL)) ::date  ";
+                $cadenaSql .= "     WHEN unidad_ejecucion=207 THEN ('".$variable['fecha_inicio']."'::date +CAST('\"' || (plazo_ejecucion) || 'years\"' AS INTERVAL) - CAST('\"' || 1 || 'days\"' AS INTERVAL)) ::date ";
+                $cadenaSql .= " END as fecha_final_contrato  ";
+                $cadenaSql .= " FROM argo.novedad_postcontractual   ";
+                $cadenaSql .= " WHERE id =" . $variable['id_novedad'] . ";";
+
+                break;    
+
+
+
+
 
 
 
@@ -245,16 +345,40 @@ class Sql extends \Sql {
                 break;
 
 
+            case "consultarActasxNovedadPost" :
+                $cadenaSql = " SELECT ai.numero_contrato, ai.vigencia,ai.fecha_inicio, ai.fecha_fin, ai.id ";
+                $cadenaSql .= " FROM argo.novedad_postcontractual ai ";
+                $cadenaSql .= " WHERE ai.id = " . $variable . " ORDER BY ai.id DESC ";
+                break; 
+
+            case "consultarNovedadCesion" :
+                $cadenaSql = " SELECT  ai.contratista ";
+                $cadenaSql .= " FROM argo.novedad_postcontractual ai ";
+                $cadenaSql .= " WHERE ai.numero_contrato='" . $variable['numero_contrato'] . "' and ai.vigencia= " . $variable['vigencia'] . " and ai.tipo_novedad=219 ";
+                $cadenaSql .= " ORDER BY ai.id DESC limit 1 ";
+                break;   
+
+              
+
+
             case "consultarActasxContratista" :
                 $cadenaSql = " SELECT cg.numero_contrato, cg.vigencia,ai.fecha_inicio, ai.fecha_fin, ai.id ";
                 $cadenaSql .= " FROM argo.contrato_general cg ";
                 $cadenaSql .= " JOIN argo.acta_inicio as ai ON ai.numero_contrato=cg.numero_contrato AND ai.vigencia=cg.vigencia ";
-                $cadenaSql .= " WHERE cg.contratista=" . $variable . " ORDER BY ai.id  ";
+                $cadenaSql .= " WHERE cg.contratista=" . $variable . " AND (cg.tipo_contrato=6 OR cg.tipo_contrato=17)  ORDER BY ai.id DESC ";
+                break;
+
+            case "consultarActasxContratistaMod" :
+                $cadenaSql = " SELECT cg.numero_contrato, cg.vigencia,ai.fecha_inicio, ai.fecha_fin, ai.id ";
+                $cadenaSql .= " FROM argo.contrato_general cg ";
+                $cadenaSql .= " JOIN argo.acta_inicio as ai ON ai.numero_contrato=cg.numero_contrato AND ai.vigencia=cg.vigencia ";
+                $cadenaSql .= " WHERE cg.contratista=" . $variable['contratista'] . "  AND (cg.tipo_contrato=6 OR cg.tipo_contrato=17) AND ai.id NOT IN (".$variable['id_acta'].") ORDER BY ai.id DESC ";
+
                 break;
 
             case "consultaTipoDocumento" :
                 $cadenaSql = " SELECT pe.valor_parametro, c.nombre FROM agora.informacion_persona_natural ipn, agora.parametro_estandar pe, core.ciudad c  ";
-                $cadenaSql .= " WHERE c.id_ciudad = ipn.id_ciudad_expedicion_documento and ipn.tipo_documento = pe.id_parametro AND ipn.num_documento_persona = $variable; ";
+                $cadenaSql .= " WHERE c.id_ciudad = ipn.id_ciudad_expedicion_documento and ipn.tipo_documento = pe.id_parametro AND ipn.num_documento_persona = '". $variable. "';" ;
                 break;
 //
 //            case "consultarContratosGeneral" :
@@ -293,11 +417,11 @@ class Sql extends \Sql {
 //                $cadenaSql .= " ORDER BY cs.numero_contrato_suscrito DESC; ";
 //
 //                break;
-//                
+//
 
             case "consultarContratosGeneralUE" :
 
-                $cadenaSql = "SELECT DISTINCT cg.unidad_ejecutora ";
+                $cadenaSql = "SELECT DISTINCT cg.unidad_ejecutora , cs.numero_contrato_suscrito ";
                 $cadenaSql .= "FROM parametros p, contrato_general cg, tipo_contrato tpc , ";
                 $cadenaSql .= "contrato_estado ce, estado_contrato ec, contrato_suscrito cs  ";
                 $cadenaSql .= "WHERE cg.tipologia_contrato = p.id_parametro AND  cg.tipo_contrato = tpc.id ";
@@ -320,7 +444,7 @@ class Sql extends \Sql {
                     $cadenaSql .= " AND cg.contratista = '" . $variable ['nit'] . "' ";
                 }
 
-            
+
 
                 if ($variable ['fecha_inicial'] != '' && $variable ['fecha_final'] != '') {
                     $cadenaSql .= " AND cg.fecha_registro BETWEEN CAST ( '" . $variable ['fecha_inicial'] . "' AS DATE) ";
@@ -331,8 +455,8 @@ class Sql extends \Sql {
 
 
                 break;
-                
-                
+
+
             case "consultarContratosGeneral" :
 
                 $cadenaSql = "SELECT DISTINCT cg.clase_contratista,p.descripcion, cg.numero_contrato, "
@@ -374,6 +498,65 @@ class Sql extends \Sql {
 
 
                 break;
+
+
+            case "consultarContratosNovedadesPost" :
+
+
+                $cadenaSql = "SELECT npts.id, npts.numero_contrato, npts.vigencia, npts.tipo_novedad, npts.fecha_registro as fecha_novedad, npts.contratista as contratista, npts.numero_cdp, npts.plazo_ejecucion, npts.unidad_ejecucion, ";
+                $cadenaSql .= " cg2.contratista as contratista_cg, cg2.numero_contrato as numero_cons, cst2.numero_contrato_suscrito, tpc2.tipo_contrato, ce2.estado, ec2.nombre_estado, cg2.convenio, npts.fecha_registro as fecha_suscripcion, ";//";
+
+                $cadenaSql .= " npts.valor_novedad, cg2.clase_contratista, cg2.fecha_registro, cg2.contratista as proveedor, cg2.tipologia_contrato, cg2.unidad_ejecutora ";
+                $cadenaSql .= " FROM novedad_postcontractual npts";
+                $cadenaSql .= " INNER JOIN contrato_suscrito cst2 ON cst2.numero_contrato_suscrito = npts.numero_contrato AND cst2.vigencia = npts.vigencia ";
+                $cadenaSql .= " INNER JOIN contrato_general cg2 ON cg2.numero_contrato = cst2.numero_contrato ";
+
+                $cadenaSql .= " INNER JOIN tipo_contrato tpc2 ON cg2.tipo_contrato = tpc2.id ";
+                $cadenaSql .= " INNER JOIN contrato_estado ce2 ON (cg2.numero_contrato = ce2.numero_contrato AND cg2.vigencia = ce2.vigencia ";
+                $cadenaSql .= " AND ce2.fecha_registro = (SELECT MAX(cee2.fecha_registro) from contrato_estado cee2 where cg2.numero_contrato = cee2.numero_contrato and  cg2.vigencia = cee2.vigencia) )";
+                $cadenaSql .= " INNER JOIN estado_contrato ec2 ON ce2.estado = ec2.id ";
+
+
+                $cadenaSql .= " WHERE npts.numero_contrato IN";
+                $cadenaSql .= " (SELECT DISTINCT cs.numero_contrato_suscrito ";
+                $cadenaSql .= "FROM parametros p, contrato_general cg, tipo_contrato tpc , ";
+                $cadenaSql .= "contrato_estado ce, estado_contrato ec, contrato_suscrito cs  ";
+                $cadenaSql .= "WHERE cg.tipologia_contrato = p.id_parametro AND  cg.tipo_contrato = tpc.id ";
+                $cadenaSql .= "AND cg.numero_contrato = cs.numero_contrato and cg.vigencia = cs.vigencia ";
+                $cadenaSql .= "AND cg.numero_contrato = ce.numero_contrato and cg.vigencia = ce.vigencia and ce.estado = ec.id ";
+                $cadenaSql .= "AND ce.fecha_registro = (SELECT MAX(cee.fecha_registro) from contrato_estado cee where cg.numero_contrato = cee.numero_contrato and  cg.vigencia = cee.vigencia) ";
+                $cadenaSql .= "AND cg.unidad_ejecutora = " . $variable ['unidad_ejecutora'] . "  and tpc.id_grupo_tipo_contrato = 2 ";
+                $cadenaSql .= "AND cg.estado = 'true'  AND (ec.id =3 or ec.id =4)  AND cg.vigencia = " . $variable['vigencia_curso'] . "  AND cg.clase_contratista is not null ";
+                if ($variable ['clase_contrato'] != '') {
+                    $cadenaSql .= " AND cg.tipo_contrato = '" . $variable ['clase_contrato'] . "' ";
+                }
+                if ($variable ['numero_contrato'] != '') {
+                    $cadenaSql .= " AND cs.numero_contrato_suscrito = '" . $variable ['numero_contrato'] . "' ";
+                }
+                if ($variable ['vigencia'] != '') {
+                    $cadenaSql .= " AND cs.vigencia = '" . $variable ['vigencia'] . "' ";
+                }
+
+                if ($variable ['nit'] != '') {
+                    $cadenaSql .= " AND cg.contratista = '" . $variable ['nit'] . "' ";
+                }
+
+                if ($variable ['supervisor'] != '') {
+                    $cadenaSql .= " AND cg.supervisor IN (" . $variable ['supervisor'] . ") ";
+                }
+
+                if ($variable ['fecha_inicial'] != '' && $variable ['fecha_final'] != '') {
+                    $cadenaSql .= " AND cg.fecha_registro BETWEEN CAST ( '" . $variable ['fecha_inicial'] . "' AS DATE) ";
+                    $cadenaSql .= " AND  CAST ( '" . $variable ['fecha_final'] . "' AS DATE)  ";
+                }
+
+                $cadenaSql .= "  ORDER BY cs.numero_contrato_suscrito DESC )";
+                $cadenaSql .= " AND npts.vigencia = " . $variable['vigencia_curso'] . ";";
+
+
+                break;
+
+
             //-------------------- Agregadas -----------------------------------------------------
 
             case "buscar_numero_orden" :
@@ -450,18 +633,18 @@ class Sql extends \Sql {
 
                 break;
 
-            Case 'consultarInformacionSupervisor' :
+            case 'consultarInformacionSupervisor' :
                 $cadenaSql = " SELECT id, nombre, documento, cargo, sede_supervisor, dependencia_supervisor, ";
                 $cadenaSql.=" tipo, estado, digito_verificacion, fecha_inicio, fecha_fin ";
                 $cadenaSql.=" FROM argo.supervisor_contrato WHERE documento='" . $variable . "' AND fecha_inicio<='" . date('Y-m-d') . "' AND fecha_fin>='" . date('Y-m-d') . "'; ";
                 break;
 
 
-            Case 'consultarInformacionSupervisorxDependencia' :
-                $cadenaSql = " SELECT id, nombre, documento, cargo, sede_supervisor, dependencia_supervisor, ";
-                $cadenaSql.=" tipo, estado, digito_verificacion, fecha_inicio, fecha_fin ";
-                $cadenaSql.=" FROM argo.supervisor_contrato WHERE documento='" . $variable['documento'] . "' AND dependencia_supervisor='" . $variable['dependencia'] . "'; ";
-                break;
+           case 'consultarInformacionSupervisorxDependencia' :
+                   $cadenaSql = " SELECT id, nombre, documento, cargo, sede_supervisor, dependencia_supervisor, ";
+                   $cadenaSql.=" tipo, estado, digito_verificacion, fecha_inicio, fecha_fin ";
+                   $cadenaSql.=" FROM argo.supervisor_contrato WHERE  dependencia_supervisor IN(" . $variable['dependencia'] . "); ";
+                   break;
 
 
 
@@ -481,20 +664,33 @@ class Sql extends \Sql {
 
             case 'buscar_contrato2' :
                 $cadenaSql = " SELECT  DISTINCT cs.numero_contrato_suscrito AS  data  ";
-                $cadenaSql .= " FROM contrato_general cg, contrato_estado ce, estado_contrato ec, contrato_suscrito cs  ";
+                $cadenaSql .= " FROM contrato_general cg, contrato_estado ce, estado_contrato ec, contrato_suscrito cs, tipo_contrato tpc  ";
                 $cadenaSql .= " WHERE cg.unidad_ejecutora ='" . $variable['unidad'] . "' ";
-                $cadenaSql .= " AND cg.numero_contrato = cs.numero_contrato  ";
-                $cadenaSql .= " AND cg.numero_contrato = ce.numero_contrato and cg.vigencia = ce.vigencia and ce.estado = ec.id and cg.vigencia = " . $variable['vigencia_curso'] . " ";
+                $cadenaSql .= " AND cg.numero_contrato = cs.numero_contrato AND  cg.tipo_contrato = tpc.id   ";
+                $cadenaSql .= " AND cg.numero_contrato = ce.numero_contrato and cg.vigencia = ce.vigencia and ce.estado = ec.id and cg.vigencia = " . $variable['vigencia_curso'] . " and tpc.id_grupo_tipo_contrato = 2 ";
                 $cadenaSql .= " AND ce.fecha_registro = (SELECT MAX(cee.fecha_registro) from contrato_estado cee where cg.numero_contrato = cee.numero_contrato and  cg.vigencia = cee.vigencia) ";
                 $cadenaSql .= " AND (ec.id = 3 OR ec.id = 4) AND  cg.supervisor IN (" . $variable['supervisor'] . ") ";
-                $cadenaSql .= " ORDER BY data ASC LIMIT 10;";
+                $cadenaSql .= " ORDER BY data ASC;";
                 break;
-
+            
+            
+            case 'consecutivo_contrato' :
+                $cadenaSql = " SELECT  DISTINCT cs.numero_contrato_suscrito as id, cs.numero_contrato_suscrito as valor   ";
+                $cadenaSql .= " FROM contrato_general cg, contrato_estado ce, estado_contrato ec, contrato_suscrito cs, tipo_contrato tpc  ";
+                $cadenaSql .= " WHERE cg.unidad_ejecutora ='" . $variable['unidad'] . "' ";
+                $cadenaSql .= " AND cg.numero_contrato = cs.numero_contrato AND  cg.tipo_contrato = tpc.id   ";
+                $cadenaSql .= " AND cg.numero_contrato = ce.numero_contrato and cg.vigencia = ce.vigencia and ce.estado = ec.id and cg.vigencia = " . date('Y') . " and tpc.id_grupo_tipo_contrato = 2 ";
+                $cadenaSql .= " AND ce.fecha_registro = (SELECT MAX(cee.fecha_registro) from contrato_estado cee where cg.numero_contrato = cee.numero_contrato and  cg.vigencia = cee.vigencia) ";
+                $cadenaSql .= " AND (ec.id = 3 OR ec.id = 4) AND  cg.supervisor IN (" . $variable['ids_super'] . ")  ";
+                $cadenaSql .= " ORDER BY cs.numero_contrato_suscrito ASC;";
+                break;
+            
+          
 
             case "tipo_contrato" :
 
                 $cadenaSql = " SELECT id as id, tipo_contrato as valor";
-                $cadenaSql.=" FROM argo.tipo_contrato WHERE estado = 't' ;";
+                $cadenaSql.=" FROM argo.tipo_contrato WHERE estado = 't' and id_grupo_tipo_contrato <> 1 ;";
 
                 break;
 
@@ -523,13 +719,14 @@ class Sql extends \Sql {
 
                 break;
 
-            case "consecutivo_contrato" :
-
-                $cadenaSql = " SELECT DISTINCT cs.numero_contrato_suscrito as id, cs.numero_contrato_suscrito as valor ";
-                $cadenaSql .= " FROM argo.contrato_suscrito cs ";
-                $cadenaSql .= " JOIN argo.contrato_general as cg ON cg.numero_contrato=cs.numero_contrato ";
-                $cadenaSql .= " WHERE cs.vigencia=" . date('Y') . " AND cg.supervisor IN (" . $variable . ") ORDER BY cs.numero_contrato_suscrito ASC; ";
-                break;
+//            case "consecutivo_contrato" :
+//
+//                $cadenaSql = " SELECT DISTINCT cs.numero_contrato_suscrito as id, cs.numero_contrato_suscrito as valor ";
+//                $cadenaSql .= " FROM argo.contrato_suscrito cs ";
+//                $cadenaSql .= " JOIN argo.contrato_general as cg ON cg.numero_contrato=cs.numero_contrato ";
+//                $cadenaSql .= " WHERE cs.vigencia=" . date('Y') . " AND cg.supervisor IN (" . $variable . ") ORDER BY cs.numero_contrato_suscrito ASC; ";
+//
+//                break;
 
 
 
@@ -647,6 +844,24 @@ class Sql extends \Sql {
 
 
             case 'Consultar_Contrato_Particular' :
+                $cadenaSql = " SELECT  ";
+                $cadenaSql .= " cg.*, s.documento, s.nombre, s.cargo,s.sede_supervisor,s.dependencia_supervisor,s.digito_verificacion,  ";
+                $cadenaSql .= " le.direccion, le.sede, le.dependencia, le.ciudad,s.tipo ";
+                $cadenaSql .= " FROM ";
+                $cadenaSql .= " contrato_general cg, supervisor_contrato s, lugar_ejecucion le ";
+                $cadenaSql .= " WHERE ";
+                $cadenaSql .= " cg.supervisor= s.id and cg.lugar_ejecucion = le.id and ";
+                $cadenaSql .= " cg.numero_contrato= '$variable[0]' and ";
+                $cadenaSql .= " cg.vigencia = $variable[1] ; ";
+                break;
+
+            case 'Consultar_Novedad_Particular' :
+                $cadenaSql = " SELECT  * ";
+                $cadenaSql .= " FROM ";
+                $cadenaSql .= " argo.novedad_postcontractual WHERE id = " . $variable . ";";
+                break;
+
+            case 'Consultar_Plazo_ejecion' :
                 $cadenaSql = " SELECT  ";
                 $cadenaSql .= " cg.*, s.documento, s.nombre, s.cargo,s.sede_supervisor,s.dependencia_supervisor,s.digito_verificacion,  ";
                 $cadenaSql .= " le.direccion, le.sede, le.dependencia, le.ciudad,s.tipo ";
@@ -894,24 +1109,39 @@ class Sql extends \Sql {
 
             case "registroActaInicio" :
                 $cadenaSql = " INSERT INTO acta_inicio(";
-                $cadenaSql .= " numero_contrato, vigencia,fecha_inicio,usuario,descripcion, fecha_registro) ";
+                $cadenaSql .= " numero_contrato, vigencia,fecha_inicio, fecha_fin,usuario,descripcion, fecha_registro) ";
                 $cadenaSql .= " VALUES (";
                 $cadenaSql .= "'" . $variable ['numero_contrato'] . "',";
                 $cadenaSql .= $variable ['vigencia'] . ",";
                 $cadenaSql .= "'" . $variable ['fecha_inicio_acta'] . "',";
+                $cadenaSql .= "'" . $variable ['fecha_final_acta'] . "',";
                 $cadenaSql .= "'" . $variable ['usuario'] . "',";
                 $cadenaSql .= "'" . $variable ['observaciones'] . "',";
                 $cadenaSql .= "'" . date('Y-m-d') . "');";
+                break;
 
+                case "registroActaInicioNov" :
+                $cadenaSql = " UPDATE novedad_postcontractual SET";
+                $cadenaSql .= " fecha_inicio= '" . $variable ['fecha_inicio_acta'] . "',";
+                $cadenaSql .= " fecha_fin= '" . $variable ['fecha_final_acta'] . "' ";
+                $cadenaSql .= " WHERE id=" . $variable['id'];
                 break;
 
 
             case "modificarActaInicio" :
                 $cadenaSql = " UPDATE acta_inicio";
-                $cadenaSql .= " SET fecha_inicio='" . $variable['fecha_inicio_acta'] . "', descripcion='" . $variable['observaciones'] . "', usuario= '" . $variable['usuario'] . "', fecha_registro='" . date('Y-m-d') . "' ";
+                $cadenaSql .= " SET fecha_inicio='" . $variable['fecha_inicio_acta'] . "', fecha_fin='" . $variable['fecha_final_acta'] . "', descripcion='" . $variable['observaciones'] . "', usuario= '" . $variable['usuario'] . "', fecha_registro='" . date('Y-m-d') . "' ";
                 $cadenaSql .= " WHERE id=" . $variable['id_acta'];
 
                 break;
+
+
+            case "modificarActaInicioNov" :
+                $cadenaSql = " UPDATE novedad_postcontractual";
+                $cadenaSql .= " SET fecha_inicio='" . $variable['fecha_inicio_acta'] . "', fecha_fin='" . $variable['fecha_final_acta'] . "'";
+                $cadenaSql .= " WHERE id=" . $variable['id'];
+
+                break;    
 
             case "consultarCargoSupervisor" :
                 $cadenaSql = " SELECT  sc.documento, sc.cargo";
@@ -958,7 +1188,7 @@ class Sql extends \Sql {
                 break;
             case "obtenerPolizasActivas" :
                 $cadenaSql = "SELECT p.id_poliza,p.descripcion_poliza,p.fecha_registro,p.estado,p.usuario,  ";
-                $cadenaSql .= " ea.nombre as nombre_aseguradora ,p.fecha_inicio,p.fecha_fin,p.numero_poliza,p.fecha_aprobacion  ";
+                $cadenaSql .= " ea.nombre as nombre_aseguradora ,p.fecha_inicio,p.fecha_fin,p.numero_poliza,p.fecha_aprobacion , p.fecha_expedicion ";
                 $cadenaSql .= "FROM argo.poliza p, core.entidad_aseguradora ea  ";
                 $cadenaSql .= "WHERE p.numero_contrato = '" . $variable['numero_contrato'] . "' and p.vigencia = " . $variable['vigencia'] . " AND ";
                 $cadenaSql .= " p.entidad_aseguradora = ea.id  and p.estado='t' ";
@@ -1108,6 +1338,39 @@ class Sql extends \Sql {
                 $cadenaSql .= " WHERE id_proveedor = $variable ;";
 
                 break;
+            
+            case "consultarActasInicio" :
+                $cadenaSql = " 	SELECT * ";
+                $cadenaSql .= " FROM acta_inicio ";
+                $cadenaSql .= " WHERE numero_contrato='" . $variable['numero_contrato'] . "' AND vigencia= " . $variable['vigencia'] . ";";
+
+                break;
+            
+             case "consultarContratosxNovedadPost" :
+                $cadenaSql = " SELECT np.numero_contrato numero_contrato_suscrito, cg.numero_contrato, cg.vigencia";
+                $cadenaSql .= " FROM argo.novedad_postcontractual np ";
+                $cadenaSql .= " JOIN argo.contrato_suscrito cs ON cs.numero_contrato_suscrito=np.numero_contrato AND cs.vigencia=np.vigencia ";
+                $cadenaSql .= " JOIN argo.contrato_general cg ON cg.numero_contrato=cs.numero_contrato AND cg.vigencia=cs.vigencia ";
+                $cadenaSql .= " WHERE np.id=".$variable."  ";
+                break; 
+            
+            case "consultarActasInicioNovedad" :
+                $cadenaSql = " SELECT np.*, ea.nombre as nombre_aseguradora ";
+                $cadenaSql .= " FROM argo.novedad_postcontractual  np ";
+                $cadenaSql .= " JOIN core.entidad_aseguradora ea ON ea.id=np.entidad_aseguradora ";
+                $cadenaSql .= " WHERE np.id=".$variable."  ";
+                break; 
+            
+            
+            
+             
+ 
+
+
+
+
+        
+        
         }
         return $cadenaSql;
     }

@@ -56,17 +56,18 @@ class Funcion {
             $this->procesarAjax ();
         } else {
 
-           if (isset ( $_REQUEST ['opcion'] )) {
-	        		
-	        		switch ($_REQUEST ['opcion']) {
-	        			case "logout" :
-	        				include ($this->ruta.'/funcion/Logout.php');
-	        				break;
-	        			case "login" :
-	        				include ($this->ruta.'/funcion/Login.php');
-	        				break;
-	        		}
-	        	}
+            if (isset($_REQUEST['opcion'])) {
+                switch ($_REQUEST ['opcion']) {
+
+                    case "finSesion" :
+                        $this->finSesion();
+                        break;
+
+                    case "validarLogin":
+                        $resultado = $this->procesarFormulario();
+                        break;
+                }
+            }
         }
         
         return $resultado;

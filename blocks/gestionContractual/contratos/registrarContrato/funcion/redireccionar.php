@@ -35,6 +35,9 @@ class redireccion {
 				$variable .= "&opcion=mensaje";
 				$variable .= "&mensaje=noInserto";
 				$variable .= "&usuario=" . $_REQUEST ['usuario'];
+				if(isset($valor ['caso'])){
+                    $variable .= "&caso=" . $valor ['caso'];
+                }
 				break;
 	
 			 case "ErrorRegistroContratoExiste" :

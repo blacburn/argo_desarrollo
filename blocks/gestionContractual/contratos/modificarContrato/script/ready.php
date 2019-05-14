@@ -1,13 +1,53 @@
 window.onload = detectarCarga;
 
 function detectarCarga() {
-    $('#marcoDatos').show('slow');
+	if(!$("#suscritoMod").val()){
+		$('#marcoDatos').show('slow');
+	}
+    
 }
+
 
 <?php
 $_REQUEST ['tiempo'] = time();
 ?>
 
+if($("#suscritoMod").val()){
+
+			swal({
+			    title: 'Importante <br>MODIFICACIÓN CONTRATO SUSCRITO',
+			    type: 'info',
+			    html:
+		                        'Para el evento de realizar una modificación sobre un contrato SUSCRITO,'
+		                        +' es requerido que relacione una justificación.',
+			    input: 'textarea',
+			    showCancelButton: false,
+			    confirmButtonText: 'Enviar',
+			    showLoaderOnConfirm: true,
+			    focusConfirm: false,
+			    allowOutsideClick: false,
+			    preConfirm: function (justi) {
+			        return new Promise(function (resolve, reject) {
+			            setTimeout(function () {
+			                if (justi === '' || justi.length < 20) {
+			                    reject('Error en el registro de Información. Mínimo 20 caracteres')
+			                    $('#marcoDatos').fadeOut(300);
+			                } else {
+			                    resolve()
+			                    $('#marcoDatos').fadeIn(300);
+			                    $("#<?php echo $this->campoSeguro('justificacion_hidden') ?>").val(justi);
+			                    var site = "<?php echo $this->miConfigurador->getVariableConfiguracion("site") ?>";
+			                    var host = "<?php echo $this->miConfigurador->getVariableConfiguracion("host") ?>";
+			                    var fileRemove = "/blocks/gestionContractual/contratos/modificarContrato/css/estiloBloqueAlert.css";
+			                    var cssFile = host + site + fileRemove;
+			                    $('link[rel=stylesheet][href~="'+cssFile+'"]').remove();
+			                }
+			            }, 2000)
+			        })
+			    },
+			});
+
+}
 
 // Asociar el widget de validación al formulario
 $("#modificarContrato").validationEngine({
@@ -556,6 +596,12 @@ $("#<?php echo $this->campoSeguro('regimen_contratación') ?>").select2();
 $("#<?php echo $this->campoSeguro('unidad_ejecucion_tiempo') ?>").width(220);
 $("#<?php echo $this->campoSeguro('unidad_ejecucion_tiempo') ?>").select2();
 
+ $('#<?php echo $this->campoSeguro('unidad_ejecucion') ?>').width(200);
+ $("#<?php echo $this->campoSeguro('unidad_ejecucion') ?>").select2();
+
+  $('#<?php echo $this->campoSeguro('dependencia_supervisor') ?>').width(300);
+ $("#<?php echo $this->campoSeguro('dependencia_supervisor') ?>").select2(); 
+ 
 $("#<?php echo $this->campoSeguro('tipo_moneda') ?>").width(250);
 $("#<?php echo $this->campoSeguro('tipo_moneda') ?>").select2();
 
@@ -583,11 +629,8 @@ $("#<?php echo $this->campoSeguro('tema_gasto_inversion') ?>").select2();
 $("#<?php echo $this->campoSeguro('unidad_ejecutora_consulta') ?>").width(220);
 $("#<?php echo $this->campoSeguro('unidad_ejecutora_consulta') ?>").select2();
 
-$("#<?php echo $this->campoSeguro('dependencia_solicitante') ?>").width(220);
+$("#<?php echo $this->campoSeguro('dependencia_solicitante') ?>").width(350);
 $("#<?php echo $this->campoSeguro('dependencia_solicitante') ?>").select2();
-
-$("#<?php echo $this->campoSeguro('dependencia_supervisor') ?>").width(220);
-$("#<?php echo $this->campoSeguro('dependencia_supervisor') ?>").select2();
 
 
 $("#<?php echo $this->campoSeguro('tema_gasto_inversion') ?>").width(220);
@@ -605,22 +648,12 @@ $("#<?php echo $this->campoSeguro('supervisor') ?>").select2();
 $("#<?php echo $this->campoSeguro('tipo_supervisor') ?>").width(305);
 $("#<?php echo $this->campoSeguro('tipo_supervisor') ?>").select2();
 
-$('#<?php echo $this->campoSeguro('nombre_supervisor') ?>').width(300);			       
-
-$("#<?php echo $this->campoSeguro('nombre_supervisor') ?>").select2({
-placeholder: "Ingrese Mínimo 3 Caracteres de Búsqueda",
-minimumInputLength: 3,
-});
 
 $("#<?php echo $this->campoSeguro('nombre_supervisor_interventor') ?>").width(300);
 $("#<?php echo $this->campoSeguro('nombre_supervisor_interventor') ?>").select2({
 placeholder: "Ingrese Mínimo 3 Caracteres de Búsqueda",
 minimumInputLength: 3,
 });
-
-
-$('#<?php echo $this->campoSeguro('cargo_supervisor') ?>').width(300);
-$("#<?php echo $this->campoSeguro('cargo_supervisor') ?>").select2();
 
 
 $('#<?php echo $this->campoSeguro('tipo_control') ?>').width(300);
@@ -632,6 +665,9 @@ $("#<?php echo $this->campoSeguro('sede_super') ?>").select2();
 
 $('#<?php echo $this->campoSeguro('sede') ?>').width(300);
 $("#<?php echo $this->campoSeguro('sede') ?>").select2();
+
+$('#<?php echo $this->campoSeguro('unidad')?>').width(240);
+ $("#<?php echo $this->campoSeguro('unidad')?>").select2();
 
 
 //Uniones Temporales
@@ -656,7 +692,7 @@ $("#<?php echo $this->campoSeguro('ejecucionDepartamento') ?>").width(200);
 $("#<?php echo $this->campoSeguro('ejecucionDepartamento') ?>").select2();
 $("#<?php echo $this->campoSeguro('ejecucionPais') ?>").width(200);  
 $("#<?php echo $this->campoSeguro('ejecucionPais') ?>").select2();
-$("#<?php echo $this->campoSeguro('dependencia_ejecucion') ?>").width(200);  
+$("#<?php echo $this->campoSeguro('dependencia_ejecucion') ?>").width(350);  
 $("#<?php echo $this->campoSeguro('dependencia_ejecucion') ?>").select2();
 $("#<?php echo $this->campoSeguro('ejecucionCiudad') ?>").width(200);  
 $("#<?php echo $this->campoSeguro('ejecucionCiudad') ?>").select2();

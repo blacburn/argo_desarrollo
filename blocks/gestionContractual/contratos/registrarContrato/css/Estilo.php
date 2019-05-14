@@ -25,6 +25,8 @@ $estilo[$indice++] = "bootstrap.css";
 $estilo[$indice++] = "bootstrap.min.css";
 
 
+$estilo[$indice++]="sweetalert2.min.css";
+
 
 
 

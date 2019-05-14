@@ -12,7 +12,9 @@ $estilo[$indice++]="jquery_switch.css";
 $estilo[$indice++]="jquery.steps.css";
 $estilo[$indice++]="jquery-ui.css";
 
-
+if(isset($_REQUEST ['miPaginaAct']) && isset($_REQUEST ['opcion']) && $_REQUEST ['opcion'] == 'modificarOrden'){
+	$estilo[$indice++]="estiloBloqueAlert.css";
+}
 
 $estilo[$indice++]="modal.css";
 
@@ -30,6 +32,9 @@ $estilo[$indice++] = "bootstrap-theme.min.css";
 $estilo[$indice++] = "jquery.dataTables.css";
 $estilo[$indice++] = "bootstrap.css";
 $estilo[$indice++] = "bootstrap.min.css";
+
+
+$estilo[$indice++]="sweetalert2.min.css";
 
 
 $rutaBloque=$this->miConfigurador->getVariableConfiguracion("host");

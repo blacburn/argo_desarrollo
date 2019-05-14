@@ -18,6 +18,7 @@ class EnLetras {
     var $Dot = ".";
     var $Zero = "0";
     var $Neg = "Menos";
+    
 
     function ValorEnLetras($x, $Moneda) {
         $s = "";
@@ -303,6 +304,9 @@ class RegistradorOrden {
 
         $conexionFrameWork = "estructura";
         $DBFrameWork = $this->miConfigurador->fabricaConexiones->getRecursoDB($conexionFrameWork);
+        
+        $conexionCore = "core";
+        $DBCore = $this->miConfigurador->fabricaConexiones->getRecursoDB($conexionCore);
 
         $conexionAgora = "agora";
         $esteRecursoDBAgora = $this->miConfigurador->fabricaConexiones->getRecursoDB($conexionAgora);
@@ -338,14 +342,29 @@ class RegistradorOrden {
         $contratista = $esteRecursoDBAgora->ejecutarAcceso($cadenaSql, "busqueda");
         $contratista = $contratista [0];
 
+        $datosElemento = array(
+            $_REQUEST['numero_contrato'],
+            $_REQUEST['vigencia'],
+            'ELEMENTO'
+        );
 
-
-        $cadenaSql = $this->miSql->getCadenaSql('consultarElementosOrden', $datosContrato);
+//        $cadenaSql = $this->miSql->getCadenaSql('consultarElementosOrden', $datosContrato);
+//        $ElementosOrden = $esteRecursoDB->ejecutarAcceso($cadenaSql, "busqueda");
+        
+        $cadenaSql = $this->miSql->getCadenaSql('consultarElementosServiciosOrden', $datosElemento);
         $ElementosOrden = $esteRecursoDB->ejecutarAcceso($cadenaSql, "busqueda");
+        
+        
+         $datosElemento = array(
+            $_REQUEST['numero_contrato'],
+            $_REQUEST['vigencia'],
+            'SERVICIO'
+        );
 
-
-        $cadenaSqlServicios = $this->miSql->getCadenaSql('consultarServiciosOrden', $datosContrato);
-        $ServiciosOrden = $esteRecursoDB->ejecutarAcceso($cadenaSqlServicios, "busqueda");
+         $cadenaSql = $this->miSql->getCadenaSql('consultarElementosServiciosOrden', $datosElemento);
+        $ServiciosOrden = $esteRecursoDB->ejecutarAcceso($cadenaSql, "busqueda");
+//        $cadenaSqlServicios = $this->miSql->getCadenaSql('consultarServiciosOrden', $datosContrato);
+//        $ServiciosOrden = $esteRecursoDB->ejecutarAcceso($cadenaSqlServicios, "busqueda");
 
 
         $cadenaSql = $this->miSql->getCadenaSql('consultaParametro', $contrato ['forma_pago']);
@@ -401,7 +420,7 @@ class RegistradorOrden {
         else{
                 $parametros = array(
                 'ordenador_gasto' => $contrato ['ordenador_gasto'],
-                'fecha_suscripcion' =>  $contrato ['fecha_registro'],
+                'fecha_suscripcion' =>  date('Y-m-d'),
                );
            
             $cadenaSql = $this->miSql->getCadenaSql('ordenadorArgoDocumento', $parametros);
@@ -410,15 +429,57 @@ class RegistradorOrden {
         }
 
         if ($contratista['tipopersona'] == 'NATURAL') {
+            
+            
+            
 
             $cadenaSql = $this->miSql->getCadenaSql('consultaTipoDocumento', $contratista ['num_documento']);
             $tipoDocumento = $esteRecursoDBAgora->ejecutarAcceso($cadenaSql, "busqueda");
+            
+            
+            
+            $InfoContratistaBasica = strtoupper($contratista['nom_proveedor']) ." (". $tipoDocumento[0][0] . "  " . $contratista['num_documento'] . ") ";
+            
+            $InfoContratista =   strtoupper($contratista['nom_proveedor']) . ", mayor de edad y vecino de esta ciudad, identificado con ". $tipoDocumento[0][0] . " No. ". $contratista['num_documento'] . " expedida en ".$tipoDocumento[0][1] ;
 
-            $InfoContratista = strtoupper($contratista['nom_proveedor']) . "</b> persona natural mayor de edad, identificado(a)
-                         con " . strtolower($tipoDocumento[0][0]) . " <b>N°. " . $contratista['num_documento'] . "</b> de " . $tipoDocumento[0][1] . " ";
+          
+//
+//            $InfoContratista = strtoupper($contratista['nom_proveedor']) . "</b> persona natural mayor de edad, identificado(a)
+//                         con " . strtolower($tipoDocumento[0][0]) . " <b>N°. " . $contratista['num_documento'] . "</b> de " . $tipoDocumento[0][1] . " ";
         } elseif ($contratista['tipopersona'] == 'JURIDICA') {
-            $InfoContratista = strtoupper($contratista['nom_proveedor']) . "</b> persona juridica, identificada
-                         con nit  <b>N°. " . $contratista['num_documento'] . "</b>  ";
+            
+            $cadenaSql = $this->miSql->getCadenaSql('consultaRepresentanteLegal', $contrato ['contratista']);
+            $representanteLegal = $esteRecursoDBAgora->ejecutarAcceso($cadenaSql, "busqueda");
+            
+                        
+            $cadenaSql = $this->miSql->getCadenaSql('consultaDigitoVerificacion', $contratista['num_documento']);
+            $digitoVerificacion = $esteRecursoDBAgora->ejecutarAcceso($cadenaSql, "busqueda");
+            
+            
+            
+           if($representanteLegal[0]['cargo'] === 'REPRESENTANTE LEGAL' || $representanteLegal[0]['cargo'] === ' '){
+                   $InfoContratista =  $representanteLegal[0]['nombre']. ", mayor de edad y vecino de esta ciudad, identificado con ". $representanteLegal[0]['tipo_documento'] . " No. ". $representanteLegal[0]['documento'] .
+                                " expedida en ".$representanteLegal[0]['ciudad'].
+                                ", quien actúa en nombre y representación legal de ".strtoupper($contratista['nom_proveedor']) . 
+                                " con NIT " . $contratista['num_documento']."-".$digitoVerificacion[0][0];
+                        
+                $InfoContratistaBasica = strtoupper($contratista['nom_proveedor']) ." ( NIT " . $contratista['num_documento'] . "-".$digitoVerificacion[0][0].") ";
+             
+            }
+            else {
+                 $InfoContratista =  $representanteLegal[0]['nombre']. ", mayor de edad y vecino de esta ciudad, identificado con ". 
+                                $representanteLegal[0]['tipo_documento'] . " No. ". $representanteLegal[0]['documento'] .
+                                " expedida en ".$representanteLegal[0]['ciudad'].
+                                ", quien actúa en nombre y representación legal "." en calidad de ". $representanteLegal[0]['cargo'] ." de ".strtoupper($contratista['nom_proveedor']) . 
+                                " con NIT " . $contratista['num_documento'] . "-".$digitoVerificacion[0][0] ;
+            
+                 $InfoContratistaBasica = strtoupper($contratista['nom_proveedor']) ." ( NIT " . $contratista['num_documento'] ."-".$digitoVerificacion[0][0]. ") ";
+          
+                
+            }
+            
+//            $InfoContratista = strtoupper($contratista['nom_proveedor']) . "</b> persona juridica, identificada
+//                         con nit  <b>N°. " . $contratista['num_documento'] . "</b>  ";
         } else {
             $InfoContratista = strtoupper($contratista['nom_proveedor']) . "</b>, " . $contratista['tipopersona'] . " identificado(a)
                          con nit  <b>N°. " . $contratista['num_documento'] . "</b>  ";
@@ -457,7 +518,14 @@ class RegistradorOrden {
 
         $cadenaSql = $this->miSql->getCadenaSql('ObtenerInfosupervisor', $contrato ['supervisor']);
         $supervisor = $esteRecursoDB->ejecutarAcceso($cadenaSql, "busqueda");
-        $supervisor = strtoupper($supervisor [0]['cargo']);
+       
+
+         if($supervisor [0]['cargo'] != ''){
+            $supervisor = strtoupper($supervisor[0]['nombre']) . " identificado(a) con cédula de ciudadanía  No. " .strtoupper($supervisor[0]['documento']) ." con el cargo de ".strtoupper($supervisor [0]['cargo']);
+        }
+        else{
+            $supervisor = strtoupper($supervisor[0]['nombre']) . " identificado(a) con cédula de ciudadanía  No. " .strtoupper($supervisor[0]['documento']) ;
+        }
 
 
         $datos_disponibilidad = array(0 => $_REQUEST ['numero_contrato'], 1 => $_REQUEST['vigencia']);
@@ -537,18 +605,19 @@ class RegistradorOrden {
             $elementosyservicios .= "
 		<table style='width:100%;'>
 		<tr>
-		<td  style='width:100%;text-align=center;'><p><b>ELEMENTOS ASOCIADOS</b></p></td>
+		<td  style='width:100%;text-align=center;'><p><b>ELEMENTOS ASOCIADOS</b></p></td><br>
 		</tr>
 		</table>
 		<table style='width:100%;'>
 		<tr>
-		<td style='width:10%;text-align=center;'><p>Item</p></td>
-		<td style='width:14%;text-align=center;'><p>Unidad</p></td>
-		<td style='width:10%;text-align=center;'><p>Cantidad</p></td>
-		<td style='width:25%;text-align=center;'><p>Descripción</p></td>
-		<td style='width:15.8%;text-align=center;'><p>Valor Unitario($)</p></td>
-		<td style='width:8.3%;text-align=center;'><p>Iva</p></td>
-		<td style='width:15.8%;text-align=center;'><p>Total</p></td>
+		<td style='width:5%;text-align=center;'><b><center>No.</center></b></td>
+                <td style='width:13%;text-align=center;'><b><center>Nombre</center></b></td>
+                <td style='width:23%;text-align=center;'><b><center>Descripción</center></b></td>
+		<td style='width:7%;text-align=center;'><b><center>Unidad</center></b></td>
+		<td style='width:7%;text-align=center;'><b><center>Cantidad</center></b></td>		
+		<td style='width:20%;text-align=center;'><b><center>Valor Unitario($)</center></b></td>
+		<td style='width:5%;text-align=center;'><b><center>Iva</center></b></td>
+		<td style='width:20%;text-align=center;'><b><center>Total</center></b></td>
 		</tr>
 		</table>
 		<table class='mainelementos' style='width:100%;'>";
@@ -560,24 +629,34 @@ class RegistradorOrden {
             $j = 1;
 
 
-
+            
 
             foreach ($ElementosOrden as $valor => $it) {
+                
+                $valor_total=$it ['valor'] * $it ['cantidad'];
+                
+                $valor_total_iva= $valor_total * ($it ['nombre_iva']/100);
+                $valor_final=$valor_total_iva + $valor_total;
+                
+                
                 $elementosyservicios .= "<tr>";
-                $elementosyservicios .= "<td style='width:10%;text-align=center;'><p>" . $j . "</p></td>";
-                $elementosyservicios .= "<td style='width:15%;text-align=center;'><p>" . $it ['unidad'] . "</p></td>";
-                $elementosyservicios .= "<td style='width:10%;text-align=center;'><p>" . $it ['cantidad'] . "</p></td>";
-                $elementosyservicios .= "<td style='width:25%;text-align=justify;'><p>" . $it ['descripcion'] . "</p></td>";
-                $elementosyservicios .= "<td style='width:15.8%;text-align=center;'><p>$ " . number_format($it ['valor'], 2, ",", ".") . "</p></td>";
-                $elementosyservicios .= "<td style='width:8.3%;text-align=center;'><p>" . $it ['nombre_iva'] . "</p></td>";
-                $elementosyservicios .= "<td style='width:15.8%;text-align=center;'><p>$ " . number_format($it ['total_iva_con'], 2, ",", ".") . "</p></td>";
+                $elementosyservicios .= "<td style='width:5%;text-align=center;'><p><center>" . $j . "</center></p></td>";
+                $elementosyservicios .= "<td style='width:13%;text-align=center;'><p><center>" . $it ['nombre'] . "</center></p></td>";
+                $elementosyservicios .= "<td style='width:23%;text-align=center;'><p><center>" . $it ['descripcion'] . "</center></p></td>";
+                $elementosyservicios .= "<td style='width:7%;text-align=center;'><p><center>" . $it ['unidad'] . "</center></p></td>";
+                $elementosyservicios .= "<td style='width:7%;text-align=center;'><p><center>" . $it ['cantidad'] . "</center></p></td>";
+                $elementosyservicios .= "<td style='width:20%;text-align=center;'><p><center>$ " . number_format($it ['valor'], 2, ",", ".") . "</center></p></td>";
+                $elementosyservicios .= "<td style='width:5%;text-align=center;'><p><center>" . $it ['nombre_iva'] . "</center></p></td>";
+                $elementosyservicios .= "<td style='width:20%;text-align=center;'><p><center>$ " . number_format($valor_final, 2, ",", ".") . "</center></p></td>";
                 $elementosyservicios .= "</tr>";
 
-                $sumatoriaTotal = $sumatoriaTotal + $it ['total_iva_con'];
-                $sumatoriaSubtotal = $sumatoriaSubtotal + $it ['subtotal_sin_iva'];
-                $sumatoriaIva = $sumatoriaIva + $it ['total_iva'];
+                $sumatoriaTotal = $sumatoriaTotal +  $valor_final;
+                $sumatoriaSubtotal = $sumatoriaSubtotal +  $valor_total;
+                $sumatoriaIva = $sumatoriaIva + $valor_total_iva;
                 $j ++;
             }
+            
+     
 
 	    //------------- Redondeo Valores Totales --------------------------------------
 
@@ -709,37 +788,56 @@ class RegistradorOrden {
             $elementosyservicios .= "<br>
 		<table class='mainelementos' style='width:100%;'>
 		<tr>
-		<td style='width:100%;text-align=center;'><p><b>SERVICIOS</b></p></td>
+		<td style='width:100%;text-align=center;'><p><b>SERVICIOS </b></p></td><br>
 		</tr>
 		</table>
 		<table class='mainelementos' style='width:100%;'>
 		<tr>
-		<td style='width:10%;text-align=center;'><p>Item</p></td>
-		<td style='width:20%;text-align=center;'><p>Descripcion</p></td>
-		<td style='width:15%;text-align=center;'><p>Nombre</p></td>
-		<td style='width:10%;text-align=center;'><p>Codigo DIAN</p></td>
-		<td style='width:25%;text-align=center;'><p>Servicio</p></td>
-		<td style='width:20%;text-align=center;'><p>Valor($)</p></td>
+		<td style='width:2%;text-align=center;'><b><center>No.</center></b></td>
+                <td style='width:13%;text-align=center;'><b><center>Nombre</center></b></td>
+                <td style='width:20%;text-align=center;'><b><center>Descripción</center></b></td>
+                <td style='width:7%;text-align=center;'><b><center>Tiempo<br>Ejecución<br>(Días)</center></b></td>
+		<td style='width:7%;text-align=center;'><b><center>Unidad</center></b></td>
+		<td style='width:7%;text-align=center;'><b><center>Cantidad</center></b></td>		
+		<td style='width:19%;text-align=center;'><b><center>Valor Unitario($)</center></b></td>
+		<td style='width:5%;text-align=center;'><b><center>Iva</center></b></td>
+		<td style='width:19%;text-align=center;'><b><center>Total</center></b></td>
 		</tr>
 		</table>
 		<table class='mainelementos' style='width:100%;'>";
 
+
+
+
             $sumatoriaTotalServicios = 0;
+            $sumatoriaSubtotalServicios = 0;
+            $sumatoriaIvaServicios = 0;
 
             $c = 1;
 
 
             foreach ($ServiciosOrden as $valor => $it) {
+                
+                $valor_total=$it ['valor'] * $it ['cantidad'];
+                
+                $valor_total_iva= $valor_total * ($it ['nombre_iva']/100);
+                $valor_final=$valor_total_iva + $valor_total;
+                
                 $elementosyservicios .= "<tr>";
-                $elementosyservicios .= "<td style='width:10%;text-align=center;'><p>" . $c . "</p></td>";
-                $elementosyservicios .= "<td style='width:20%;text-align=center;'><p>" . $it ['descripcion'] . "</p></td>";
-                $elementosyservicios .= "<td style='width:15%;text-align=justify;'><p>" . $it ['nombre'] . "</p></td>";
-                $elementosyservicios .= "<td style='width:10%;text-align=center;'><p>$ " . $it ['codigo_ciiu'] . "</p></td>";
-                $elementosyservicios .= "<td style='width:25%;text-align=center;'><p>" . $it ['codigo_ciiu'] . "</p></td>";
-                $elementosyservicios .= "<td style='width:20%;text-align=center;'><p>$ " . number_format($it ['valor_servicio'], 2, ",", ".") . "</p></td>";
+                $elementosyservicios .= "<td style='width:2%;text-align=center;'><p><center>" . $c . "</center></p></td>";
+                $elementosyservicios .= "<td style='width:13%;text-align=center;'><p><center>" . $it ['nombre'] . "</center></p></td>";
+                $elementosyservicios .= "<td style='width:20%;text-align=center;'><p><center>" . $it ['descripcion'] . "</center></p></td>";
+                $elementosyservicios .= "<td style='width:7%;text-align=center;'><p><center>" . $it ['tiempo_ejecucion'] . "</center></p></td>";
+                $elementosyservicios .= "<td style='width:7%;text-align=center;'><p><center>" . $it ['unidad'] . "</center></p></td>";
+                $elementosyservicios .= "<td style='width:7%;text-align=center;'><p><center>" . $it ['cantidad'] . "</center></p></td>";
+                $elementosyservicios .= "<td style='width:19%;text-align=center;'><p><center>$ " . number_format($it ['valor'], 2, ",", ".") . "</center></p></td>";
+                $elementosyservicios .= "<td style='width:5%;text-align=center;'><p><center>" . $it ['nombre_iva'] . "</center></p></td>";
+                $elementosyservicios .= "<td style='width:19%;text-align=center;'><p><center>$ " . number_format($valor_final, 2, ",", ".") . "</center></p></td>";
                 $elementosyservicios .= "</tr>";
 
-                $sumatoriaTotalServicios = $sumatoriaTotalServicios + $it ['valor_servicio'];
+                $sumatoriaTotalServicios = $sumatoriaTotalServicios + $valor_final;
+                $sumatoriaSubtotalServicios = $sumatoriaSubtotalServicios +  $valor_total;
+                $sumatoriaIvaServicios = $sumatoriaIvaServicios + $valor_total_iva;
                 $c ++;
             }
 
@@ -753,11 +851,25 @@ class RegistradorOrden {
             $elementosyservicios .= "</table>";
 
             $elementosyservicios .= "		<table class='mainelementos' style='width:100%;'>
+	
+<tr>
+
+		<td style='width:75%;text-align=left;'><p><b>SUBTOTAL  : </b></p></td>
+		<td style='width:25%;text-align=center;'><p><b>$" . number_format($sumatoriaSubtotalServicios, 2, ",", ".") . "</b></p></td>
+		</tr>
 		<tr>
 
-		<td style='width:75%;text-align=left;'><p><b>TOTAL  : </b></p></td>
+		<td style='width:75%;text-align=left;'><p><b>TOTAL IVA  : </b></p></td>
+		<td style='width:25%;text-align=center;'><p><b>$" . number_format($sumatoriaIvaServicios, 2, ",", ".") . "</b></p></td>
+		</tr>
+
+		<tr>
+
+		<td style='width:75%;text-align=center;'><p><b>TOTAL  : </b></p></td>
 		<td style='width:25%;text-align=center;'><p><b>$" . number_format($sumatoriaTotalServicios, 2, ",", ".") . "</b></p></td>
 		</tr>
+                
+
 
 
 	</table>
@@ -771,6 +883,8 @@ class RegistradorOrden {
 		<td style='width:100%;text-align=center;text-transform:uppercase;'><p><b>" . $LetrastotalServicios . "</b></p></td>
 		</tr>
 
+
+                
 		</table>";
 
 
@@ -852,11 +966,11 @@ class RegistradorOrden {
         
        
 
-        $tablaDeAmparos=' <table align="center" style="width:100% ; border: 1  ;"> 
+        $tablaDeAmparos=' <table align="center" style="width:100% ;border: 1px solid black;"> 
             <tr>            
-              <td style="text-align:center;">AMPARO</td> 
-              <td style="text-align:center;">SUFICIENCIA</td> 
-              <td style="text-align:center;">VIGENCIA</td> 
+              <td style="text-align:center;font-weight:bold;border: 1px solid black;">AMPARO</td> 
+              <td style="text-align:center;font-weight:bold;border: 1px solid black;">SUFICIENCIA</td> 
+              <td style="text-align:center;font-weight:bold;border: 1px solid black;">DESCRIPCION</td> 
            </tr> 
           ';
    
@@ -893,17 +1007,26 @@ class RegistradorOrden {
 
 
 
+        $desc_forma_pago= str_replace('LA UNIVERSIDAD','<b>LA UNIVERSIDAD</b>',$contrato['descripcion_forma_pago']);
+        $desc_forma_pago= str_replace('EL CONTRATISTA','<b>EL CONTRATISTA</b>',$desc_forma_pago);
+        $desc_forma_pago= str_replace('PARÁGRAFO','<b>PARÁGRAFO</b>',$desc_forma_pago);
+        $desc_forma_pago= str_replace('PRIMERO','<b>PRIMERO</b>',$desc_forma_pago);
+        $desc_forma_pago= str_replace('SEGUNDO','<b>SEGUNDO</b>',$desc_forma_pago);
+        $desc_forma_pago= str_replace('TERCERO','<b>TERCERO</b>',$desc_forma_pago);
+        $desc_forma_pago= str_replace('CUARTO','<b>CUARTO</b>',$desc_forma_pago);
+
+
         //------------------------------------- Generacion de Documento -----------------------------------------------------------
 
 
 
 
         if ($contrato['poliza'] == 't') {
-            $tipo_plantilla = "plantillaconPoliza";
+            $tipo_plantilla = "plantillaComprasPoliza";
         } else {
-            $tipo_plantilla = "plantillaSinPoliza";
+            $tipo_plantilla = "plantillaCompras";
         }
-        $cadenaSql = $this->miSql->getCadenaSql('consultaPlantilla', array('tipo_contrato' => $contrato['tipo_contrato'], 'tipo_plantilla' => $tipo_plantilla));
+        $cadenaSql = $this->miSql->getCadenaSql('consultaPlantilla', array('tipo_contrato' => $contrato['tipo_contrato'], 'tipo_plantilla' => $tipo_plantilla ,  'fecha_vigencia' => $contrato['fecha_registro']));
         $plantilla = $esteRecursoDB->ejecutarAcceso($cadenaSql, "busqueda");
         $plantilla = $plantilla[0];
 
@@ -930,7 +1053,9 @@ class RegistradorOrden {
             'P[DOCUMENTO_PROVEEDOR]' => $contratista['num_documento'],
             'P[ELABORO_NOMBRE]' => strtoupper($usuario[0]['nombre']),
             'P[ELABORO_APELLIDO]' => strtoupper($usuario[0]['apellido']),
-            'P[ELEMENTOS_SERVICIO]' => $elementosyservicios,
+            'P[ELEMENTOS_SERVICIO]' => $elementosyservicios,            
+            'P[ACTIVIDADES]' => $contrato['actividades'],
+            'P[FORMA_PAGO]' => $desc_forma_pago,
         );
 
         $contenidoPiePagina = "";

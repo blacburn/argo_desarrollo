@@ -91,6 +91,70 @@ class registrarForm {
         echo $this->miFormulario->marcoAgrupacion('inicio', $atributos);
 
 
+        // ---------------- CONTROL: Cuadro de Texto --------------------------------------------------------
+            $esteCampo = 'vigencia';
+            $atributos ['columnas'] = 2;
+            $atributos ['nombre'] = $esteCampo;
+            $atributos ['id'] = $esteCampo;
+            $atributos ['evento'] = '';
+            $atributos ['deshabilitado'] = false;
+            $atributos ["etiquetaObligatorio"] = true;
+            $atributos ['tab'] = $tab;
+            $atributos ['tamanno'] = 1;
+            $atributos ['estilo'] = 'jqueryui';
+            $atributos ['validar'] = 'required';
+            $atributos ['limitar'] = false;
+            $atributos ['etiqueta'] = $this->lenguaje->getCadena($esteCampo);
+            $atributos ['anchoEtiqueta'] = 213;
+
+            if (isset($_REQUEST [$esteCampo])) {
+                $atributos ['seleccion'] = $_REQUEST [$esteCampo];
+            } else {
+                $atributos ['seleccion'] = date('Y');
+            }
+
+            // $atributos ['matrizItems'] = $matrizItems;
+            // Utilizar lo siguiente cuando no se pase un arreglo:
+            $atributos ['baseDatos'] = 'contractual';
+            $atributos ['cadena_sql'] = $this->miSql->getCadenaSql("list_vigencias");
+            $tab ++;
+            $atributos = array_merge($atributos, $atributosGlobales);
+            echo $this->miFormulario->campoCuadroLista($atributos);
+            unset($atributos);
+
+            // ---------------- CONTROL: Cuadro de Texto --------------------------------------------------------
+            $esteCampo = 'numero_contrato';
+            $atributos ['columnas'] = 2;
+            $atributos ['nombre'] = $esteCampo;
+            $atributos ['id'] = $esteCampo;
+            $atributos ['evento'] = '';
+            $atributos ['deshabilitado'] = true;
+            $atributos ["etiquetaObligatorio"] = false;
+            $atributos ['tab'] = $tab;
+            $atributos ['tamanno'] = 1;
+            $atributos ['estilo'] = 'jqueryui';
+            $atributos ['validar'] = ' ';
+            $atributos ['limitar'] = false;
+            $atributos ['etiqueta'] = $this->lenguaje->getCadena($esteCampo);
+            $atributos ['anchoEtiqueta'] = 213;
+
+            if (isset($_REQUEST [$esteCampo])) {
+                $atributos ['seleccion'] = $_REQUEST [$esteCampo];
+            } else {
+                $atributos ['seleccion'] = - 1;
+            }
+
+            // $atributos ['matrizItems'] = $matrizItems;
+            // Utilizar lo siguiente cuando no se pase un arreglo:
+            $atributos ['baseDatos'] = 'contractual';
+            $atributos ['cadena_sql'] = $this->miSql->getCadenaSql("list_vigencias");
+            $tab ++;
+            $atributos = array_merge($atributos, $atributosGlobales);
+            echo $this->miFormulario->campoCuadroLista($atributos);
+            unset($atributos);
+
+
+
         $esteCampo = 'vigencia_contrato';
         $atributos ['id'] = $esteCampo;
         $atributos ['nombre'] = $esteCampo;
@@ -120,7 +184,7 @@ class registrarForm {
 
         // Aplica atributos globales al control
         $atributos = array_merge($atributos, $atributosGlobales);
-        echo $this->miFormulario->campoCuadroTexto($atributos);
+        //echo $this->miFormulario->campoCuadroTexto($atributos);
         unset($atributos);
 
         $esteCampo = 'id_contrato';

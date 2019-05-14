@@ -176,7 +176,7 @@ class registrarForm {
                                 <th>Vigencia</th>
                                 <th>Sede -Dependencia</th>
                                 <th>Estado</th>
-                                <th>Cargar Elementos</th>
+                                <th>Cargar Elementos<br>ó Servicos</th>
                                 
                              </tr>
             </thead>

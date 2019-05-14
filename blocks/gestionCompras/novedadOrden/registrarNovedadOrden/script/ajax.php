@@ -896,16 +896,16 @@ $urlFinalinformacionRp = $url . $cadenainformacionRp;
                             + "Documento: " + data[1] + " <br><br>"
                             + "Tipo Persona: " + data[0] + " <br><br>"
                             + "Ciudad de Contacto: " + data[2] + " <br><br>"
-                            + "Direccion: " + data[3] + " <br><br>"
+                            + "Dirección: " + data[3] + " <br><br>"
                             + "Correo: " + data[4] + " <br><br>"
                             + "Sitio WEB: " + data[5] + " <br><br>"
                             + "Estado: " + data[8] + " <br><br>"
                             + "Tipo Cuenta: " + data[9] + " <br><br>"
-                            + "Numero de Cuenta: " + data[10] + " <br><br>"
+                            + "Número de Cuenta: " + data[10] + " <br><br>"
                             + "Entidad Bancaria: " + data[11] + " <br><br>"
                             + "Fecha Registro: " + data[12] + " <br><br>"
-                            + "Punatje: " + data[6] + " <br><br>";
-                    $("#ventanaEmergenteContratista").dialog('option', 'title', 'Unico Contratista');
+                            + "Puntaje: " + data[6] + " <br><br>";
+                    $("#ventanaEmergenteContratista").dialog('option', 'title', 'Único Contratista');
                     $("#ventanaEmergenteContratista").dialog("open");
 
 
@@ -936,12 +936,12 @@ $urlFinalinformacionRp = $url . $cadenainformacionRp;
                             + "Documento: " + data[0][1] + " <br><br>"
                             + "Tipo Sociedad: " + data[0][0] + " <br><br>"
                             + "Ciudad de Contacto: " + data[0][2] + " <br><br>"
-                            + "Direccion: " + data[0][3] + " <br><br>"
+                            + "Dirección: " + data[0][3] + " <br><br>"
                             + "Correo: " + data[0][4] + " <br><br>"
                             + "Sitio WEB: " + data[0][5] + " <br><br>"
                             + "Estado: " + data[0][8] + " <br><br>"
                             + "Tipo Cuenta: " + data[0][9] + " <br><br>"
-                            + "Numero de Cuenta: " + data[0][10] + " <br><br>"
+                            + "Número de Cuenta: " + data[0][10] + " <br><br>"
                             + "Entidad Bancaria: " + data[0][11] + " <br><br>"
                             + "Fecha Registro: " + data[0][12] + " <br><br>"
                             + "Puntaje: " + data[0][6] + " <br><br>"

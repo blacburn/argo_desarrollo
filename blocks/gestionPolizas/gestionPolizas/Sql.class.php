@@ -728,7 +728,7 @@ class Sql extends \Sql {
                 break;
 
             case "ConsultarTipoContrato" :
-                $cadenaSql = " SELECT tp.tipo_contrato  ";
+                $cadenaSql = " SELECT tp.tipo_contrato , tp.id_grupo_tipo_contrato  ";
                 $cadenaSql .= " FROM argo.tipo_contrato tp, argo.contrato_general cg  ";
                 $cadenaSql .= " WHERE ";
                 $cadenaSql .= " cg.tipo_contrato = tp.id and id = $variable ;";
@@ -864,6 +864,34 @@ class Sql extends \Sql {
                 $cadenaSql .= " FROM agora.informacion_proveedor ";
                 $cadenaSql .= " WHERE id_proveedor = $variable ;";
 
+                break;
+
+            case "vigencia_contrato" :
+
+                $cadenaSql = " SELECT DISTINCT vigencia as id, vigencia as valor";
+                $cadenaSql .= " FROM argo.contrato_suscrito ORDER BY vigencia DESC; ";
+            break;    
+
+            case "consecutivo_contrato2" :
+
+                $cadenaSql = " SELECT  DISTINCT cs.numero_contrato_suscrito as id, cs.numero_contrato_suscrito as valor,  cs.fecha_suscripcion ";
+                $cadenaSql .= " FROM contrato_general cg, contrato_estado ce, estado_contrato ec, contrato_suscrito cs , tipo_contrato tpc   ";
+                $cadenaSql .= " WHERE cg.unidad_ejecutora ='" . $variable['unidad'] . "' ";
+                $cadenaSql .= " AND cg.numero_contrato = cs.numero_contrato  AND tpc.id = cg.tipo_contrato  ";
+                $cadenaSql .= " AND cg.numero_contrato = ce.numero_contrato and cg.vigencia = ce.vigencia and ce.estado = ec.id and cg.vigencia = " . $variable['vigencia_curso'] . " ";
+                $cadenaSql .= " AND ce.fecha_registro = (SELECT MAX(cee.fecha_registro) from contrato_estado cee where cg.numero_contrato = cee.numero_contrato and  cg.vigencia = cee.vigencia) ";
+                $cadenaSql .= " AND (ec.id = 3 ) AND tpc.id_grupo_tipo_contrato != 1  ";
+                $cadenaSql .= " ORDER BY cs.fecha_suscripcion ASC;";
+            break;
+            case 'buscar_contrato2' :
+                $cadenaSql = " SELECT  DISTINCT cs.numero_contrato_suscrito AS  data,  cs.fecha_suscripcion ";
+                $cadenaSql .= " FROM contrato_general cg, contrato_estado ce, estado_contrato ec, contrato_suscrito cs , tipo_contrato tpc   ";
+                $cadenaSql .= " WHERE cg.unidad_ejecutora ='" . $variable['unidad'] . "' ";
+                $cadenaSql .= " AND cg.numero_contrato = cs.numero_contrato  AND tpc.id = cg.tipo_contrato  ";
+                $cadenaSql .= " AND cg.numero_contrato = ce.numero_contrato and cg.vigencia = ce.vigencia and ce.estado = ec.id and cg.vigencia = " . $variable['vigencia_curso'] . " ";
+                $cadenaSql .= " AND ce.fecha_registro = (SELECT MAX(cee.fecha_registro) from contrato_estado cee where cg.numero_contrato = cee.numero_contrato and  cg.vigencia = cee.vigencia) ";
+                $cadenaSql .= " AND (ec.id = 3 ) AND tpc.id_grupo_tipo_contrato != 1  ";
+                $cadenaSql .= " ORDER BY cs.fecha_suscripcion ASC;";
                 break;
         }
         return $cadenaSql;

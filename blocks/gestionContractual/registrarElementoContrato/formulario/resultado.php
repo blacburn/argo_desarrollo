@@ -174,7 +174,7 @@ class registrarForm {
             			<th>Identificación<br>Nombre Contratista</th>
                                 <th>Sede -Dependencia</th>
                                 <th>Estado</th>
-                                <th>Cargar Elementos</th>
+                                <th>Cargar Elementos <br> ó Servicios</th>
                              </tr>
             </thead>
             <tbody>";

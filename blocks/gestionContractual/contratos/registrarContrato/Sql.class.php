@@ -34,6 +34,83 @@ class Sql extends \Sql {
             /**
              * Clausulas específicas
              */
+
+            case 'consultarEstadoContrato' :
+                $cadenaSql = " SELECT ce.estado, ec.nombre_estado  ";
+                $cadenaSql .= " FROM contrato_general cg, contrato_estado ce, estado_contrato ec  ";
+                $cadenaSql .= " WHERE cg.numero_contrato = ce.numero_contrato and cg.vigencia = ce.vigencia and ce.estado = ec.id ";
+                $cadenaSql .= " AND ce.fecha_registro = (SELECT MAX(cee.fecha_registro) from contrato_estado cee where cg.numero_contrato = cee.numero_contrato and  cg.vigencia = cee.vigencia) ";
+                $cadenaSql .= " AND cg.numero_contrato = '" . $variable[0] . "' and cg.vigencia = " . $variable[1] . " ;";
+
+                break;
+
+            case "tipo_contrato_find" :
+                $cadenaSql = " SELECT * ";
+                $cadenaSql.=" FROM argo.tipo_contrato WHERE id = ".$variable." ;";
+                break;
+            case "insertarLogContratoSuccess" :
+                $cadenaSql = "INSERT INTO ";
+                $cadenaSql .= "frame_work." . $prefijo . "log_contrato ";
+                $cadenaSql .= "( ";
+                $cadenaSql .= "tipo_log, ";
+                $cadenaSql .= "tipo_contrato, ";
+                $cadenaSql .= "estado_contrato, ";
+                $cadenaSql .= "vigencia, ";
+                $cadenaSql .= "consecutivo_contrato, ";
+                $cadenaSql .= "query, ";
+                if(isset($variable ['data'])){
+                    $cadenaSql .= "data, ";
+                }
+                $cadenaSql .= "host, ";
+                $cadenaSql .= "fecha_log, ";
+                $cadenaSql .= "id_usuario ";
+                $cadenaSql .= ") ";
+                $cadenaSql .= "VALUES ";
+                $cadenaSql .= "( ";
+                $cadenaSql .= "'" . $variable ['tipo_log'] . "', ";
+                $cadenaSql .= "'" . $variable ['tipo_contrato'] . "', ";
+                $cadenaSql .= "'" . $variable ['estado_contrato'] . "', ";
+                $cadenaSql .= "'" . $variable ['vigencia'] . "', ";
+                $cadenaSql .= "'" . $variable ['consecutivo_contrato'] . "', ";
+                $cadenaSql .= "'" . $variable ['query'] . "', ";
+                if(isset($variable ['data'])){
+                    $cadenaSql .= "'" . $variable ['data'] . "', ";
+                }
+                $cadenaSql .= "'" . $variable ['host'] . "', ";
+                $cadenaSql .= "'" . $variable ['fecha_log'] . "', ";
+                $cadenaSql .= "'" . $variable ['usuario'] . "' ";
+                $cadenaSql .= ") RETURNING id;";
+                break;
+            case "insertarLogContratoError" :
+                $cadenaSql = "INSERT INTO ";
+                $cadenaSql .= "frame_work." . $prefijo . "log_contrato_error ";
+                $cadenaSql .= "( ";
+                $cadenaSql .= "tipo_log, ";
+                $cadenaSql .= "tipo_contrato, ";
+                $cadenaSql .= "estado_contrato, ";
+                $cadenaSql .= "vigencia, ";
+                $cadenaSql .= "consecutivo_contrato, ";
+                $cadenaSql .= "query, ";
+                $cadenaSql .= "error, ";
+                $cadenaSql .= "host, ";
+                $cadenaSql .= "fecha_log, ";
+                $cadenaSql .= "id_usuario ";
+                $cadenaSql .= ") ";
+                $cadenaSql .= "VALUES ";
+                $cadenaSql .= "( ";
+                $cadenaSql .= "'" . $variable ['tipo_log'] . "', ";
+                $cadenaSql .= "'" . $variable ['tipo_contrato'] . "', ";
+                $cadenaSql .= "'" . $variable ['estado_contrato'] . "', ";
+                $cadenaSql .= "'" . $variable ['vigencia'] . "', ";
+                $cadenaSql .= "'" . $variable ['consecutivo_contrato'] . "', ";
+                $cadenaSql .= "'" . $variable ['query'] . "', ";
+                $cadenaSql .= "'" . $variable ['error'] . "', ";
+                $cadenaSql .= "'" . $variable ['host'] . "', ";
+                $cadenaSql .= "'" . $variable ['fecha_log'] . "', ";
+                $cadenaSql .= "'" . $variable ['usuario'] . "' ";
+                $cadenaSql .= ") RETURNING id;";
+                break;
+
             case "vigencias_solicitudes" :
 
                 $cadenaSql = "SELECT DISTINCT vigencia , vigencia valor  ";
@@ -928,7 +1005,7 @@ class Sql extends \Sql {
                 $cadenaSql.=" SN.ESTADO, SN.JUSTIFICACION, SN.OBJETO,SN.VALOR_CONTRATACION,CDP.ESTADO as ESTADOCDP , CDP.FECHA_REGISTRO,SN.RUBRO_INTERNO, RB.DESCRIPCION ";
                 $cadenaSql.=" FROM CO.CO_SOL_CDP SCDP, PR.PR_DISPONIBILIDADES CDP , CO.CO_DEPENDENCIAS DP, PR.PR_RUBRO RB, CO.CO_SOLICITUD_ADQ SN   ";
                 $cadenaSql.=" LEFT JOIN CO.CO_DTLLE_SOL_ADQ_S DE ON  DE.VIGENCIA = SN.VIGENCIA and DE.NUM_SOL_ADQ = SN.NUM_SOL_ADQ   ";
-                $cadenaSql.=" WHERE SN.NUM_SOL_ADQ = SCDP.NUM_SOL_ADQ and SN.VIGENCIA = SCDP.VIGENCIA and SN.DEPENDENCIA = DP.COD_DEPENDENCIA ";
+                $cadenaSql.=" WHERE SN.NUM_SOL_ADQ = SCDP.NUM_SOL_ADQ and SN.VIGENCIA = SCDP.VIGENCIA and cdp.codigo_unidad_ejecutora = '0" . $variable['unidad_ejecutora'] . "' and SN.DEPENDENCIA = DP.COD_DEPENDENCIA ";
                 $cadenaSql.=" and SN.VIGENCIA = RB.VIGENCIA and SN.RUBRO_INTERNO = RB.INTERNO  ";
                 $cadenaSql.=" and CDP.VIGENCIA = SCDP.VIGENCIA and CDP.NUM_SOL_ADQ = SCDP.ID_SOL_CDP and CDP.CODIGO_COMPANIA = SCDP.CODIGO_COMPANIA  ";
                 $cadenaSql.=" and CDP.VIGENCIA = SCDP.VIGENCIA and SN.VIGENCIA=" . $variable['vigencia'] . " and ";
@@ -1009,6 +1086,135 @@ class Sql extends \Sql {
 
                 break;
 
+
+            case "supervisoresConsultados" :
+                $cadenaSql = "SELECT sc.documento||'-'||sc.nombre supervisor, cst.cargo, sc.id ";
+                $cadenaSql .= " FROM argo.supervisor_contrato sc ";
+                $cadenaSql .= " JOIN argo.cargo_supervisor_temporal cst ON cst.id=sc.cargo_id ";
+                $cadenaSql .= " WHERE dependencia_supervisor='".$variable."' ";
+                $cadenaSql .= "   and '".date('Y-m-d')."'>=fecha_inicio and '".date('Y-m-d')."'<=fecha_fin ";
+                break;
+
+            case "supervisoresConsultadosBi" :
+                $cadenaSql = "SELECT sc.documento||'-'||sc.nombre supervisor, cst.cargo, sc.id ";
+                $cadenaSql .= " FROM argo.supervisor_contrato sc ";
+                $cadenaSql .= " JOIN argo.cargo_supervisor_temporal cst ON cst.id=sc.cargo_id ";
+                $cadenaSql .= " WHERE dependencia_supervisor='".$variable['dependencia']."' ";
+                $cadenaSql .= " AND sede_supervisor='".$variable['sede']."' ";
+                $cadenaSql .= "   and '".date('Y-m-d')."'>=fecha_inicio and '".date('Y-m-d')."'<=fecha_fin ";
+                break; 
+
+
+            case "buscar_contrato_proveedor" :
+
+                $cadenaSql = " SELECT  ce.numero_contrato , ce.vigencia, ce.estado, cg.unidad_ejecutora ";
+                $cadenaSql .= " FROM argo.contrato_general cg ";
+                $cadenaSql .= " JOIN argo.contrato_estado as ce ON ce.numero_contrato=cg.numero_contrato ";
+                $cadenaSql .= " WHERE  contratista IN (".$variable.") AND ce.estado IN (1,3,4) AND cg.tipo_contrato=6  AND cg.unidad_ejecutora=1 ";
+                $cadenaSql .= " ORDER BY  ce.id  DESC limit 1 ";
+
+                break;
+
+            case "buscar_otro_contrato_proveedor" :
+
+                $cadenaSql = " SELECT  ce.numero_contrato , ce.vigencia, ce.estado, cg.unidad_ejecutora ";
+                $cadenaSql .= " FROM argo.contrato_general cg ";
+                $cadenaSql .= " JOIN argo.contrato_estado as ce ON ce.numero_contrato=cg.numero_contrato ";
+                $cadenaSql .= " WHERE  contratista IN (".$variable['contratista'].") AND ce.estado IN (1,3,4) AND cg.tipo_contrato=".$variable['tipo_contrato']."  AND cg.unidad_ejecutora=1 ";
+                $cadenaSql .= " ORDER BY  ce.id  DESC limit 1 ";
+
+                break;
+    
+
+
+
+
+
+            case "buscar_contrato_proveedorOtrosi" :
+
+                $cadenaSql = " SELECT  ce.numero_contrato , ce.vigencia, ce.estado, cg.unidad_ejecutora ";
+                $cadenaSql .= " FROM argo.contrato_general cg ";
+                $cadenaSql .= " JOIN argo.contrato_estado as ce ON ce.numero_contrato=cg.numero_contrato ";
+                $cadenaSql .= " JOIN argo.contrato_suscrito as cs ON cs.numero_contrato=cg.numero_contrato ";
+                $cadenaSql .= " JOIN argo.novedad_postcontractual as np ON np.numero_contrato=cs.numero_contrato_suscrito ";
+                $cadenaSql .= " WHERE  cg.contratista IN (".$variable.") AND ce.estado IN (4) AND cg.tipo_contrato=6  AND tipo_novedad=220 AND cs.vigencia=np.vigencia AND cg.unidad_ejecutora=1 AND np.fecha_inicio<='".date('Y-m-d')."' AND np.fecha_fin >= '".date('Y-m-d')."' ";
+                $cadenaSql .= " ORDER BY  ce.id  DESC limit 1 ";
+
+                break;   
+
+            case "buscar_contrato_proveedorCesion" :
+
+                $cadenaSql = " SELECT  ce.numero_contrato , ce.vigencia, ce.estado, cg.unidad_ejecutora ";
+                $cadenaSql .= " FROM argo.contrato_general cg ";
+                $cadenaSql .= " JOIN argo.contrato_estado as ce ON ce.numero_contrato=cg.numero_contrato ";
+                $cadenaSql .= " JOIN argo.contrato_suscrito as cs ON cs.numero_contrato=cg.numero_contrato ";
+                $cadenaSql .= " JOIN argo.novedad_postcontractual as np ON np.numero_contrato=cs.numero_contrato_suscrito ";
+                $cadenaSql .= " WHERE  np.contratista IN (".$variable.") AND ce.estado IN (4) AND cg.tipo_contrato=6  AND tipo_novedad=219 AND cs.vigencia=np.vigencia AND cg.unidad_ejecutora=1 AND np.fecha_inicio<='".date('Y-m-d')."' AND np.fecha_fin >= '".date('Y-m-d')."' ";
+                $cadenaSql .= " ORDER BY  ce.id  DESC limit 1 ";
+
+                break; 
+
+             case "buscar_contrato_proveedorCesionante" :
+
+                $cadenaSql = " SELECT  ce.numero_contrato , ce.vigencia, ce.estado, cg.unidad_ejecutora ";
+                $cadenaSql .= " FROM argo.contrato_general cg ";
+                $cadenaSql .= " JOIN argo.contrato_estado as ce ON ce.numero_contrato=cg.numero_contrato ";
+                $cadenaSql .= " JOIN argo.contrato_suscrito as cs ON cs.numero_contrato=cg.numero_contrato ";
+                $cadenaSql .= " JOIN argo.novedad_postcontractual as np ON np.numero_contrato=cs.numero_contrato_suscrito ";
+                $cadenaSql .= " WHERE  cg.contratista IN (".$variable.") AND ce.estado IN (4) AND cg.tipo_contrato=6  AND tipo_novedad=219 AND cs.vigencia=np.vigencia AND cg.unidad_ejecutora=1 AND np.fecha_inicio<='".date('Y-m-d')."' AND np.fecha_fin >= '".date('Y-m-d')."' ";
+                $cadenaSql .= " ORDER BY  ce.id  DESC limit 1 ";
+
+                break;      
+
+
+    
+
+
+             case "buscar_contrato_elaborado" :
+
+                $cadenaSql = " SELECT cg.numero_contrato, cg.vigencia, cg.fecha_registro , cg.plazo_ejecucion || ' ' || par.descripcion plazo_ejecucion,  ce.estado ";
+                $cadenaSql .= " FROM argo.contrato_general cg ";
+                $cadenaSql .= " JOIN argo.parametros as par ON par.id_parametro=cg.unidad_ejecucion ";
+                $cadenaSql .= " JOIN argo.contrato_estado as ce ON ce.numero_contrato=cg.numero_contrato ";
+                $cadenaSql .= " WHERE cg.numero_contrato IN ('". $variable ."') ORDER BY ce.id DESC limit 1;";
+
+                break; 
+
+            case "buscar_contrato_suscrito" :
+
+                $cadenaSql = " SELECT cs.numero_contrato_suscrito numero_contrato, cs.vigencia, cs.fecha_suscripcion fecha_registro, cg.plazo_ejecucion || ' ' || par.descripcion plazo_ejecucion,   ce.estado ";
+                $cadenaSql .= " FROM argo.contrato_general cg ";
+                $cadenaSql .= " JOIN argo.parametros as par ON par.id_parametro=cg.unidad_ejecucion ";
+                $cadenaSql .= " JOIN argo.contrato_suscrito as cs ON cs.numero_contrato=cg.numero_contrato ";
+                $cadenaSql .= " JOIN argo.contrato_estado as ce ON ce.numero_contrato=cg.numero_contrato ";
+                $cadenaSql .= " WHERE cg.numero_contrato IN ('". $variable ."') ORDER BY ce.id DESC limit 1;";
+
+                break;        
+
+            case "buscar_contrato_ejecucion" :
+
+                $cadenaSql = " SELECT cs.numero_contrato_suscrito numero_contrato, cs.vigencia, ai.fecha_inicio || ' al ' || ai.fecha_fin fecha_registro,  cg.plazo_ejecucion || ' ' || par.descripcion plazo_ejecucion, ce.estado ";
+                $cadenaSql .= " FROM argo.contrato_general cg ";
+                $cadenaSql .= " JOIN argo.parametros as par ON par.id_parametro=cg.unidad_ejecucion ";
+                $cadenaSql .= " JOIN argo.contrato_suscrito as cs ON cs.numero_contrato=cg.numero_contrato ";
+                $cadenaSql .= " JOIN argo.acta_inicio as ai ON ai.numero_contrato=cg.numero_contrato ";
+                $cadenaSql .= " JOIN argo.contrato_estado as ce ON ce.numero_contrato=cg.numero_contrato ";
+                $cadenaSql .= " WHERE cg.numero_contrato IN ('". $variable ."')  ORDER BY ce.id DESC limit 1;";
+
+                break;       
+
+            case "buscar_contrato_ejecucionNovedad" :
+
+                $cadenaSql = " SELECT cs.numero_contrato_suscrito numero_contrato, cs.vigencia, np.fecha_inicio || ' al ' || np.fecha_fin fecha_registro,  np.plazo_ejecucion || ' ' || par.descripcion plazo_ejecucion, ce.estado ";
+                $cadenaSql .= " FROM argo.contrato_general cg ";
+                $cadenaSql .= " JOIN argo.contrato_suscrito as cs ON cs.numero_contrato=cg.numero_contrato  ";
+                $cadenaSql .= " JOIN argo.acta_inicio as ai ON ai.numero_contrato=cg.numero_contrato  ";
+                $cadenaSql .= " JOIN argo.novedad_postcontractual as np ON np.numero_contrato=cs.numero_contrato_suscrito ";
+                $cadenaSql .= " JOIN argo.parametros as par ON par.id_parametro=np.unidad_ejecucion  ";                
+                $cadenaSql .= " JOIN argo.contrato_estado as ce ON ce.numero_contrato=cg.numero_contrato ";
+                $cadenaSql .= " WHERE cg.numero_contrato IN ('". $variable ."') AND cs.vigencia=np.vigencia ORDER BY ce.id DESC limit 1;";
+
+                break; 
 
 
             /*

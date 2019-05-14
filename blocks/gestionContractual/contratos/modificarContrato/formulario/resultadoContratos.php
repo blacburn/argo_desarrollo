@@ -287,15 +287,15 @@ class registrarForm {
 
             echo "<thead>
                              <tr>
-                                <th>Vigencia</th>
-                                <th>Consecutivo de Elaboración</th>            
-                                <th>Tipo Contrato</th>            
-            			<th>Contratista</th>
-                                <th>Estado</th>
-                                <th>Actualizar<br>Contrato</th>
-                                <th>Suscribir<br>Contrato</th>
-                                <th>Gestion de Elementos<br>Contrato</th>
-                                <th>Documento<input type='text' name='fuentedocumento' placeholder='Tamaño Fuente' id='fuentedocumento'></th>
+                                <th><center>Vigencia</center></th>
+                                <th><center>Consecutivo de Elaboración</center></th>            
+                                <th><center>Tipo Contrato</center></th>            
+            			        <th><center>Contratista</center></th>
+                                <th><center>Estado</center></th>
+                                <th><center>Actualizar<br>Contrato</center></th>
+                                <th><center>Suscribir<br>Contrato</center></th>
+                                <th><center>Gestion de Elementos<br>Contrato</center></th>
+                                <th><center>Documento<input type='text' name='fuentedocumento' placeholder='Tamaño Fuente' id='fuentedocumento'></center></th>
                                 </tr>
             </thead>
             <tbody>";
@@ -358,7 +358,13 @@ class registrarForm {
                     $mostrarHtml .= "<td><center>" . $valor ['tipo_contrato'] . "<a href='javascript:void(0);' onclick='VerInfoConvenio(" . $valor ['convenio'] . ");'> (Convenio)</a></center></td>";
                 }
                 if ($valor["clase_contratista"] == '33') {
-                    $mostrarHtml .= "<td><center><a href='javascript:void(0);' onclick='VerInfoContratista(" . $valor ['proveedor'] . ");'> Información Contratista</a></center></td>";
+              
+                    if($valor['num_tipo_contrato']=='6' && $unidadEjecutora[0]['unidad_ejecutora']=='1'){
+                       $mostrarHtml .= "<td><center><a href='javascript:void(0);' onclick='VerInfoContratistaCPS(" . $valor ['proveedor'] . ", ".$valor ['numero_contrato'].");'> Información Contratista</a></center></td>";
+                    }
+                    else{
+                       $mostrarHtml .= "<td><center><a href='javascript:void(0);' onclick='VerInfoContratista(" . $valor ['proveedor'] . ", ".$valor['num_tipo_contrato'].", ".$valor ['numero_contrato'].");'> Información Contratista</a></center></td>";
+                    }
                 } else {
                     $mostrarHtml .= "<td><center><a href='javascript:void(0);' onclick='VerInfoSociedadTemporal(" . $valor ['proveedor'] . ");'> Información Contratista</a></center></td>";
                 }
@@ -412,8 +418,39 @@ class registrarForm {
             echo $this->miFormulario->cuadroMensaje($atributos);
             unset($atributos);
 
+
+            $atributos ["id"] = "divisionInfoContratistaCPS";
+            $atributos = array_merge($atributos, $atributosGlobales);
+            $atributos ["estiloEnLinea"] = 'display:none';
+            echo $this->miFormulario->division("inicio", $atributos);
+            unset($atributos);
+                    {
+
+              // ---------------- CONTROL: Cuadro de Texto --------------------------------------------------------
+            $esteCampo = 'infoContratista2';
+            $atributos ['id'] = $esteCampo;
+            $atributos ['tipo'] = 'warning';
+            $atributos ['estilo'] = 'textoNotasFormulario';
+            $atributos ['mensaje'] = "";
+            $atributos ['span'] = "spandidCPS";
+
+            $tab ++;
+
+            // Aplica atributos globales al control
+            $atributos = array_merge($atributos, $atributosGlobales);
+            echo $this->miFormulario->cuadroMensaje($atributos);
+            unset($atributos);
+                    }
             echo $this->miFormulario->division("fin");
             unset($atributos);
+
+
+            echo $this->miFormulario->division("fin");
+            unset($atributos);
+
+
+
+
 
 
             // Fin de Conjunto de Controles

@@ -11,7 +11,7 @@ $funcion [$indice ++] = "jquery.dataTables.min.js";
 
 $funcion [$indice ++] = "jquery.autocomplete.js";
 $funcion [$indice ++] = "jquery.autocomplete.min.js";
-
+$funcion [$indice ++]  = "sweetalert2.min.js";
 
 $rutaBloque = $this->miConfigurador->getVariableConfiguracion ( "host" );
 $rutaBloque .= $this->miConfigurador->getVariableConfiguracion ( "site" );

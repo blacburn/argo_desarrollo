@@ -330,12 +330,22 @@ class RegistradorOrden {
         $amparos = [];
         $usuarios = "";
 
-        for ($i = 0; $i < count($polizas); $i++) {
+        $cadenaSql = $this->miSql->getCadenaSql('Consultar_Contrato_Particular', $datosContrato);
+        $contrato = $esteRecursoDB->ejecutarAcceso($cadenaSql, "busqueda");
+        $contrato = $contrato[0];
 
-            $cadenaSqlelaboro = $this->miSql->getCadenaSql('obtenerInformacionElaborador', $polizas[$i]['usuario']);
+        $cadenaSql = $this->miSql->getCadenaSql('ConsultarDescripcionParametro', $contrato['tipologia_contrato']);
+        $tipoContrato = $esteRecursoDB->ejecutarAcceso($cadenaSql, "busqueda");
+
+        $cadenaSql = $this->miSql->getCadenaSql('ConsultarTipoContrato', $contrato['tipo_contrato']);
+        $tipoContrato = $esteRecursoDB->ejecutarAcceso($cadenaSql, "busqueda");
+
+        if ($tipoContrato[0][1] !== '1') {
+
+
+            $cadenaSqlelaboro = $this->miSql->getCadenaSql('obtenerInformacionElaborador', $polizas[0]['usuario']);
 
             $usuario = $DBFrameWork->ejecutarAcceso($cadenaSqlelaboro, "busqueda");
-
             $usuarios = $usuarios .
                     "<table align='justify' style='width:100%;' >                   
                     <tr>
@@ -348,43 +358,73 @@ class RegistradorOrden {
                         <td style='width:100%;text-align:left;'>Nombre. " . strtoupper($usuario[0]['nombre']) . " " . strtoupper($usuario[0]['apellido']) . "</td>	
                     </tr>
                      <tr>
-                        <td style='width:100%;text-align:left;'>Contratista Oficina Asesora Jurídica</td>	
+                        <td style='width:100%;text-align:left;'>Oficina Asesora Jurídica</td>	
                     </tr>
                                     
                      
                 </table><br><br>";
 
 
+            for ($i = 0; $i < count($polizas); $i++) {
+
+                $numero_poliza = $numero_poliza . $polizas[$i]['numero_poliza'] . "<br>";
+                $aseguradoras = $aseguradoras . $polizas[$i]['nombre_aseguradora'] . "<br>";
+                $cadenaSql = $this->miSql->getCadenaSql('obtenerAmparosActivos', $polizas[$i]['id_poliza']);
+                $amparosPoliza = $esteRecursoDB->ejecutarAcceso($cadenaSql, "busqueda");
+                if ($amparosPoliza) {
+                    $amparos = array_merge($amparos, $amparosPoliza);
+                }
+            }
+        } else {
 
 
-            $numero_poliza = $numero_poliza . $polizas[$i]['numero_poliza'] . "<br>";
-            $aseguradoras = $aseguradoras . $polizas[$i]['nombre_aseguradora'] . "<br>";
-            $cadenaSql = $this->miSql->getCadenaSql('obtenerAmparosActivos', $polizas[$i]['id_poliza']);
-            $amparosPoliza = $esteRecursoDB->ejecutarAcceso($cadenaSql, "busqueda");
-            if ($amparosPoliza) {
-                $amparos = array_merge($amparos, $amparosPoliza);
+            $cadenaSqlelaboro = $this->miSql->getCadenaSql('obtenerInformacionElaborador', $polizas[0]['usuario']);
+
+            $usuario = $DBFrameWork->ejecutarAcceso($cadenaSqlelaboro, "busqueda");
+            $usuarios = $usuarios .
+                    "<table align='justify' style='width:100%;' >                   
+                    <tr>
+                        <td style='width:100%;text-align:left;height: 20px'>Elaborado por </td>	
+                    </tr>
+                     <tr>
+                        <td style='width:100%;text-align:left;'>Firma ___________________________</td>	
+                    </tr>
+                     <tr>
+                        <td style='width:100%;text-align:left;'>Nombre. " . strtoupper($usuario[0]['nombre']) . " " . strtoupper($usuario[0]['apellido']) . "</td>	
+                    </tr>
+                     <tr>
+                        <td style='width:100%;text-align:left;'>Sección Compras</td>	
+                    </tr>
+                                    
+                     
+                </table><br><br>";
+
+
+            for ($i = 0; $i < count($polizas); $i++) {
+
+                $numero_poliza = $numero_poliza . $polizas[$i]['numero_poliza'] . "<br>";
+                $aseguradoras = $aseguradoras . $polizas[$i]['nombre_aseguradora'] . "<br>";
+                $cadenaSql = $this->miSql->getCadenaSql('obtenerAmparosActivos', $polizas[$i]['id_poliza']);
+                $amparosPoliza = $esteRecursoDB->ejecutarAcceso($cadenaSql, "busqueda");
+                if ($amparosPoliza) {
+                    $amparos = array_merge($amparos, $amparosPoliza);
+                }
             }
         }
+
+
 
 
         $cadenaSql = $this->miSql->getCadenaSql('Consultar_Info_Suscripcion', $datosContrato);
         $infoSuscripcion = $esteRecursoDB->ejecutarAcceso($cadenaSql, "busqueda");
         $infoSuscripcion = $infoSuscripcion[0];
 
-        $cadenaSql = $this->miSql->getCadenaSql('Consultar_Contrato_Particular', $datosContrato);
-        $contrato = $esteRecursoDB->ejecutarAcceso($cadenaSql, "busqueda");
-        $contrato = $contrato[0];
 
 
-        $cadenaSql = $this->miSql->getCadenaSql('ConsultarDescripcionParametro', $contrato['tipologia_contrato']);
-        $tipoContrato = $esteRecursoDB->ejecutarAcceso($cadenaSql, "busqueda");
-       
-        $cadenaSql = $this->miSql->getCadenaSql('ConsultarTipoContrato', $contrato['tipo_contrato']);
-        
-        $tipoContrato = $esteRecursoDB->ejecutarAcceso($cadenaSql, "busqueda");
-        
+
+
+
         $cadenaSql = $this->miSql->getCadenaSql('obtenerInfoProveedor', $contrato['contratista']);
-
         $contratista = $esteRecursoDBAgora->ejecutarAcceso($cadenaSql, "busqueda");
         $contratista = $contratista[0];
 
@@ -544,12 +584,24 @@ class RegistradorOrden {
                             <td class='main3' style='width:100%;text-align:center;height: 30px;' >
                                 <font size='5px'>Macroproceso: Gestión Administrativa y Contratación</font>
                             </td>
-                        </tr>    
-                        <tr>
+                        </tr>   ";
+
+        if ($tipoContrato[0][1] !== '1') {
+            $contenidoPagina .= " <tr>
                             <td class='main5' style='width:100%;text-align:center;height: 30px;' >
                                  <font size='5px'>Proceso: Gestión Jurídica</font>
                             </td>
-                        </tr>
+                        </tr>";
+        } else {
+            $contenidoPagina .= "   <tr>
+                            <td class='main5' style='width:100%;text-align:center;height: 30px;' >
+                                 <font size='5px'>Proceso: Gestión Jurídica - Sección Compras</font>
+                            </td>
+                        </tr>";
+        }
+
+
+        $contenidoPagina .= "             
                        
                     </table>
                 </td>
@@ -746,17 +798,30 @@ class RegistradorOrden {
                     </tr>
                      <tr>
                         <td style='width:100%;text-align:left;height: 20px'>________________________________________ </td>	
-                    </tr>
-                     <tr>
-                        <td style='width:100%;text-align:left;'>JORGE ARTURO LEMUS MONTAÑEZ</td>	
+                    </tr>";
+
+        if ($tipoContrato[0][1] !== '1') {
+            $contenidoPagina .= "    <tr>
+                    <td style='width:100%;text-align:left;'>DIANA MIREYA PARRA CARDONA</td>	
                     </tr>
                      <tr>
                         <td style='width:100%;text-align:left;'>Jefe Oficina Asesora Jurídica</td>	
+                    </tr>";
+        } else {
+            $contenidoPagina .= "    <tr>
+                        <td style='width:100%;text-align:left;'>TULIO BERNARDO ISAZA SANTAMARIA </td>	
                     </tr>
-                    
-                                    
-                     
-                </table><br><br>";
+                     <tr>
+                        <td style='width:100%;text-align:left;'>Jefe Sección Compras</td>	
+                    </tr>";
+        }
+
+
+
+
+
+
+        $contenidoPagina .= "     </table><br><br>";
         $contenidoPagina .= $usuarios;
         $contenidoPagina .= "<page_footer  backleft='10mm' backright='10mm'>
 				

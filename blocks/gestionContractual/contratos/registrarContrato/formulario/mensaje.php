@@ -104,6 +104,7 @@ class registrarForm {
 					case "noInserto" :
 						$atributos ['tipo'] = 'error';
 						$atributos ['mensaje'] = "<h3>Error al Registrar Contrato.<br>Verifique los Datos.</h3>";
+						$atributos ['mensaje'] .= "<br><br>Puede comunicarse con el Administrador del Sistema y reportar el caso <br> (" . $_REQUEST['caso'] . ")";
 						break;
 					case "noInsertoContratoExiste" :
                                                 $sqlTipoPersona = $this->miSql->getCadenaSql('buscar_info_proveedor_contrato', $_REQUEST['contratista']);

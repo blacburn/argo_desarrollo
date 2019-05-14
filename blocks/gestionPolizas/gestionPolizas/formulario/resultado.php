@@ -90,6 +90,13 @@ class registrarForm {
                 $vigencia = "";
             }
 
+            // NUEVOOOOOOOOOOOOOO
+            if (isset($_REQUEST ['consecutivo_por_contrato']) && $_REQUEST ['consecutivo_por_contrato'] != '') {
+                $contrato = $_REQUEST ['consecutivo_por_contrato'];
+            } else {
+                $contrato = "";
+            }
+
             if (isset($_REQUEST ['unidad_ejecutora_consulta']) && $_REQUEST ['unidad_ejecutora_consulta'] != '') {
                 $unidad_ejecutora = $_REQUEST ['unidad_ejecutora_consulta'];
             } else {
@@ -133,7 +140,7 @@ class registrarForm {
                 'fecha_inicial' => $fecha_inicio,
                 'fecha_final' => $fecha_final,
                 'unidad_ejecutora' => $unidadEjecutora[0]['unidad_ejecutora'],
-                'vigencia_curso' => date("Y")
+                'vigencia_curso' => $_REQUEST['vigencia_por_contrato']
             );
             $cadenaSql = $this->miSql->getCadenaSql('consultarContratosGeneral', $arreglo);
 

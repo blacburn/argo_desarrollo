@@ -64,12 +64,13 @@ class registrarForm {
         $directorio .= $this->miConfigurador->getVariableConfiguracion("enlace");
 
         if (isset($_REQUEST ['accesoCondor']) && $_REQUEST ['accesoCondor'] == 'true') {
-            
+             $unidad[0]['unidad_ejecutora']=$_REQUEST['unidad_ejecutora'];
         } else {
             $id_usuario = $_REQUEST['usuario'];
             $cadenaSqlUnidad = $this->miSql->getCadenaSql("obtenerInfoUsuario", $id_usuario);
             $unidad = $DBFrameWork->ejecutarAcceso($cadenaSqlUnidad, "busqueda");
         }
+
 
 
         // Limpia Items Tabla temporal
@@ -176,34 +177,32 @@ class registrarForm {
 
         $_REQUEST = array_merge($_REQUEST, $padresCiudad);
 
-         $cadenaSql = $this->miSql->getCadenaSql('consultaArrendamiento', $datosContrato);
+
+
+        $cadenaSql = $this->miSql->getCadenaSql('consultaArrendamiento', $datosContrato);
         $arrendamiento = $esteRecursoDB->ejecutarAcceso($cadenaSql, "busqueda");
-        
-     
-        
+
+
+
         $arrendamientoN = array(
             'destinacionArrendamiento_hidden' => $arrendamiento[0]['destinacion'],
             'diasHabiles_hidden' => $arrendamiento[0]['plazo_pago_mensual'],
             'valorMensualArrendamiento_hidden' => $arrendamiento[0]['valor_arrendamiento'],
             'reajusteArrendamiento_hidden' => $arrendamiento[0]['reajuste'],
-            'diasHabilesAdmin_hidden' =>$arrendamiento[0]['plazo_administracion'],
-            'valorAdmin_hidden' =>intval($arrendamiento[0]['valor_administracion']),
+            'diasHabilesAdmin_hidden' => $arrendamiento[0]['plazo_administracion'],
+            'valorAdmin_hidden' => intval($arrendamiento[0]['valor_administracion']),
             'diasHabilesEntrega_hidden' => $arrendamiento[0]['plazo_entrega'],
-            
         );
-          
+
         $_REQUEST = array_merge($_REQUEST, $arrendamientoN);
 
 
-        $cadenaSqlelaboro = $this->miSql->getCadenaSql('obtenerInformacionElaborador', $contrato['usuario']);
-        $usuario = $DBFrameWork->ejecutarAcceso($cadenaSqlelaboro, "busqueda");
 
         if (isset($_REQUEST ['accesoCondor']) && $_REQUEST ['accesoCondor'] == 'true') {
             $atributos ["id"] = "logos";
             $atributos ["estilo"] = " ";
             echo $this->miFormulario->division("inicio", $atributos);
-            unset($atributos);
-            {
+            unset($atributos); {
 
                 $esteCampo = 'logo';
                 $atributos ['id'] = $esteCampo;
@@ -222,11 +221,15 @@ class registrarForm {
         }
 
 
-        $esteCampo = "marcoDatos";
+        $cadenaSqlelaboro = $this->miSql->getCadenaSql('obtenerInformacionElaborador', $contrato['usuario']);
+        $usuario = $DBFrameWork->ejecutarAcceso($cadenaSqlelaboro, "busqueda");
+
+
+        $esteCampo = "marcoDatosBasicos";
         $atributos ['id'] = $esteCampo;
         $atributos ["estilo"] = "jqueryui";
         $atributos ['tipoEtiqueta'] = 'inicio';
-        $atributos ["leyenda"] = "Cosultar Contrato " . $_REQUEST['mensaje_titulo'] . " | Elaborador por : " . $usuario[0]['nombre'] . " " . $usuario[0]['apellido'];
+        $atributos ["leyenda"] = "Consultar Contrato " . $_REQUEST['mensaje_titulo'] . " | Elaborador por : " . $usuario[0]['nombre'] . " " . $usuario[0]['apellido'];
         ;
         echo $this->miFormulario->marcoAgrupacion('inicio', $atributos);
         unset($atributos); {
@@ -260,26 +263,49 @@ class registrarForm {
                 $variable .= "&unidad_ejecutora_consulta=" . $arreglo['unidad\_ejecutora'];
 
                 $variable = $this->miConfigurador->fabricaConexiones->crypto->codificar_url($variable, $directorio);
-            } 
+            } elseif (isset($_REQUEST['consultaSupervisor']) && $_REQUEST['consultaSupervisor'] == "TRUE") {
 
-             elseif (isset($_REQUEST['consultaSupervisor']) && $_REQUEST['consultaSupervisor'] == "TRUE") {
 
                 $arreglo = preg_replace('!s:(\d+):"(.*?)";!e', "'s:'.strlen('$2').':\"$2\";'", $_REQUEST['arreglo']);
                 $arreglo = unserialize($arreglo);
 
-                $variable = "bloque=gestionActas";
-                $variable .= "&pagina=gestionActasInicio";
-                $variable .= "&opcion=ConsultarContratos";
-                $variable .= "&clase_contrato=" . $arreglo['clase\_contrato'];
-                $variable .= "&id_contrato=" . $arreglo['numero\_contrato'] . "-(" . $arreglo['vigencia'] . ")";
-                $variable .= "&fecha_inicio_sub=" . $arreglo['fecha\_inicial'];
-                $variable .= "&id_contratista=" . $arreglo['nit'];
-                $variable .= "&fecha_final_sub=" . $arreglo['fecha\_final'];
-                $variable .= "&vigencia_por_contrato=" . $arreglo['vigencia\_curso'];
-                $variable .= "&unidad_ejecutora_consulta=" . $arreglo['unidad\_ejecutora'];
+                if (isset($_REQUEST ['accesoCondor']) && $_REQUEST ['accesoCondor'] == 'true') {
+                    $variable = "bloque=gestionActas";
+                    $variable .= "&pagina=gestionActasInicioC";
+                    $variable .= "&opcion=ConsultarContratos";
+                    $variable .= "&clase_contrato=" . $arreglo['clase\_contrato'];
+                    $variable .= "&id_contrato=" . $arreglo['numero\_contrato'] . "-(" . $arreglo['vigencia'] . ")";
+                    $variable .= "&fecha_inicio_sub=" . $arreglo['fecha\_inicial'];
+                    $variable .= "&id_contratista=" . $arreglo['nit'];
+                    $variable .= "&fecha_final_sub=" . $arreglo['fecha\_final'];
+                    $variable .= "&vigencia_por_contrato=" . $arreglo['vigencia\_curso'];
+                    $variable .= "&unidad_ejecutora_consulta=" . $arreglo['unidad\_ejecutora'];
+                    $variable .= "&usuario=" . $_REQUEST['usuario'];
+                    $variable .= "&identificacion=" . $_REQUEST['usuario'];
+                    $variable .= "&accesoCondor=true";
 
-                $variable = $this->miConfigurador->fabricaConexiones->crypto->codificar_url($variable, $directorio);
-            }      
+                    $variable = $this->miConfigurador->fabricaConexiones->crypto->codificar_url($variable, $directorio);
+                } else {
+                    $variable = "bloque=gestionActas";
+                    $variable .= "&pagina=gestionActasInicio";
+                    $variable .= "&opcion=ConsultarContratos";
+                    $variable .= "&clase_contrato=" . $arreglo['clase\_contrato'];
+                    $variable .= "&id_contrato=" . $arreglo['numero\_contrato'] . "-(" . $arreglo['vigencia'] . ")";
+                    $variable .= "&fecha_inicio_sub=" . $arreglo['fecha\_inicial'];
+                    $variable .= "&id_contratista=" . $arreglo['nit'];
+                    $variable .= "&fecha_final_sub=" . $arreglo['fecha\_final'];
+                    $variable .= "&vigencia_por_contrato=" . $arreglo['vigencia\_curso'];
+                    $variable .= "&unidad_ejecutora_consulta=" . $arreglo['unidad\_ejecutora'];
+                    $variable .= "&tipo_acceso=" . $_REQUEST ['tipo_acceso'];
+                    if(isset($_REQUEST ['tipo_acceso']) && $_REQUEST ['tipo_acceso'] == 'novedad'){
+                        $variable .= "&vigencia_por_contrato_nov=" . $arreglo['vigencia\_curso'];
+                    }
+
+                    $variable = $this->miConfigurador->fabricaConexiones->crypto->codificar_url($variable, $directorio);
+                }
+            }
+
+            //AGREGOOOOOOO consultaSupervisor
             else {
 
                 $arreglo = preg_replace('!s:(\d+):"(.*?)";!e', "'s:'.strlen('$2').':\"$2\";'", $_REQUEST['arreglo']);
@@ -300,6 +326,7 @@ class registrarForm {
 
                 $variable = $this->miConfigurador->fabricaConexiones->crypto->codificar_url($variable, $directorio);
             }
+
             // ---------------- CONTROL: Cuadro de Texto --------------------------------------------------------
             $esteCampo = 'botonRegresar';
             $atributos ['id'] = $esteCampo;
@@ -312,16 +339,19 @@ class registrarForm {
             $atributos ['redirLugar'] = true;
             echo $this->miFormulario->enlace($atributos);
             unset($atributos);
+            echo "<br>";
 
-              $cadenaAmparosParametros = $this->miSql->getCadenaSql("obtenerAmparosParametros");
+
+            $cadenaAmparosParametros = $this->miSql->getCadenaSql("obtenerAmparosParametros");
             $amparosParametros = $esteRecursoDBCore->ejecutarAcceso($cadenaAmparosParametros, "busqueda");
-            
-              $cadenaSql = $this->miSql->getCadenaSql('consultaArrendamientoAmparo',$datosContrato);
-              $arrendamientoGeneral = $esteRecursoDB->ejecutarAcceso($cadenaSql, "busqueda");
-             
-                                                                           
-            
-           $tablaAmparosDinamica ='<div class="container">
+
+
+            $cadenaSql = $this->miSql->getCadenaSql('consultaArrendamientoAmparo', $datosContrato);
+            $arrendamientoGeneral = $esteRecursoDB->ejecutarAcceso($cadenaSql, "busqueda");
+
+
+
+            $tablaAmparosDinamica = '<div class="container">
                                            <div class="row clearfix">
                                                 <div class="col-md-20 column">
                                                     <table class="table table-bordered table-hover" id="tab_amparos">
@@ -342,65 +372,57 @@ class registrarForm {
                                                                         </tr>
                                                                 </thead>
                                                                 <tbody>';
-                                                                           $contadorArrend =0;
-                                                                           $numeral = 1;
-                                                                           
-                                                                           
-                                                                           if($arrendamientoGeneral !=false){
+            $contadorArrend = 0;
+            $numeral = 1;
+
+
+            if ($arrendamientoGeneral != false) {
 //                                                                           
-                                                                            while($contadorArrend<count($arrendamientoGeneral)){
+                while ($contadorArrend < count($arrendamientoGeneral)) {
 //                                                                                   
 //                                                                                                    
-                                                                               $tablaAmparosDinamica .=' <tr id="addr'.$contadorArrend.'">
-                                                                                        <td>'.$numeral .' </td>';
-                                                                                                $cadenaAmparosParametros = $this->miSql->getCadenaSql("obtenerAmparosParametros2", $arrendamientoGeneral[$contadorArrend]['tipo_amparo']);
-                                                                                                $amparosParametros2 = $esteRecursoDBCore->ejecutarAcceso($cadenaAmparosParametros, "busqueda");
-                                                                                                
-                                                                                                 $tablaAmparosDinamica .='<td><select  id="amparo'.$contadorArrend.'" name="amparo'.$contadorArrend.'"  class="selectpicker " disabled> '
-                                                                                                         . '<option value="">Seleccione  ....</option>';
-                                                                                                         for ($i = 0; $i < count($amparosParametros); $i++) {
-                                                                                                        
-                                                                                                         if ($amparosParametros[$i]['id'] ==$amparosParametros2[0][0]){
-                                                                                                             $tablaAmparosDinamica.='<option value="' . $amparosParametros[$i]['id'] . '" selected="true">' . $amparosParametros[$i]['nombre'] . '</option>';
-                                                                                                            }
-                                                                                                         else{
-                                                                                                             $tablaAmparosDinamica.='<option value="' . $amparosParametros[$i]['id'] . '">' . $amparosParametros[$i]['nombre'] . '</option>';
-                                                                                                          }
-                                                                                                        }             
-                                                                                                    $tablaAmparosDinamica.='</select>
+                    $tablaAmparosDinamica .=' <tr id="addr' . $contadorArrend . '">
+                                                                                        <td>' . $numeral . ' </td>';
+                    $cadenaAmparosParametros = $this->miSql->getCadenaSql("obtenerAmparosParametros2", $arrendamientoGeneral[$contadorArrend]['tipo_amparo']);
+                    $amparosParametros2 = $esteRecursoDBCore->ejecutarAcceso($cadenaAmparosParametros, "busqueda");
+
+                    $tablaAmparosDinamica .='<td><select  id="amparo' . $contadorArrend . '" name="amparo' . $contadorArrend . '"  class="selectpicker " disabled> '
+                            . '<option value="">Seleccione  ....</option>';
+                    for ($i = 0; $i < count($amparosParametros); $i++) {
+
+                        if ($amparosParametros[$i]['id'] == $amparosParametros2[0][0]) {
+                            $tablaAmparosDinamica.='<option value="' . $amparosParametros[$i]['id'] . '" selected="true">' . $amparosParametros[$i]['nombre'] . '</option>';
+                        } else {
+                            $tablaAmparosDinamica.='<option value="' . $amparosParametros[$i]['id'] . '">' . $amparosParametros[$i]['nombre'] . '</option>';
+                        }
+                    }
+                    $tablaAmparosDinamica.='</select>
                                                                                                     </td>';
-                                                                                                    $tablaAmparosDinamica.='<td>
-                                                                                                    <input type="text" id="porcentajeamparo'.$contadorArrend.'" name="porcentajeamparo'.$contadorArrend.'" placeholder="Porcentaje(%)-> 10%" maxlength="3" value="'.$arrendamientoGeneral[$contadorArrend]['suficiencia'].'" class="form-control  custom[number]" disabled/>
+                    $tablaAmparosDinamica.='<td>
+                                                                                                    <input type="text" id="porcentajeamparo' . $contadorArrend . '" name="porcentajeamparo' . $contadorArrend . '" placeholder="Porcentaje(%)-> 10%" maxlength="3" value="' . $arrendamientoGeneral[$contadorArrend]['suficiencia'] . '" class="form-control  custom[number]" disabled/>
                                                                                                     </td>
                                                                                                     <td>
-                                                                                                    <input type="text" id="valoramparo'.$contadorArrend.'" name="valoramparo'.$contadorArrend.'" placeholder="Descripción" maxlength="500" value="'.$arrendamientoGeneral[$contadorArrend]['vigencia'].'" class="form-control  " disabled/>
+                                                                                                    <input type="text" id="valoramparo' . $contadorArrend . '" name="valoramparo' . $contadorArrend . '" placeholder="Descripción" maxlength="500" value="' . $arrendamientoGeneral[$contadorArrend]['vigencia'] . '" class="form-control  " disabled/>
                                                                                                     </td>';
-                                                                                                  $tablaAmparosDinamica .= '</tr>';  
-                                                                                                  $contadorArrend++;
-                                                                                                  $numeral++;
+                    $tablaAmparosDinamica .= '</tr>';
+                    $contadorArrend++;
+                    $numeral++;
 //                                                                                                   
-                                                                                  }
-                                                                              }
+                }
+            }
+            $tablaAmparosDinamica .= '</tbody></table></div></div></div>';
 
 
 
-                                                                               $tablaAmparosDinamica .= '</tbody></table></div></div></div>';
 
 
 
-                                                                           
-                                                                              
-                                                                         
-            
-                                       
-                                                                                                                                 
-                                                                                                                                          
-                                                                                                                                     
+
 //          
-                                                                                                                                          
+
             echo "<input id='amparosOculto' name='amparosOculto' type='hidden' value='" . json_encode($amparosParametros) . "'>";
-            
-            echo "<br>";
+
+
 
             if (isset($_REQUEST['ordenATC']) && $_REQUEST['ordenATC'] == "true") {
 
@@ -519,7 +541,7 @@ class registrarForm {
             echo $this->miFormulario->division("inicio", $atributos);
             unset($atributos); {
 
-                echo "<h3>Informacion del Contrato</h3>
+                echo "<h3>Información de Contrato</h3>
 							<section>"; {
 
                     if ($contrato['tipo_contrato'] == '1') {
@@ -986,19 +1008,16 @@ class registrarForm {
                 }
                 echo "</section>";
 
-                echo "<h3>Garantia y Mecanismos de Cobertura del Riesgo</h3><section>";
-                
-                
-                  echo 
-                                $tablaAmparosDinamica .
-                          
-                          
-                          
-                
-                 "</section>";
+                echo "<h3>Garantía y Mecanismos de Cobertura del Riesgo</h3><section>";
 
 
-                echo "<h3>Información del Solicitante y el Supervisor</h3><section>";
+                echo
+                $tablaAmparosDinamica .
+                "</section>";
+
+//                        
+
+                echo "<h3>Información Solicitante y Supervisor</h3><section>";
 
                 $esteCampo = "AgrupacionSolicitante";
                 $atributos ['id'] = $esteCampo;
@@ -1628,7 +1647,7 @@ class registrarForm {
                         $sqlDatosProveedor = $this->miSql->getCadenaSql("buscar_Informacion_proveedor_edicion", $contrato['contratista']);
                         $datosProveedor = $esteRecursoDBAgora->ejecutarAcceso($sqlDatosProveedor, "busqueda");
 
-                        $infoProveedorUnico = '<b>TIPO PERSONA:</b>' . $datosProveedor[0]['tipopersona'] . '<br>
+                        $infoProveedorUnico = '<b>TIPO PERSONA: </b>' . $datosProveedor[0]['tipopersona'] . '<br>
                             <b>NOMBRE:</b> ' . $datosProveedor[0]['nom_proveedor'] . '<br>
                             <b>DOCUMENTO:</b> ' . $datosProveedor[0]['num_documento'] . '<br>
                             <b>CIUDAD DE CONTACTO:</b> ' . $datosProveedor[0]['nombreciudad'] . '<br>
@@ -1636,11 +1655,11 @@ class registrarForm {
                             <b>CORREO:</b> ' . $datosProveedor[0]['correo'] . '<br>
                             <b>SITIO WEB:</b> ' . $datosProveedor[0]['web'] . '<br>
                             <b>ASESOR:</b> ' . $datosProveedor[0]['nom_asesor'] . '<br>
-                            <b>TELEFONO ASESOR:</b> ' . $datosProveedor[0]['tel_asesor'] . '<br>
+                            <b>TELÉFONO ASESOR:</b> ' . $datosProveedor[0]['tel_asesor'] . '<br>
                             <b>DESCRIPCIÓN:</b> ' . $datosProveedor[0]['descripcion'] . '<br>
                             <b>PUNTAJE DE EVALUACIÓN:</b> ' . $datosProveedor[0]['puntaje_evaluacion'] . '<br>
                             <b>TIPO CUENTA BANCARIA:</b> ' . $datosProveedor[0]['tipo_cuenta_bancaria'] . '<br>
-                            <b>NUMERO CUENTA :</b> ' . $datosProveedor[0]['num_cuenta_bancaria'] . '<br>
+                            <b>NÚMERO CUENTA:</b> ' . $datosProveedor[0]['num_cuenta_bancaria'] . '<br>
                             <b>ENTIDAD BANCARIA:</b> ' . $datosProveedor[0]['nombrebanco'];
 
 
@@ -1666,7 +1685,7 @@ class registrarForm {
                                 '<b>REPRESENTANTE SUPLENTE:</b> ' . $infoSociedad[0]['inforepresentantesuplente'] . '<br>' .
                                 '<b>PUNTAJE DE EVALUACIÓN:</b> ' . $infoSociedad[0]['puntaje_evaluacion'] . '<br>' .
                                 '<b>TIPO CUENTA BANCARIA:</b> ' . $infoSociedad[0]['tipo_cuenta_bancaria'] . '<br>' .
-                                '<b>NUMERO CUENTA :</b> ' . $infoSociedad[0]['num_cuenta_bancaria'] . '<br>' .
+                                '<b>NÚMERO CUENTA:</b> ' . $infoSociedad[0]['num_cuenta_bancaria'] . '<br>' .
                                 '<b>ENTIDAD BANCARIA:</b> ' . $infoSociedad[0]['nombrebanco'];
 
                         $sqlDatosParticipantes = $this->miSql->getCadenaSql("buscar_participantes_sociedad", $contrato['contratista']);
@@ -1823,7 +1842,7 @@ class registrarForm {
                 echo $this->miFormulario->campoCuadroTexto($atributos);
                 unset($atributos);
 
-                                  $esteCampo = 'destinacionArrendamiento_hidden';
+                $esteCampo = 'destinacionArrendamiento_hidden';
                 $atributos ['id'] = $esteCampo;
                 $atributos ['nombre'] = $esteCampo;
                 $atributos ['tipo'] = 'hidden';
@@ -1842,7 +1861,7 @@ class registrarForm {
                 echo $this->miFormulario->campoCuadroTexto($atributos);
                 unset($atributos);
 
-                  $esteCampo = 'diasHabiles_hidden';
+                $esteCampo = 'diasHabiles_hidden';
                 $atributos ['id'] = $esteCampo;
                 $atributos ['nombre'] = $esteCampo;
                 $atributos ['tipo'] = 'hidden';
@@ -1860,7 +1879,7 @@ class registrarForm {
                 $atributos = array_merge($atributos, $atributosGlobales);
                 echo $this->miFormulario->campoCuadroTexto($atributos);
                 unset($atributos);
-                 $esteCampo = 'valorMensualArrendamiento_hidden';
+                $esteCampo = 'valorMensualArrendamiento_hidden';
                 $atributos ['id'] = $esteCampo;
                 $atributos ['nombre'] = $esteCampo;
                 $atributos ['tipo'] = 'hidden';
@@ -1878,7 +1897,7 @@ class registrarForm {
                 $atributos = array_merge($atributos, $atributosGlobales);
                 echo $this->miFormulario->campoCuadroTexto($atributos);
                 unset($atributos);
-                 $esteCampo = 'reajusteArrendamiento_hidden';
+                $esteCampo = 'reajusteArrendamiento_hidden';
                 $atributos ['id'] = $esteCampo;
                 $atributos ['nombre'] = $esteCampo;
                 $atributos ['tipo'] = 'hidden';
@@ -1896,7 +1915,7 @@ class registrarForm {
                 $atributos = array_merge($atributos, $atributosGlobales);
                 echo $this->miFormulario->campoCuadroTexto($atributos);
                 unset($atributos);
-                 $esteCampo = 'diasHabilesAdmin_hidden';
+                $esteCampo = 'diasHabilesAdmin_hidden';
                 $atributos ['id'] = $esteCampo;
                 $atributos ['nombre'] = $esteCampo;
                 $atributos ['tipo'] = 'hidden';
@@ -1932,7 +1951,7 @@ class registrarForm {
                 $atributos = array_merge($atributos, $atributosGlobales);
                 echo $this->miFormulario->campoCuadroTexto($atributos);
                 unset($atributos);
-                     $esteCampo = 'diasHabilesEntrega_hidden';
+                $esteCampo = 'diasHabilesEntrega_hidden';
                 $atributos ['id'] = $esteCampo;
                 $atributos ['nombre'] = $esteCampo;
                 $atributos ['tipo'] = 'hidden';
@@ -1950,7 +1969,7 @@ class registrarForm {
                 $atributos = array_merge($atributos, $atributosGlobales);
                 echo $this->miFormulario->campoCuadroTexto($atributos);
                 unset($atributos);
-                 $esteCampo = 'tablAmparos_hidden';
+                $esteCampo = 'tablAmparos_hidden';
                 $atributos ['id'] = $esteCampo;
                 $atributos ['nombre'] = $esteCampo;
                 $atributos ['tipo'] = 'hidden';
@@ -1968,7 +1987,7 @@ class registrarForm {
                 $atributos = array_merge($atributos, $atributosGlobales);
                 echo $this->miFormulario->campoCuadroTexto($atributos);
                 unset($atributos);
-                  $esteCampo = 'tablaSuficiencia_hidden';
+                $esteCampo = 'tablaSuficiencia_hidden';
                 $atributos ['id'] = $esteCampo;
                 $atributos ['nombre'] = $esteCampo;
                 $atributos ['tipo'] = 'hidden';
@@ -1986,7 +2005,7 @@ class registrarForm {
                 $atributos = array_merge($atributos, $atributosGlobales);
                 echo $this->miFormulario->campoCuadroTexto($atributos);
                 unset($atributos);
-                  $esteCampo = 'tablaVigencia_hidden';
+                $esteCampo = 'tablaVigencia_hidden';
                 $atributos ['id'] = $esteCampo;
                 $atributos ['nombre'] = $esteCampo;
                 $atributos ['tipo'] = 'hidden';
@@ -2004,7 +2023,7 @@ class registrarForm {
                 $atributos = array_merge($atributos, $atributosGlobales);
                 echo $this->miFormulario->campoCuadroTexto($atributos);
                 unset($atributos);
-                  $esteCampo = 'tablaVigenciaNueva_hidden';
+                $esteCampo = 'tablaVigenciaNueva_hidden';
                 $atributos ['id'] = $esteCampo;
                 $atributos ['nombre'] = $esteCampo;
                 $atributos ['tipo'] = 'hidden';
@@ -2040,8 +2059,8 @@ class registrarForm {
                 $atributos = array_merge($atributos, $atributosGlobales);
                 echo $this->miFormulario->campoCuadroTexto($atributos);
                 unset($atributos);
-                
-                 $esteCampo = 'contadorSelect_hidden';
+
+                $esteCampo = 'contadorSelect_hidden';
                 $atributos ['id'] = $esteCampo;
                 $atributos ['nombre'] = $esteCampo;
                 $atributos ['tipo'] = 'hidden';
@@ -2059,8 +2078,9 @@ class registrarForm {
                 $atributos = array_merge($atributos, $atributosGlobales);
                 echo $this->miFormulario->campoCuadroTexto($atributos);
                 unset($atributos);
-                
-                
+
+
+
                 echo "</section>";
 
                 echo "<h3>Información Presupuestal 1</h3>
@@ -2070,8 +2090,9 @@ class registrarForm {
 
                     $datos_disponibilidad = array(0 => $_REQUEST ['numero_contrato'], 1 => $_REQUEST['vigencia']);
                     $cadena_sql = $this->miSql->getCadenaSql('ConsultarDisponibilidadesContrato', $datos_disponibilidad);
-
                     $disponibilidades = $esteRecursoDB->ejecutarAcceso($cadena_sql, "busqueda");
+
+
 
 
                     $esteCampo = "AgrupacionDisponibilidad";
@@ -2097,7 +2118,8 @@ class registrarForm {
 					</div>
 					<table class='table table-bordered table-hover' id='tablacdpasociados'>
 						<thead>
-							<tr>
+							<tr>    
+                                                        
 								<th><center>Vigencia</center></th>
 								<th><center>Solicitud de Necesidad</center></th>
 								<th><center>Número de Disponibilidad</center></th>
@@ -2112,16 +2134,23 @@ class registrarForm {
                         $valor_acumulado = 0;
                         $indices_cdp = "";
                         $indices_cdp_vigencia = "";
+
+                        //modificooooooo obtenerInfoCdp y consulta_unidad_ejecutora2
                         for ($i = 0; $i < count($disponibilidades); $i++) {
                             $datos_info_disponibilidad = array('numero_disponibilidad' => $disponibilidades[$i]['numero_cdp'], 'vigencia' => $disponibilidades[$i]['vigencia_cdp'],
                                 'unidad_ejecutora' => $unidad[0]['unidad_ejecutora']);
                             $cadena_sql = $this->miSql->getCadenaSql('obtenerInfoCdp', $datos_info_disponibilidad);
                             $info_disponibilidad = $DBSICA->ejecutarAcceso($cadena_sql, "busqueda");
+
                             $valor_acumulado = $valor_acumulado + $info_disponibilidad[0]['VALOR_CONTRATACION'];
                             $indices_cdp.= "," . $info_disponibilidad[0]['NUMERO_DISPONIBILIDAD'];
                             $indices_cdp_vigencia.= "," . $info_disponibilidad[0]['NUMERO_DISPONIBILIDAD'] . "-" . $info_disponibilidad[0]['VIGENCIA'];
 
-                            echo "<tr id='$i'><td><center>" . $info_disponibilidad[0]['VIGENCIA'] . "</center></td>"
+//                            $atributos ['cadena_sql'] = $this->miSql->getCadenaSql("consulta_unidad_ejecutora2", $disponibilidades[$i]['unidad_ejecutora']);
+//                            $UE = $esteRecursoDB->ejecutarAcceso($atributos ['cadena_sql'], "busqueda");
+
+                            echo "<tr id='$i'>"
+                            . "<td><center>" . $info_disponibilidad[0]['VIGENCIA'] . "</center></td>"
                             . "<td><center>" . $info_disponibilidad[0]['NUM_SOL_ADQ'] . "</center></td>"
                             . "<td><center>" . $info_disponibilidad[0]['NUMERO_DISPONIBILIDAD'] . "</center></td>"
                             . "<td><center>" . $info_disponibilidad[0]['VALOR_CONTRATACION'] . "</center></td>"
@@ -2761,7 +2790,7 @@ class registrarForm {
 
                 echo "</section>";
 
-                echo "<h3>Justificacion y Condiciones</h3><section>";
+                echo "<h3>Justificación y Condiciones</h3><section>";
 
                 $esteCampo = "AgrupacionJustificacionCondiciones";
                 $atributos ['id'] = $esteCampo;

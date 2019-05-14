@@ -169,21 +169,23 @@
                 processing: true,
                 searching: true,
                 info: true,
-                "scrollY": "300px",
+                "scrollY": "200px",
                 "scrollCollapse": false,
                 "bLengthChange": false,
                 "bPaginate": false,
-                "aoColumns": [
-                    {sWidth: "10%"},
-                    {sWidth: "20%"},
-                    {sWidth: "10%"},
-                    {sWidth: "10%"},
-                    {sWidth: "20%"},
-                    {sWidth: "10%"},
-                    {sWidth: "10%"},
-                    {sWidth: "30%"},
-                    {sWidth: "10%"},
-                    {sWidth: "10%"}
+               "aoColumns": [
+                    {sWidth: "1%"},
+                    {sWidth: "15%"},
+                    {sWidth: "15%"},
+                    {sWidth: "7%"},
+                    {sWidth: "2%"},
+                    {sWidth: "7%"},
+                    {sWidth: "7%"},
+                    {sWidth: "19%"},
+                    {sWidth: "19%"},
+                    {sWidth: "4%"},
+                    {sWidth: "4%"}
+                    
 
                 ]
 
@@ -223,15 +225,20 @@
                 "scrollCollapse": false,
                 "bLengthChange": false,
                 "bPaginate": false,
-                "aoColumns": [
-                    {sWidth: "10%"},
-                    {sWidth: "30%"},
-                    {sWidth: "20%"},
-                    {sWidth: "30%"},
-                    {sWidth: "20%"},
-                    {sWidth: "10%"},
-                    {sWidth: "10%"}
-
+                 "aoColumns": [
+                     {sWidth: "1%"},
+                    {sWidth: "14%"},
+                    {sWidth: "14%"},
+                    {sWidth: "2%"},
+                    {sWidth: "7%"},
+                    {sWidth: "2%"},
+                    {sWidth: "7%"},
+                    {sWidth: "7%"},
+                    {sWidth: "19%"},
+                    {sWidth: "19%"},
+                    {sWidth: "4%"},
+                    {sWidth: "4%"}
+                    
 
                 ]
 

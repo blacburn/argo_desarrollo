@@ -1,3 +1,6 @@
+
+
+
 window.onload = detectarCarga;
 
 function detectarCarga() {
@@ -263,11 +266,9 @@ minimumInputLength: 3,
 $('#<?php echo $this->campoSeguro('ordenador_gasto') ?>').width(300);			       
 $("#<?php echo $this->campoSeguro('ordenador_gasto') ?>").select2();
 
-$('#<?php echo $this->campoSeguro('nombre_supervisor') ?>').width(300);			       
-$("#<?php echo $this->campoSeguro('nombre_supervisor') ?>").select2({
-placeholder: "Ingrese Mínimo 3 Caracteres de Búsqueda",
-minimumInputLength: 3,
-});
+$('#<?php echo $this->campoSeguro('nombre_supervisor') ?>').width(350);
+$("#<?php echo $this->campoSeguro('nombre_supervisor') ?>").select2();
+
 
 $("#<?php echo $this->campoSeguro('nombre_supervisor_interventor') ?>").width(300);
 $("#<?php echo $this->campoSeguro('nombre_supervisor_interventor') ?>").select2({
@@ -457,8 +458,6 @@ $("#<?php echo $this->campoSeguro('formaPago') ?>").select2();
 $('#<?php echo $this->campoSeguro('vigencia_convenio') ?>').width(150);
 $("#<?php echo $this->campoSeguro('vigencia_convenio') ?>").select2();
 $('#<?php echo $this->campoSeguro('convenio_solicitante') ?>').attr('disabled',''); 
-$('#<?php echo $this->campoSeguro('cargo_supervisor') ?>').width(300);
-$("#<?php echo $this->campoSeguro('cargo_supervisor') ?>").select2();
 
 
 $('#<?php echo $this->campoSeguro('tipo_control') ?>').width(300);
@@ -574,3 +573,8 @@ $("#<?php echo $this->campoSeguro('ejecucionDepartamento') ?>").width(200);
 $("#<?php echo $this->campoSeguro('ejecucionDepartamento') ?>").select2();
 $("#<?php echo $this->campoSeguro('ejecucionPais') ?>").width(200);  
 $("#<?php echo $this->campoSeguro('ejecucionPais') ?>").select2();
+$("#<?php echo $this->campoSeguro('ejecucionCiudad') ?>").width(200);
+$("#<?php echo $this->campoSeguro('ejecucionCiudad') ?>").select2();
+
+$('#<?php echo $this->campoSeguro('dependencia_ejecucion') ?>').width(350);
+$("#<?php echo $this->campoSeguro('dependencia_ejecucion') ?>").select2();

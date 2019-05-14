@@ -151,6 +151,105 @@ if ($_REQUEST ['funcion'] == 'consultaInformacionProveedor') {
     $resultado = json_encode($resultado);
     echo $resultado;
 }
+//-------Obtener la informacion contratos del proveedor unico a partir del id
+if ($_REQUEST ['funcion'] == 'consultaContratosProveedor') {
+
+    $cadenaSql = $this->sql->getCadenaSql('buscar_contrato_proveedorOtrosi', $_REQUEST ['valor']);
+    $resultado = $esteRecursoDB->ejecutarAcceso($cadenaSql, "busqueda");
+
+    if($resultado){
+         $cadenaSql = $this->sql->getCadenaSql('buscar_contrato_ejecucionNovedad', $resultado[0]['numero_contrato']);
+         $resultado_contrato = $esteRecursoDB->ejecutarAcceso($cadenaSql, "busqueda");
+         array_push($resultado_contrato,$resultado[0]['estado']);
+    }
+    else{
+
+        $cadenaSql = $this->sql->getCadenaSql('buscar_contrato_proveedorCesionante', $_REQUEST ['valor']);
+        $resultado = $esteRecursoDB->ejecutarAcceso($cadenaSql, "busqueda");
+
+        if($resultado){
+                $resultado_contrato[0]['estado']=0;
+        }
+        else{
+            $cadenaSql = $this->sql->getCadenaSql('buscar_contrato_proveedorCesion', $_REQUEST ['valor']);
+            $resultado = $esteRecursoDB->ejecutarAcceso($cadenaSql, "busqueda");
+
+            if($resultado){
+            
+                 $cadenaSql = $this->sql->getCadenaSql('buscar_contrato_ejecucionNovedad', $resultado[0]['numero_contrato']);
+                 $resultado_contrato = $esteRecursoDB->ejecutarAcceso($cadenaSql, "busqueda");
+                 array_push($resultado_contrato,$resultado[0]['estado']);
+
+            }
+            else{
+                  $cadenaSql = $this->sql->getCadenaSql('buscar_contrato_proveedor', $_REQUEST ['valor']);
+                  $resultado = $esteRecursoDB->ejecutarAcceso($cadenaSql, "busqueda");
+
+                    if($resultado[0]['estado']==='1'){
+                        $cadenaSql = $this->sql->getCadenaSql('buscar_contrato_elaborado', $resultado[0]['numero_contrato']);
+                        $resultado_contrato = $esteRecursoDB->ejecutarAcceso($cadenaSql, "busqueda");
+                         array_push($resultado_contrato,$resultado[0]['estado']);
+                    }
+                    elseif($resultado[0]['estado']==='3'){
+                        $cadenaSql = $this->sql->getCadenaSql('buscar_contrato_suscrito', $resultado[0]['numero_contrato']);
+                        $resultado_contrato = $esteRecursoDB->ejecutarAcceso($cadenaSql, "busqueda");
+                         array_push($resultado_contrato,$resultado[0]['estado']);
+                    }
+                    elseif($resultado[0]['estado']==='4'){
+                        $cadenaSql = $this->sql->getCadenaSql('buscar_contrato_ejecucion', $resultado[0]['numero_contrato']);
+                        $resultado_contrato = $esteRecursoDB->ejecutarAcceso($cadenaSql, "busqueda");
+                        array_push($resultado_contrato,$resultado[0]['estado']);
+                        }
+                    else{
+                        $resultado_contrato[0]['estado']=0;
+                    }   
+            }
+        }
+    }
+
+
+
+    $resultado = json_encode($resultado_contrato);
+    echo $resultado;
+}
+
+if ($_REQUEST ['funcion'] == 'consultaOtrosContratosProveedor') {
+
+                
+     $arreglo_busqueda = array(
+            'contratista' => $_REQUEST['valor'],
+            'tipo_contrato' => $_REQUEST['contrato'],
+     );
+
+
+              $cadenaSql = $this->sql->getCadenaSql('buscar_otro_contrato_proveedor', $arreglo_busqueda);
+              $resultado = $esteRecursoDB->ejecutarAcceso($cadenaSql, "busqueda");
+
+                if($resultado[0]['estado']==='1'){
+                    $cadenaSql = $this->sql->getCadenaSql('buscar_contrato_elaborado', $resultado[0]['numero_contrato']);
+                    $resultado_contrato = $esteRecursoDB->ejecutarAcceso($cadenaSql, "busqueda");
+                     array_push($resultado_contrato,$resultado[0]['estado']);
+                }
+                elseif($resultado[0]['estado']==='3'){
+                    $cadenaSql = $this->sql->getCadenaSql('buscar_contrato_suscrito', $resultado[0]['numero_contrato']);
+                    $resultado_contrato = $esteRecursoDB->ejecutarAcceso($cadenaSql, "busqueda");
+                     array_push($resultado_contrato,$resultado[0]['estado']);
+                }
+                elseif($resultado[0]['estado']==='4'){
+                    $cadenaSql = $this->sql->getCadenaSql('buscar_contrato_ejecucion', $resultado[0]['numero_contrato']);
+                    $resultado_contrato = $esteRecursoDB->ejecutarAcceso($cadenaSql, "busqueda");
+                    array_push($resultado_contrato,$resultado[0]['estado']);
+                    }
+                else{
+                    $resultado_contrato[0]['estado']=0;
+                }   
+
+    $resultado = json_encode($resultado_contrato);
+    echo $resultado;
+}
+
+
+
 //-------------------------Obtener Proveedor Unico ----------------------------------------------------------
 if ($_REQUEST ['funcion'] == 'consultaProveedor') {
 
@@ -180,5 +279,19 @@ if ($_REQUEST ['funcion'] == 'consultaProveedorSociedad') {
     }
 
     echo '{"suggestions":' . json_encode($resultado) . '}';
+}
+
+//-------------------------Obtener Supervisores  de acuerdo a la Dependencia---------------------------------
+if ($_REQUEST ['funcion'] == 'consultarSuperxDependencia') {
+    
+    $datos = array(
+        'sede' => $_REQUEST ['valorSed'],
+        'dependencia' => $_REQUEST ['valor']
+    );
+    
+    $cadenaSql = $this->sql->getCadenaSql('supervisoresConsultadosBi', $datos);
+    $resultado = $esteRecursoDB->ejecutarAcceso($cadenaSql, "busqueda");
+    $resultado = json_encode($resultado);
+    echo $resultado;
 }
 ?>

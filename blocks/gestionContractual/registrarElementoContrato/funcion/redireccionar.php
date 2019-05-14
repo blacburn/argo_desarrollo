@@ -20,6 +20,7 @@ class redireccion {
 				$variable .= "&id_orden=" . $valor [1];
 				$variable .= "&mensaje_titulo=" . $valor [0];
 				$variable .= "&fecha_orden=" . $valor [2];
+                                $variable .= "&respuesta=" . $valor [4];
 				
 				if ($valor [3] == '') {
 					$variable .= "&registroOrden=true";

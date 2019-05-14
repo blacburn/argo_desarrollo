@@ -447,4 +447,11 @@ $this->idioma ["fecha_final_subTitulo"] = "Seleccione Fecha Final";
 
 
 $this->idioma ["botonRegistrar"] = "Registrar";
+
+
+$this->idioma ["vigencia_por_contrato"] = "Vigencia : ";
+$this->idioma ["vigencia_por_contratoTitulo"] = "Seleccione Vigencia";
+
+$this->idioma ["consecutivo_por_contrato"] = "Consecutivo Contrato : ";
+$this->idioma ["consecutivo_por_contratoTitulo"] = "Seleccione Consecutivo Contrato";
 ?>

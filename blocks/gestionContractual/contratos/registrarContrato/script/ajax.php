@@ -75,6 +75,44 @@ $cadena = $this->miConfigurador->fabricaConexiones->crypto->codificar_url($caden
 // URL definitiva
 $urlInformacionProveedor = $url . $cadena;
 
+// Variables
+$cadenaAContratosProveedor = "pagina=" . $this->miConfigurador->getVariableConfiguracion("pagina");
+$cadenaAContratosProveedor .= "&procesarAjax=true";
+$cadenaAContratosProveedor .= "&action=index.php";
+$cadenaAContratosProveedor .= "&bloqueNombre=" . $esteBloque ["nombre"];
+$cadenaAContratosProveedor .= "&bloqueGrupo=" . $esteBloque ["grupo"];
+$cadenaAContratosProveedor .= "&funcion=consultaContratosProveedor";
+$cadenaAContratosProveedor .= "&tiempo=" . $_REQUEST ['tiempo'];
+
+// Codificar las variables
+$enlace = $this->miConfigurador->getVariableConfiguracion("enlace");
+$cadena = $this->miConfigurador->fabricaConexiones->crypto->codificar_url($cadenaAContratosProveedor, $enlace);
+
+// URL definitiva
+$urlContratosProveedor = $url . $cadena;
+
+
+// Variables
+$cadenaAOtrosContratosProveedor = "pagina=" . $this->miConfigurador->getVariableConfiguracion("pagina");
+$cadenaAOtrosContratosProveedor .= "&procesarAjax=true";
+$cadenaAOtrosContratosProveedor .= "&action=index.php";
+$cadenaAOtrosContratosProveedor .= "&bloqueNombre=" . $esteBloque ["nombre"];
+$cadenaAOtrosContratosProveedor .= "&bloqueGrupo=" . $esteBloque ["grupo"];
+$cadenaAOtrosContratosProveedor .= "&funcion=consultaOtrosContratosProveedor";
+$cadenaAOtrosContratosProveedor .= "&tiempo=" . $_REQUEST ['tiempo'];
+
+// Codificar las variables
+$enlace = $this->miConfigurador->getVariableConfiguracion("enlace");
+$cadena = $this->miConfigurador->fabricaConexiones->crypto->codificar_url($cadenaAOtrosContratosProveedor, $enlace);
+
+// URL definitiva
+$urlOtrosContratosProveedor = $url . $cadena;
+
+
+
+
+
+
 $cadenaAInformacionProveedorSociedad = "pagina=" . $this->miConfigurador->getVariableConfiguracion("pagina");
 $cadenaAInformacionProveedorSociedad .= "&procesarAjax=true";
 $cadenaAInformacionProveedorSociedad .= "&action=index.php";
@@ -339,6 +377,23 @@ $enlace = $this->miConfigurador->getVariableConfiguracion("enlace");
 $cadenaACodificarUE1 = $this->miConfigurador->fabricaConexiones->crypto->codificar_url($cadenaACodificarUE1, $enlace);
 // URL definitiva
 $urlFinalUE1 = $url . $cadenaACodificarUE1;
+
+
+// Variables
+$cadenaACodificarSuperxDep = "pagina=" . $this->miConfigurador->getVariableConfiguracion("pagina");
+$cadenaACodificarSuperxDep .= "&procesarAjax=true";
+$cadenaACodificarSuperxDep .= "&action=index.php";
+$cadenaACodificarSuperxDep .= "&bloqueNombre=" . $esteBloque ["nombre"];
+$cadenaACodificarSuperxDep .= "&bloqueGrupo=" . $esteBloque ["grupo"];
+$cadenaACodificarSuperxDep .= $cadenaACodificarSuperxDep . "&funcion=consultarSuperxDependencia";
+$cadenaACodificarSuperxDep .= "&tiempo=" . $_REQUEST ['tiempo'];
+
+// Codificar las variables
+$enlace = $this->miConfigurador->getVariableConfiguracion("enlace");
+$cadenaSuperxDep = $this->miConfigurador->fabricaConexiones->crypto->codificar_url($cadenaACodificarSuperxDep, $enlace);
+
+// URL definitiva
+$urlFinalSupervisorxDependencia = $url . $cadenaSuperxDep;
 ?>
 <script type='text/javascript'>
 //----------------------------Configuracion Paso a Paso--------------------------------------
@@ -444,9 +499,9 @@ $urlFinalUE1 = $url . $cadenaACodificarUE1;
 
 
 
-                camposA = camposA + $('#amparo' + index).val() + ',',
-                        camposS = camposS + $('#porcentajeamparo' + index).val() + ',',
-                        camposV = camposV + $('#valoramparo' + index).val() + ',';
+                camposA = camposA + $('#amparo' + index).val() + '~',
+                        camposS = camposS + $('#porcentajeamparo' + index).val() + '~',
+                        camposV = camposV + $('#valoramparo' + index).val() + '~';
 
 
             });
@@ -480,7 +535,23 @@ $urlFinalUE1 = $url . $cadenaACodificarUE1;
         onSelect: function (suggestion) {
 
             $("#<?php echo $this->campoSeguro('id_proveedor') ?>").val(suggestion.data);
-            consultarInformacionProveedor($("#<?php echo $this->campoSeguro('id_proveedor') ?>").val());
+
+
+	            if( $("#<?php echo $this->campoSeguro('tipo_contrato') ?>").val() == 6 && $("#<?php echo $this->campoSeguro('unidad_ejecutora_hidden') ?>").val()==1){
+	            	 consultarContratosProveedor($("#<?php echo $this->campoSeguro('id_proveedor') ?>").val());
+	            }
+	            else{
+	            	  if($("#<?php echo $this->campoSeguro('unidad_ejecutora_hidden') ?>").val()==1){
+	            	  		 consultarOtrosContratosProveedor($("#<?php echo $this->campoSeguro('id_proveedor') ?>").val(),$("#<?php echo $this->campoSeguro('tipo_contrato') ?>").val());
+	            	  }
+	            	  else{
+	            	  		 consultarInformacionProveedor($("#<?php echo $this->campoSeguro('id_proveedor') ?>").val());
+	            	  }
+	            	
+
+	            	//consultarInformacionProveedor($("#<?php echo $this->campoSeguro('id_proveedor') ?>").val());
+	            }
+
         }
 
 
@@ -566,7 +637,7 @@ $urlFinalUE1 = $url . $cadenaACodificarUE1;
             $('#tab_amparos tr:last').after('<tr id="addr' + (i + 1) + '">' +
                     lista +
                     '<td>' + "<input id='porcentajeamparo" + (i + 1) + "' name='porcentajeamparo" + (i + 1) + "' type='text' placeholder='Porcentaje(%)-> 10%' maxlength='3' class='form-control   custom[number]'>" + '</td>' +
-                    '<td>' + "<input id='valoramparo" + (i + 1) + "'  name='valoramparo" + (i + 1) + "' type='text' placeholder='Vigencia'  maxlength='50' class='form-control input-md '>" + '</td>' +
+                    '<td>' + "<input id='valoramparo" + (i + 1) + "'  name='valoramparo" + (i + 1) + "' type='text' placeholder='Descripción'  maxlength='500' class='form-control input-md '>" + '</td>' +
                     '</tr>');
 
             var data = jQuery.parseJSON($("#amparosOculto").val());
@@ -696,6 +767,294 @@ $urlFinalUE1 = $url . $cadenaACodificarUE1;
         }
     }
 
+    function consultarContratosProveedor(id) {
+        $.ajax({
+            url: "<?php echo $urlContratosProveedor ?>",
+            dataType: "json",
+            data: {valor: id},
+            success: function (data) {
+                if (data[0] != " ") {
+                		
+             			if(data[0]['estado'] == 4)
+							{	
+
+								swal({
+								  title: 'Atención !!!',
+								  html: 'El contratista relacionado en el presente registro tiene un contrato en <b>ejecución</b>:<br><br> '
+					                         + 'Número de contrato:' + '<b> ' +  data[0][0] +   '</b><br> '
+						                     + 'Vigencia contrato:' + '<b> ' +  data[0][1] +   '</b><br> '
+						                     + 'Fechas Acta:' + '<b> ' +  data[0][2] +   '</b><br> '
+						                     + 'Plazo de Ejecución:' + '<b> ' +  data[0][3] +   '</b><br><br>'
+						                     + 'Por ende no se permite el registro de un nuevo contrato al presente contratista.',
+								  type: 'warning',
+								  showCancelButton: false,
+								  closeOnClickOutside: false,
+ 								  allowOutsideClick: false,
+								  confirmButtonColor: '#3085d6'
+								}).then((result) => {
+								  if (result) {
+								    
+										     
+										$("#infoProveedor").css('display', 'none');
+		 								$("#<?php echo $this->campoSeguro('selec_proveedor')?>").val('');
+								    
+								  }
+								})
+
+								/*.then(function (result) {
+
+									 swal.resetDefaults()
+						             if(result == 1){
+										consultarInformacionProveedor($("#<?php echo $this->campoSeguro('id_proveedor') ?>").val());
+									  }
+									 else{
+									 	$("#infoProveedor").css('display', 'none');
+ 										$("#<?php echo $this->campoSeguro('selec_proveedor')?>").val('');
+                                      }
+								 }, function () {
+						  			swal.resetDefaults()
+								})*/
+
+
+								
+						      
+							}
+							else if(data[0]['estado'] == 3)
+							{
+								swal({
+								  title: 'Atención !!!',
+								  html: 'El contratista relacionado en el presente registro tiene un contrato <b>suscrito</b>:<br><br> '
+					                         + 'Número de contrato:' + '<b> ' +  data[0][0] +   '</b><br> '
+						                     + 'Vigencia contrato:' + '<b> ' +  data[0][1] +   '</b><br> '
+						                     + 'Fecha suscrito:' + '<b> ' +  data[0][2] +   '</b><br> '
+						                     + 'Plazo de Ejecución:' + '<b> ' +  data[0][3] +   '</b><br><br>'
+						                     + 'Por ende no se permite el registro de un nuevo contrato al presente contratista.',
+								  type: 'warning',
+								  showCancelButton: false,
+								  closeOnClickOutside: false,
+ 								  allowOutsideClick: false,
+								  confirmButtonColor: '#3085d6'
+								}).then((result) => {
+								  if (result) {
+								    
+										     
+										$("#infoProveedor").css('display', 'none');
+		 								$("#<?php echo $this->campoSeguro('selec_proveedor')?>").val('');
+								    
+								  }
+								})
+								/*.then(function (result) {
+
+									 swal.resetDefaults()
+						             if(result == 1){
+										consultarInformacionProveedor($("#<?php echo $this->campoSeguro('id_proveedor') ?>").val());
+									  }
+									 else{
+									 	$("#infoProveedor").css('display', 'none');
+ 										$("#<?php echo $this->campoSeguro('selec_proveedor')?>").val('');
+                                      }
+								 }, function () {
+						  			swal.resetDefaults()
+								})*/
+
+							}
+							else if(data[0]['estado'] == 1)
+							{
+								swal({
+								  title: 'Atención !!!',
+								  html: 'El contratista relacionado en el presente registro tiene un contrato <b>por suscribir</b>:<br><br> '
+					                         + 'Número de contrato:' + '<b> ' +  data[0][0] +   '</b><br> '
+						                     + 'Vigencia contrato:' + '<b> ' +  data[0][1] +   '</b><br> '
+						                     + 'Fecha registro:' + '<b> ' +  data[0][2] +   '</b><br> '
+						                     + 'Plazo de Ejecución:' + '<b> ' +  data[0][3] +   '</b><br><br>'
+						                     + 'Por ende no se permite el registro de un nuevo contrato al presente contratista.',
+								  type: 'warning',
+								  showCancelButton: false,
+								  closeOnClickOutside: false,
+ 								  allowOutsideClick: false,
+								  confirmButtonColor: '#3085d6'
+								}).then((result) => {
+								  if (result) {
+								    
+										     
+										$("#infoProveedor").css('display', 'none');
+		 								$("#<?php echo $this->campoSeguro('selec_proveedor')?>").val('');
+								    
+								  }
+								})
+
+								
+
+								/*.then(function (result) {
+
+									 swal.resetDefaults()
+						             if(result == 1){
+										consultarInformacionProveedor($("#<?php echo $this->campoSeguro('id_proveedor') ?>").val());
+									  }
+									 else{
+									 	$("#infoProveedor").css('display', 'none');
+ 										$("#<?php echo $this->campoSeguro('selec_proveedor')?>").val('');
+                                      }
+								 }, function () {
+						  			swal.resetDefaults()
+								})*/
+
+							}
+						    else{
+
+								consultarInformacionProveedor($("#<?php echo $this->campoSeguro('id_proveedor') ?>").val());
+
+							}
+ 					
+
+			    }
+            }
+
+        });
+    }
+    ;
+
+
+
+    function consultarOtrosContratosProveedor(id,tipo) {
+        $.ajax({
+            url: "<?php echo $urlOtrosContratosProveedor ?>",
+            dataType: "json",
+            data: {valor: id, contrato:tipo},
+            success: function (data) {
+                if (data[0] != " ") {
+                		
+             			if(data[0]['estado'] == 4)
+							{	
+
+								swal({
+								  title: 'Atención !!!',
+								  html: 'El contratista relacionado en el presente registro tiene un contrato en <b>ejecución</b>:<br><br> '
+					                         + 'Número de contrato:' + '<b> ' +  data[0][0] +   '</b><br> '
+						                     + 'Vigencia contrato:' + '<b> ' +  data[0][1] +   '</b><br> '
+						                     + 'Fechas Acta:' + '<b> ' +  data[0][2] +   '</b><br> '
+						                     + 'Plazo de Ejecución:' + '<b> ' +  data[0][3] +   '</b><br><br>'
+						                     + 'Desea continuar con el registro del contratista? ',
+								  type: 'question',
+								  showCancelButton: false,
+								  closeOnClickOutside: false,
+ 								  allowOutsideClick: false,
+								  confirmButtonColor: '#3085d6',
+								  cancelButtonColor: '#d33',
+								  input: 'select',
+							      inputOptions: {
+									    '1': 'Si',
+									    '2': 'No'
+									}
+								}).then(function (result) {
+
+									 swal.resetDefaults()
+						             if(result == 1){
+										consultarInformacionProveedor($("#<?php echo $this->campoSeguro('id_proveedor') ?>").val());
+									  }
+									 else{
+									 	$("#infoProveedor").css('display', 'none');
+ 										$("#<?php echo $this->campoSeguro('selec_proveedor')?>").val('');
+                                      }
+								 }, function () {
+						  			swal.resetDefaults()
+								})
+
+
+								
+						      
+							}
+							else if(data[0]['estado'] == 3)
+							{
+								swal({
+								  title: 'Atención !!!',
+								  html: 'El contratista relacionado en el presente registro tiene un contrato <b>suscrito</b>:<br><br> '
+					                         + 'Número de contrato:' + '<b> ' +  data[0][0] +   '</b><br> '
+						                     + 'Vigencia contrato:' + '<b> ' +  data[0][1] +   '</b><br> '
+						                     + 'Fecha suscrito:' + '<b> ' +  data[0][2] +   '</b><br> '
+						                     + 'Plazo de Ejecución:' + '<b> ' +  data[0][3] +   '</b><br><br>'
+						                     + 'Desea continuar con el registro del contratista? ',
+								  type: 'question',
+								  showCancelButton: false,
+								  closeOnClickOutside: false,
+ 								  allowOutsideClick: false,
+								  confirmButtonColor: '#3085d6',
+								  cancelButtonColor: '#d33',
+								  input: 'select',
+							      inputOptions: {
+									    '1': 'Si',
+									    '2': 'No'
+									}
+								}).then(function (result) {
+
+									 swal.resetDefaults()
+						             if(result == 1){
+										consultarInformacionProveedor($("#<?php echo $this->campoSeguro('id_proveedor') ?>").val());
+									  }
+									 else{
+									 	$("#infoProveedor").css('display', 'none');
+ 										$("#<?php echo $this->campoSeguro('selec_proveedor')?>").val('');
+                                      }
+								 }, function () {
+						  			swal.resetDefaults()
+								})
+
+							}
+							else if(data[0]['estado'] == 1)
+							{
+								swal({
+								  title: 'Atención !!!',
+								  html: 'El contratista relacionado en el presente registro tiene un contrato <b>por suscribir</b>:<br><br> '
+					                         + 'Número de contrato:' + '<b> ' +  data[0][0] +   '</b><br> '
+						                     + 'Vigencia contrato:' + '<b> ' +  data[0][1] +   '</b><br> '
+						                     + 'Fecha registro:' + '<b> ' +  data[0][2] +   '</b><br> '
+						                     + 'Plazo de Ejecución:' + '<b> ' +  data[0][3] +   '</b><br><br>'
+						                     + 'Desea continuar con el registro del contratista? ',
+								  type: 'question',
+								  showCancelButton: false,
+								  closeOnClickOutside: false,
+ 								  allowOutsideClick: false,
+								  confirmButtonColor: '#3085d6',
+								  cancelButtonColor: '#d33',
+								  input: 'select',
+							      inputOptions: {
+									    '1': 'Si',
+									    '2': 'No'
+									}
+								}).then(function (result) {
+
+									 swal.resetDefaults()
+						             if(result == 1){
+										consultarInformacionProveedor($("#<?php echo $this->campoSeguro('id_proveedor') ?>").val());
+									  }
+									 else{
+									 	$("#infoProveedor").css('display', 'none');
+ 										$("#<?php echo $this->campoSeguro('selec_proveedor')?>").val('');
+                                      }
+								 }, function () {
+						  			swal.resetDefaults()
+								})
+
+							}
+						    else{
+
+								consultarInformacionProveedor($("#<?php echo $this->campoSeguro('id_proveedor') ?>").val());
+
+							}
+ 					
+
+			    }
+            }
+
+        });
+    }
+    ;
+
+
+    
+
+
+
     function consultarInformacionProveedor(id) {
         $.ajax({
             url: "<?php echo $urlInformacionProveedor ?>",
@@ -709,7 +1068,7 @@ $urlFinalUE1 = $url . $cadenaACodificarUE1;
                             data[0][i] = "SIN INFORMACIÓN";
                         }
                     }
-                    var infoProveedor = '<b>TIPO PERSONA:</b> ' + data[0].tipopersona + '<br>' +
+                    var infoProveedor = '<b>TIPO PERSONA: </b> ' + data[0].tipopersona + '<br>' +
                             '<b>NOMBRE:</b> ' + data[0].nom_proveedor + '<br>' +
                             '<b>DOCUMENTO:</b> ' + data[0].num_documento + '<br>' +
                             '<b>CIUDAD DE CONTACTO:</b> ' + data[0].nombreciudad + '<br>' +
@@ -717,11 +1076,11 @@ $urlFinalUE1 = $url . $cadenaACodificarUE1;
                             '<b>CORREO:</b> ' + data[0].correo + '<br>' +
                             '<b>SITIO WEB:</b> ' + data[0].web + '<br>' +
                             '<b>ASESOR:</b> ' + data[0].nom_asesor + '<br>' +
-                            '<b>TELEFONO ASESOR:</b> ' + data[0].tel_asesor + '<br>' +
+                            '<b>TELÉFONO ASESOR:</b> ' + data[0].tel_asesor + '<br>' +
                             '<b>DESCRIPCIÓN:</b> ' + data[0].descripcion + '<br>' +
                             '<b>PUNTAJE DE EVALUACIÓN:</b> ' + data[0].puntaje_evaluacion + '<br>' +
                             '<b>TIPO CUENTA BANCARIA:</b> ' + data[0].tipo_cuenta_bancaria + '<br>' +
-                            '<b>NUMERO CUENTA :</b> ' + data[0].num_cuenta_bancaria + '<br>' +
+                            '<b>NÚMERO CUENTA:</b> ' + data[0].num_cuenta_bancaria + '<br>' +
                             '<b>ENTIDAD BANCARIA:</b> ' + data[0].nombrebanco;
 
                     infoProveedor = String(infoProveedor);
@@ -768,7 +1127,7 @@ $urlFinalUE1 = $url . $cadenaACodificarUE1;
                             '<b>REPRESENTANTE SUPLENTE:</b> ' + data[0].inforepresentantesuplente + '<br>' +
                             '<b>PUNTAJE DE EVALUACIÓN:</b> ' + data[0].puntaje_evaluacion + '<br>' +
                             '<b>TIPO CUENTA BANCARIA:</b> ' + data[0].tipo_cuenta_bancaria + '<br>' +
-                            '<b>NUMERO CUENTA :</b> ' + data[0].num_cuenta_bancaria + '<br>' +
+                            '<b>NÚMERO CUENTA:</b> ' + data[0].num_cuenta_bancaria + '<br>' +
                             '<b>ENTIDAD BANCARIA:</b> ' + data[0].nombrebanco;
 
                     var infoProveedor = infoProveedor.replace("null", "SIN INFORMACIÓN");
@@ -873,7 +1232,7 @@ $urlFinalUE1 = $url . $cadenaACodificarUE1;
 
                     $("#<?php echo $this->campoSeguro('dependencia_supervisor') ?>").removeAttr('disabled');
 
-                    $('#<?php echo $this->campoSeguro('dependencia_supervisor') ?>').width(200);
+                    $('#<?php echo $this->campoSeguro('dependencia_supervisor') ?>').width(300);
                     $("#<?php echo $this->campoSeguro('dependencia_supervisor') ?>").select2();
 
                 }
@@ -1425,6 +1784,75 @@ $urlFinalUE1 = $url . $cadenaACodificarUE1;
             }
             $("#<?php echo $this->campoSeguro('digito_supervisor') ?>").val(digito_verificacion);
         }
+    }
+    ;
+
+
+      //--------------Inicio JavaScript y Ajax  Dependencia y Supervisor ---------------------------------------------------------------------------------------------    
+    $("#<?php echo $this->campoSeguro('dependencia_supervisor') ?>").change(function () {
+
+    	$('#<?php echo $this->campoSeguro('nombre_supervisor') ?>').val('');
+        $('#<?php echo $this->campoSeguro('cargo_supervisor') ?>').val('');
+        $('#<?php echo $this->campoSeguro('digito_supervisor') ?>').val('');
+
+        if ($("#<?php echo $this->campoSeguro('dependencia_supervisor') ?>").val() != '') {
+            consultarSupervisorXDependencia();
+        }
+
+    });
+   
+
+    function consultarSupervisorXDependencia(elem, request, response) {
+        $.ajax({
+            url: "<?php echo $urlFinalSupervisorxDependencia ?>",
+            dataType: "json",
+            data: {valor: $("#<?php echo $this->campoSeguro('dependencia_supervisor') ?>").val(),
+        			valorSed: $("#<?php echo $this->campoSeguro('sede_super') ?>").val()},
+            success: function (data) {
+
+                if (data[0] != " ") {
+
+                    if(!data){
+
+                    	var sedeOpt = $("#<?php echo $this->campoSeguro('sede_super') ?> option:selected").text();
+                        var dependenciaOpt = $("#<?php echo $this->campoSeguro('dependencia_supervisor') ?> option:selected").text();
+
+
+                        swal({
+                            title: 'ATENCIÓN',
+                            type: 'error',
+                            html:
+                                    'No se puede hacer registro de SUPERVISOR para:<br><br>'
+                                    +'Sede: <b>'+sedeOpt+'</b><br>'
+                                    +'Dependencia: <b>'+dependenciaOpt+'</b><br>'
+                                    +'<br>'
+                                    +'No existe supervisor <b>ACTIVO</b> para la SEDE y DEPENDENCIA seleccionadas, por favor realice el registro del supervisor en el Módulo de Parámetros Personas<br>',
+                            confirmButtonText:
+                                    'Aceptar'
+                        })
+
+                    }else{
+                    	$('#<?php echo $this->campoSeguro('nombre_supervisor') ?>').val(data[0][0]);
+	                    $('#<?php echo $this->campoSeguro('nombre_supervisor_h') ?>').val(data[0][0]);
+	                    
+	                    
+	                    var identificacion = data[0][0].split("-");
+	                    calcularDigitoCedulaSupervisor(identificacion[0]);
+	                    
+	                    $('#<?php echo $this->campoSeguro('cargo_supervisor') ?>').val(data[0][1]);
+	                    $('#<?php echo $this->campoSeguro('cargo_supervisor_h') ?>').val(data[0][1]);
+
+	                    $('#<?php echo $this->campoSeguro('id_supervisor_hidden') ?>').val(data[0][2]);
+                    }
+                    
+                }
+
+
+            }
+
+        });
+
+
     }
     ;
 

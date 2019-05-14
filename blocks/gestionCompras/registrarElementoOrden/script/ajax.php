@@ -28,6 +28,22 @@ $cadena = $this->miConfigurador->fabricaConexiones->crypto->codificar_url($caden
 $urlVigenciaContrato = $url . $cadena;
 
 // Variables
+$cadenaACodificarValorIva = "pagina=" . $this->miConfigurador->getVariableConfiguracion("pagina");
+$cadenaACodificarValorIva .= "&procesarAjax=true";
+$cadenaACodificarValorIva .= "&action=index.php";
+$cadenaACodificarValorIva .= "&bloqueNombre=" . $esteBloque ["nombre"];
+$cadenaACodificarValorIva .= "&bloqueGrupo=" . $esteBloque ["grupo"];
+$cadenaACodificarValorIva .= $cadenaACodificarValorIva . "&funcion=consultarValorIva";
+$cadenaACodificarValorIva .= "&tiempo=" . $_REQUEST ['tiempo'];
+
+// Codificar las variables
+$enlace = $this->miConfigurador->getVariableConfiguracion("enlace");
+$cadenaValorIva = $this->miConfigurador->fabricaConexiones->crypto->codificar_url($cadenaACodificarValorIva, $enlace);
+
+// URL definitiva
+$urlFinalVAlorIva = $url . $cadenaValorIva;
+
+// Variables
 $cadenaACodificar = "pagina=" . $this->miConfigurador->getVariableConfiguracion("pagina");
 $cadenaACodificar .= "&procesarAjax=true";
 $cadenaACodificar .= "&action=index.php";
@@ -47,8 +63,6 @@ $urlContratista = $url . $cadena;
 
 
 //-----------------------------------------------------
-
-
 // Variables
 $cadenaACodificar = "pagina=" . $this->miConfigurador->getVariableConfiguracion("pagina");
 $cadenaACodificar .= "&procesarAjax=true";
@@ -195,11 +209,45 @@ $cadenaACodificarInformacionSociedadTemporal = $this->miConfigurador->fabricaCon
 
 // URL definitiva
 $urlInformacionSociedadTemporal = $url . $cadenaACodificarInformacionSociedadTemporal;
+
+
+
+//Variables
+$cadenaACodificarArchivo = "pagina=" . $this->miConfigurador->getVariableConfiguracion("pagina");
+$cadenaACodificarArchivo .= "&procesarAjax=true";
+$cadenaACodificarArchivo .= "&action=index.php";
+$cadenaACodificarArchivo .= "&bloqueNombre=" . $esteBloque ["nombre"];
+$cadenaACodificarArchivo .= "&bloqueGrupo=" . $esteBloque ["grupo"];
+$cadenaACodificarArchivo .= $cadenaACodificarArchivo . "&funcion=verificarArchivo";
+$cadenaACodificarArchivo .= "&tiempo=" . $_REQUEST ['tiempo'];
+
+// Codificar las variables
+$enlace = $this->miConfigurador->getVariableConfiguracion("enlace");
+
+$cadenaArchivo = $this->miConfigurador->fabricaConexiones->crypto->codificar_url($cadenaACodificarArchivo, $enlace);
+
+// URL definitiva
+$urlFinalArchivo = $url . $cadenaArchivo;
 ?>
 <script type='text/javascript'>
 
+    $('#<?php echo $this->campoSeguro('tipo_consulta') ?>').width(150);
+    $("#<?php echo $this->campoSeguro('tipo_consulta') ?>").select2();
+
+    $('#<?php echo $this->campoSeguro('iva') ?>').width(150);
+    $("#<?php echo $this->campoSeguro('iva') ?>").select2();
 
 //--------------Inicio JavaScript y Ajax Sede y Dependencia elemento ---------------------------------------------------------------------------------------------    
+
+
+    $("#<?php echo $this->campoSeguro('iva') ?>").change(function () {
+        if ($("#<?php echo $this->campoSeguro('iva') ?>").val() != '') {
+            consultarValorIVA();
+        }
+
+
+    });
+
 
     $("#<?php echo $this->campoSeguro('sede') ?>").change(function () {
 
@@ -245,12 +293,14 @@ $urlInformacionSociedadTemporal = $url . $cadenaACodificarInformacionSociedadTem
         });
     }
     ;
-    
-    
-     //--------------------Autocomplete Contratista y Numero de Contrato 
+
+
+    //--------------------Autocomplete Contratista y Numero de Contrato 
 
 
     $(function () {
+
+       
 
         $("#<?php echo $this->campoSeguro('vigencia_contrato') ?>").keyup(function () {
             $('#<?php echo $this->campoSeguro('vigencia_contrato') ?>').val($('#<?php echo $this->campoSeguro('vigencia_contrato') ?>').val());
@@ -288,7 +338,46 @@ $urlInformacionSociedadTemporal = $url . $cadenaACodificarInformacionSociedadTem
 
     //--------------Fin JavaScript y Ajax Sede y Dependencia elemento --------------------------------------------------------------------------------------------------   
 
+    function consultarValorIVA(elem, request, response) {
+        $.ajax({
+            url: "<?php echo $urlFinalVAlorIva ?>",
+            dataType: "json",
+            data: {valor: $("#<?php echo $this->campoSeguro('iva') ?>").val()},
+            success: function (data) {
 
+
+
+                if (data[0] != " ") {
+
+
+                    $.each(data, function (indice, valor) {
+
+                        cantidad = Number($("#<?php echo $this->campoSeguro('cantidad') ?>").val());
+                        valor2 = Number($("#<?php echo $this->campoSeguro('valor') ?>").val());
+                        iva = Math.round(((cantidad * valor2) * data[ indice ].iva) * 100) / 100;
+                        precio = Math.round((cantidad * valor2) * 100) / 100;
+                        total = Math.round((precio + iva) * 100) / 100;
+
+
+                        $("#<?php echo $this->campoSeguro('total_iva') ?>").val(iva);
+
+                        $("#<?php echo $this->campoSeguro('total_iva_con') ?>").val(total);
+
+
+                    });
+
+
+
+
+
+                }
+
+
+            }
+
+        });
+    }
+    ;
 
 
     function resetIva(elem, request, response) {
@@ -540,16 +629,16 @@ $urlInformacionSociedadTemporal = $url . $cadenaACodificarInformacionSociedadTem
                             + "Documento: " + data[1] + " <br><br>"
                             + "Tipo Persona: " + data[0] + " <br><br>"
                             + "Ciudad de Contacto: " + data[2] + " <br><br>"
-                            + "Direccion: " + data[3] + " <br><br>"
+                            + "Dirección: " + data[3] + " <br><br>"
                             + "Correo: " + data[4] + " <br><br>"
                             + "Sitio WEB: " + data[5] + " <br><br>"
                             + "Estado: " + data[8] + " <br><br>"
                             + "Tipo Cuenta: " + data[9] + " <br><br>"
-                            + "Numero de Cuenta: " + data[10] + " <br><br>"
+                            + "Número de Cuenta: " + data[10] + " <br><br>"
                             + "Entidad Bancaria: " + data[11] + " <br><br>"
                             + "Fecha Registro: " + data[12] + " <br><br>"
-                            + "Punatje: " + data[6] + " <br><br>";
-                    $("#ventanaEmergenteContratista").dialog('option', 'title', 'Unico Contratista');
+                            + "Puntaje: " + data[6] + " <br><br>";
+                    $("#ventanaEmergenteContratista").dialog('option', 'title', 'Único Contratista');
                     $("#ventanaEmergenteContratista").dialog("open");
 
 
@@ -561,14 +650,14 @@ $urlInformacionSociedadTemporal = $url . $cadenaACodificarInformacionSociedadTem
     }
 
 
-       function VerInfoSociedadTemporal(identificacion) {
+    function VerInfoSociedadTemporal(identificacion) {
         $.ajax({
             url: "<?php echo $urlInformacionSociedadTemporal ?>",
             dataType: "json",
             data: {id: identificacion},
             success: function (data) {
                 if (data[0] != " ") {
-                    
+
                     var participantes = "Participantes: <br><br>";
                     for (i = 0; i < data[1].length; i++) {
                         participantes = participantes + "Nombre: " + data[1][i][0] + " | Porcentaje de Participacion:  " + data[1][i][1] + "%<br>";
@@ -579,12 +668,12 @@ $urlInformacionSociedadTemporal = $url . $cadenaACodificarInformacionSociedadTem
                             + "Documento: " + data[0][1] + " <br><br>"
                             + "Tipo Sociedad: " + data[0][0] + " <br><br>"
                             + "Ciudad de Contacto: " + data[0][2] + " <br><br>"
-                            + "Direccion: " + data[0][3] + " <br><br>"
+                            + "Dirección: " + data[0][3] + " <br><br>"
                             + "Correo: " + data[0][4] + " <br><br>"
                             + "Sitio WEB: " + data[0][5] + " <br><br>"
                             + "Estado: " + data[0][8] + " <br><br>"
                             + "Tipo Cuenta: " + data[0][9] + " <br><br>"
-                            + "Numero de Cuenta: " + data[0][10] + " <br><br>"
+                            + "Número de Cuenta: " + data[0][10] + " <br><br>"
                             + "Entidad Bancaria: " + data[0][11] + " <br><br>"
                             + "Fecha Registro: " + data[0][12] + " <br><br>"
                             + "Puntaje: " + data[0][6] + " <br><br>"
@@ -602,6 +691,573 @@ $urlInformacionSociedadTemporal = $url . $cadenaACodificarInformacionSociedadTem
         });
 
     }
+
+
+
+    $("#<?php echo $this->campoSeguro('documentos_elementos') ?>").change(function () {
+
+        var file = $("#<?php echo $this->campoSeguro('documentos_elementos') ?>").val();
+        var ext = file.substring(file.lastIndexOf("."));
+
+        if (ext !== '.xlsx')
+        {
+            swal({
+                title: 'Problema con el Archivo de Elementos',
+                type: 'warning',
+                html:
+                        'Por favor cambie el archivo por otro en formato.  <i>(xlsx)</i> recuerde que puede descargar el Archivo Plantilla adjunto y cargarlo en este campo con los elementos registrados',
+                confirmButtonText:
+                        'Ok'
+            })
+            $("#<?php echo $this->campoSeguro('documentos_elementos') ?>").val(null);
+        }
+    });
+
+
+    var sumadorBienes = 0;
+    var sumadorServicios = 0;
+
+
+    $("#btConfirmar").click(function () {
+
+        if ($("#<?php echo $this->campoSeguro('tipo_consulta') ?>").val() == 1) {//ELEMENTO
+
+
+
+            if ($("#<?php echo $this->campoSeguro('nombre') ?>").val() != '' &&
+                    $("#<?php echo $this->campoSeguro('descripcion') ?>").val() != '' &&
+                    $("#<?php echo $this->campoSeguro('cantidad') ?>").val() != '' &&
+                    $("#<?php echo $this->campoSeguro('unidad') ?>").val() != '' &&
+                    $("#<?php echo $this->campoSeguro('valor') ?>").val() != '' &&
+                    $("#<?php echo $this->campoSeguro('iva') ?>").val() != '') {
+
+                if ($.isNumeric($("#<?php echo $this->campoSeguro('cantidad') ?>").val()) && $("#<?php echo $this->campoSeguro('cantidad') ?>").val() > 0 && $.isNumeric($("#<?php echo $this->campoSeguro('valor') ?>").val()) && $("#<?php echo $this->campoSeguro('valor') ?>").val() > 0) {
+
+                    var nFilas = $("#tablaFP2 tr").length;
+
+                    var dep ;
+                    var fun;
+                    
+                    dep= $("#<?php echo $this->campoSeguro('dependencia_solicitante') ?> option:selected").text();
+                    fun= $("#<?php echo $this->campoSeguro('funcionario') ?> option:selected").text();
+                    
+                    
+                    if(dep==='Seleccione .....'){
+                      dep=''; 
+                    }
+                    if(fun==='Seleccione .....'){
+                      fun=''; 
+                    }
+                    
+                    
+                    var nuevaFila = "<tr id=\"nFilas\">";
+                    nuevaFila += "<td>" + (nFilas) + "</td>";
+                    nuevaFila += "<td>1 - ELEMENTO</td>";
+                    nuevaFila += "<td>" + ($("#<?php echo $this->campoSeguro('nombre') ?>").val()) + "</td>";
+                    nuevaFila += "<td>" + ($("#<?php echo $this->campoSeguro('descripcion') ?>").val()) + "</td>";
+                    nuevaFila += "<td></td>";
+                    nuevaFila += "<td>" + ($("#<?php echo $this->campoSeguro('cantidad') ?>").val()) + "</td>";
+                    nuevaFila += "<td>" + ($("#<?php echo $this->campoSeguro('unidad') ?>").val()) + " - " + ($("#<?php echo $this->campoSeguro('unidad') ?> option:selected").text())+ "</td>";
+                    nuevaFila += "<td>" + ($("#<?php echo $this->campoSeguro('valor') ?>").val()) + "</td>";
+                    nuevaFila += "<td>" + ($("#<?php echo $this->campoSeguro('iva') ?>").val()) + " - " + ($("#<?php echo $this->campoSeguro('iva') ?> option:selected").text()) + "</td>";
+                    nuevaFila += "<td>" + dep + "</td>";
+                    nuevaFila += "<td>" + fun + "</td>";
+                    nuevaFila += "<th class=\"eliminarItem\" scope=\"row\"><div class = \"widget\">Eliminar</div></th>";
+                    nuevaFila += "</tr>";
+
+
+
+                    $("#tablaFP2").append(nuevaFila);
+
+                    $("#<?php echo $this->campoSeguro('nombre') ?>").val('');
+                    $("#<?php echo $this->campoSeguro('descripcion') ?>").val('');
+                    $("#<?php echo $this->campoSeguro('cantidad') ?>").val('');
+                     $("#<?php echo $this->campoSeguro('unidad') ?>").select2("val", -1);
+                    $("#<?php echo $this->campoSeguro('valor') ?>").val('');
+                    $("#<?php echo $this->campoSeguro('subtotal_sin_iva') ?>").val('');
+                    $("#<?php echo $this->campoSeguro('total_iva') ?>").val('');
+                    $("#<?php echo $this->campoSeguro('total_iva_con') ?>").val('');
+                    $("#<?php echo $this->campoSeguro('iva') ?>").select2("val", -1);
+                     $("#<?php echo $this->campoSeguro('sede') ?>").select2("val", -1);
+                    $("#<?php echo $this->campoSeguro('dependencia_solicitante') ?>").select2("val", -1);
+                    $("#<?php echo $this->campoSeguro('funcionario') ?>").select2("val", -1);
+
+                    $("#<?php echo $this->campoSeguro('tabla_elementos_servicios') ?>").css('display', 'block');
+                    
+                    
+                    
+                    fullParamIt = "";
+                    $('#tablaFP2 tr').each(function () {
+
+                        /* Obtener todas las celdas */
+                        var celdas = $(this).find('td');
+
+                        /* Mostrar el valor de cada celda */
+                        celdas.each(function () {
+                            fullParamIt += String($(this).html()) + "&";
+                        });
+
+
+                    });
+
+                    $("#<?php echo $this->campoSeguro('idsItems') ?>").val(fullParamIt);
+                    
+                    
+
+                    $("#<?php echo $this->campoSeguro('countItems') ?>").val(nFilas);
+                    //-----------------------------------------------------------------------------
+
+
+                    swal({
+                        title: 'Registro Exitoso !',
+                        type: 'success',
+                        html:
+                                'Los Parámetros de <big>Items de Elemento ó Servicio</big>, ' +
+                                'Se Registraron de Forma Correcta.',
+                        confirmButtonText:
+                                'Ok'
+                    })
+
+                    //-----------------------------------------------------------------------------
+
+                } else {
+                    swal({
+                        title: 'Ocurrio un problema...',
+                        type: 'error',
+                        html:
+                                'Recuerde Diligenciar los Campos Cantidad y Valor como <big>Números</big>, ' +
+                                'sin Puntos ni Comas, Gracias.',
+                        confirmButtonText:
+                                'Ok'
+                    })
+
+                }
+
+
+            } else {
+
+                swal({
+                    title: 'Ocurrio un problema...',
+                    type: 'error',
+                    html:
+                            'Los Parámetros de <big>Items de Elemento </big>, ' +
+                            'están mal diligenciados o incompletos. No es Posible Registrar.',
+                    confirmButtonText:
+                            'Ok'
+                })
+            }
+        }
+        if ($("#<?php echo $this->campoSeguro('tipo_consulta') ?>").val() == 2) {//SERVICIO
+
+            if ($("#<?php echo $this->campoSeguro('nombre') ?>").val() != '' &&
+                    $("#<?php echo $this->campoSeguro('descripcion') ?>").val() != '' &&
+                    $("#<?php echo $this->campoSeguro('tiempo_ejecucion') ?>").val() != '' &&
+                    $("#<?php echo $this->campoSeguro('cantidad') ?>").val() != '' &&
+                    $("#<?php echo $this->campoSeguro('unidad') ?>").val() != '' &&
+                    $("#<?php echo $this->campoSeguro('valor') ?>").val() != '' &&
+                    $("#<?php echo $this->campoSeguro('iva') ?>").val() != '') {
+
+
+                if ($.isNumeric($("#<?php echo $this->campoSeguro('cantidad') ?>").val()) &&
+                        $("#<?php echo $this->campoSeguro('cantidad') ?>").val() > 0 &&
+                        $.isNumeric($("#<?php echo $this->campoSeguro('valor') ?>").val()) &&
+                        $("#<?php echo $this->campoSeguro('valor') ?>").val() > 0 &&
+                        $.isNumeric($("#<?php echo $this->campoSeguro('tiempo_ejecucion') ?>").val()) &&
+                        $("#<?php echo $this->campoSeguro('tiempo_ejecucion') ?>").val() >= 0
+                        ) {
+
+                    var nFilas = $("#tablaFP2 tr").length;
+                    
+                    var dep ;
+                    var fun;
+                    
+                    dep= $("#<?php echo $this->campoSeguro('dependencia_solicitante') ?> option:selected").text();
+                    fun= $("#<?php echo $this->campoSeguro('funcionario') ?> option:selected").text();
+                    
+                    
+                    if(dep==='Seleccione .....'){
+                      dep=''; 
+                    }
+                    if(fun==='Seleccione .....'){
+                      fun=''; 
+                    }
+                    
+
+
+                    var nuevaFila = "<tr id=\"nFilas\">";
+                    nuevaFila += "<td>" + (nFilas) + "</td>";
+                    nuevaFila += "<td>2 - SERVICIO</td>";
+                    nuevaFila += "<td>" + ($("#<?php echo $this->campoSeguro('nombre') ?>").val()) + "</td>";
+                    nuevaFila += "<td>" + ($("#<?php echo $this->campoSeguro('descripcion') ?>").val()) + "</td>";
+                    nuevaFila += "<td>" + ($("#<?php echo $this->campoSeguro('tiempo_ejecucion') ?>").val()) + "</td>";
+                    nuevaFila += "<td>" + ($("#<?php echo $this->campoSeguro('cantidad') ?>").val()) + "</td>";
+                    nuevaFila += "<td>" + ($("#<?php echo $this->campoSeguro('unidad') ?>").val()) + " - " + ($("#<?php echo $this->campoSeguro('unidad') ?> option:selected").text()) + "</td>";
+                    nuevaFila += "<td>" + ($("#<?php echo $this->campoSeguro('valor') ?>").val()) + "</td>";
+                    nuevaFila += "<td>" + ($("#<?php echo $this->campoSeguro('iva') ?>").val()) + " - " + ($("#<?php echo $this->campoSeguro('iva') ?> option:selected").text()) + "</td>";
+                    nuevaFila += "<td>" + dep + "</td>";
+                    nuevaFila += "<td>" + fun + "</td>";
+                    nuevaFila += "<th class=\"eliminarItem\" scope=\"row\"><div class = \"widget\">Eliminar</div></th>";
+                    nuevaFila += "</tr>";
+
+
+
+                    $("#tablaFP2").append(nuevaFila);
+
+                    $("#<?php echo $this->campoSeguro('nombre') ?>").val('');
+                    $("#<?php echo $this->campoSeguro('descripcion') ?>").val('');
+                    $("#<?php echo $this->campoSeguro('tiempo_ejecucion') ?>").val('');
+                    $("#<?php echo $this->campoSeguro('cantidad') ?>").val('');
+                     $("#<?php echo $this->campoSeguro('unidad') ?>").select2("val", -1);
+                    $("#<?php echo $this->campoSeguro('valor') ?>").val('');
+                    $("#<?php echo $this->campoSeguro('subtotal_sin_iva') ?>").val('');
+                    $("#<?php echo $this->campoSeguro('total_iva') ?>").val('');
+                    $("#<?php echo $this->campoSeguro('total_iva_con') ?>").val('');
+                    $("#<?php echo $this->campoSeguro('iva') ?>").select2("val", -1);
+                    $("#<?php echo $this->campoSeguro('sede') ?>").select2("val", -1);
+                    $("#<?php echo $this->campoSeguro('dependencia_solicitante') ?>").select2("val", -1);
+                    $("#<?php echo $this->campoSeguro('funcionario') ?>").select2("val", -1);
+                    
+                    
+                     fullParamIt = "";
+                    $('#tablaFP2 tr').each(function () {
+
+                        /* Obtener todas las celdas */
+                        var celdas = $(this).find('td');
+
+                        /* Mostrar el valor de cada celda */
+                        celdas.each(function () {
+                            fullParamIt += String($(this).html()) + "&";
+                        });
+
+
+                    });
+
+                    $("#<?php echo $this->campoSeguro('idsItems') ?>").val(fullParamIt);
+                    
+                    
+
+                     $("#<?php echo $this->campoSeguro('countItems') ?>").val(nFilas);
+
+
+
+
+
+
+                    $("#<?php echo $this->campoSeguro('tabla_elementos_servicios') ?>").css('display', 'block');
+                    //-----------------------------------------------------------------------------
+
+
+                    swal({
+                        title: 'Registro Exitoso !',
+                        type: 'success',
+                        html:
+                                'Los Parámetros de <big>Items de Elemento ó Servicio</big>, ' +
+                                'Se Registraron de Forma Correcta.',
+                        confirmButtonText:
+                                'Ok'
+                    })
+
+                } else {
+                    swal({
+                        title: 'Ocurrio un problema...',
+                        type: 'error',
+                        html:
+                                'Recuerde Diligenciar los Campos Cantidad, Valor y Tiempo de Ejecución como <big>Números</big>, ' +
+                                'sin Puntos ni Comas, Gracias.',
+                        confirmButtonText:
+                                'Ok'
+                    })
+
+                }
+
+
+            } else {
+
+                swal({
+                    title: 'Ocurrio un problema...',
+                    type: 'error',
+                    html:
+                            'Los Parámetros de <big>Items de Servicio</big>, ' +
+                            'están mal diligenciados o incompletos. No es Posible Registrar.',
+                    confirmButtonText:
+                            'Ok'
+                })
+            }
+
+
+        }
+
+
+    });
+    
+    
+    $(document).on("click", ".eliminarItem", function () {
+
+        var parent = $(this).parents().get(0);
+        var element = $(parent).text();
+
+        var celdas = $(parent).find('td');
+
+        var tipo_item = String($(celdas[3]).html());
+        
+        $(parent).remove();
+
+        fullParamIt = "";
+        var contNumeral=0;
+        $('#tablaFP2 tr').each(function () {
+
+            /* Obtener todas las celdas */
+            var celdas = $(this).find('td');
+            
+            $(celdas[0]).text(contNumeral);
+
+            /* Mostrar el valor de cada celda */
+            celdas.each(function () {
+                fullParamIt += String($(this).html()) + "&";
+            });
+            contNumeral = contNumeral+1;
+
+        });
+
+        $("#<?php echo $this->campoSeguro('idsItems') ?>").val(fullParamIt);
+      
+
+        var countF = $("#tablaFP2 tr").length - 1;
+
+        $("#<?php echo $this->campoSeguro('countItems') ?>").val(countF);
+
+
+        if(tipo_item === '1 - BIEN'){
+            sumadorBienes = sumadorBienes -1;
+        }
+        if(tipo_item === '2 - SERVICIO')
+            {
+                sumadorServicios = sumadorServicios - 1; 
+            }
+     
+
+        
+    });
+    
+    
+     $("#btConfirmarMasivo").click(function () {
+    
+               
+        var inputFileImage = document.getElementById("<?php echo $this->campoSeguro('documentos_elementos') ?>");
+       
+        fileArchivo = inputFileImage.files[0];
+        
+        if(fileArchivo !== undefined){
+            dataArchivo = new FormData();
+            dataArchivo.append('file', fileArchivo);
+            analizarArchivo();
+        }
+        else{
+             swal({
+                title: 'No se ha cargado ningún archivo',
+                type: 'warning',
+                html:
+                        'Recuerde que puede descargar el Archivo Plantilla adjunto y cargarlo en este campo con los elementos y/o servicios registrados',
+                confirmButtonText:
+                        'Ok'
+            }) 
+        }
+      
+        
+    });
+    
+    
+    function analizarArchivo(elem, request, response) {
+
+        swal({
+              title: 'Cargando Información...',
+              type: 'info',
+              closeOnClickOutside: false,
+              allowOutsideClick: false,
+              onOpen: function () {
+                swal.showLoading()
+                // AJAX request
+
+
+                //*************************************************   
+
+                    $.ajax({
+                        url: "<?php echo $urlFinalArchivo ?>",
+                        type: "post",
+                        dataType: "json",
+                        data: dataArchivo,
+                        processData: false,
+                        contentType: false,
+                        success: function (data) {
+                        
+                            if (data[0] != " ") {
+
+
+
+                                $.each(data, function (indice, valor) {                        
+                                  
+                                    
+                                    if (data[indice].tipo.toUpperCase() == 'ELEMENTO') {
+                                        var nFilas = $("#tablaFP2 tr").length;
+
+                                        var count = nFilas;
+
+
+                                            var nuevaFila = "<tr id=\"nFilas\">";
+                                            nuevaFila += "<td>" + (nFilas)+"</td>";
+                                            nuevaFila += "<td>1 - ELEMENTO</td>";
+                                            nuevaFila += "<td>" + (data[indice].nombre)  + "</td>";
+                                            nuevaFila += "<td>" + (data[indice].descripcion)  + "</td>";
+                                            nuevaFila += "<td>" + (data[indice].tiempo_ejecucion) + "</td>";
+                                            nuevaFila += "<td>" + (data[indice].cantidad) + "</td>";
+                                            nuevaFila += "<td>" + (data[indice].unidad) + "</td>";
+                                            nuevaFila += "<td>" + (data[indice].valor)+ "</td>";
+                                            nuevaFila += "<td>" + (data[indice].iva) + "</td>";
+                                            nuevaFila += "<td>" + (data[indice].dependencia) + "</td>";
+                                            nuevaFila += "<td>" + (data[indice].funcionario) + "</td>";
+                                            nuevaFila += "<th class=\"eliminarItem\" scope=\"row\"><div class = \"widget\">Eliminar</div></th>";
+                                            nuevaFila += "</tr>";
+                                 
+
+                                  
+                                        $("#tablaFP2").append(nuevaFila);
+                                        
+                                        fullParamIt = "";
+                                        $('#tablaFP2 tr').each(function () {
+
+                                            /* Obtener todas las celdas */
+                                            var celdas = $(this).find('td');
+
+                                            /* Mostrar el valor de cada celda */
+                                            celdas.each(function () {
+                                                fullParamIt += String($(this).html()) + "&";
+                                            });
+
+
+                                        });
+                                        
+                                        
+
+                                        
+                                       
+                                      
+
+                                        $("#<?php echo $this->campoSeguro('idsItems') ?>").val(fullParamIt);
+
+                                        $("#<?php echo $this->campoSeguro('countItems') ?>").val(nFilas);
+                                        
+                                        sumadorBienes = sumadorBienes + 1;
+                                
+                                             
+
+                                    }
+                                    
+                                        if (data[indice].tipo.toUpperCase() == 'SERVICIO') {
+                                        var nFilas = $("#tablaFP2 tr").length;
+                                        
+                                       
+
+                                        var count = nFilas;
+                            
+
+
+                                       var nuevaFila = "<tr id=\"nFilas\">";
+                                            nuevaFila += "<td>" + (nFilas)+"</td>";
+                                            nuevaFila += "<td>2 - SERVICIO</td>";
+                                            nuevaFila += "<td>" + (data[indice].nombre)  + "</td>";
+                                            nuevaFila += "<td>" + (data[indice].descripcion)  + "</td>";
+                                            nuevaFila += "<td>" + (data[indice].tiempo_ejecucion) + "</td>";
+                                            nuevaFila += "<td>" + (data[indice].cantidad) + "</td>";
+                                            nuevaFila += "<td>" + (data[indice].unidad) + "</td>";
+                                            nuevaFila += "<td>" + (data[indice].valor)+ "</td>";
+                                            nuevaFila += "<td>" + (data[indice].iva) + "</td>";
+                                            nuevaFila += "<td>" + (data[indice].dependencia) + "</td>";
+                                            nuevaFila += "<td>" + (data[indice].funcionario) + "</td>";
+                                            nuevaFila += "<th class=\"eliminarItem\" scope=\"row\"><div class = \"widget\">Eliminar</div></th>";
+                                            nuevaFila += "</tr>";
+
+                                        $("#tablaFP2").append(nuevaFila);
+                                        
+                                        fullParamIt = "";
+                                        $('#tablaFP2 tr').each(function () {
+
+                                            /* Obtener todas las celdas */
+                                            var celdas = $(this).find('td');
+
+                                            /* Mostrar el valor de cada celda */
+                                            celdas.each(function () {
+                                                fullParamIt += String($(this).html()) + "&";
+                                            });
+
+
+                                        });
+                                        
+                                        
+
+                                        
+                                       
+
+                                        $("#<?php echo $this->campoSeguro('idsItems') ?>").val(fullParamIt);
+
+                                        $("#<?php echo $this->campoSeguro('countItems') ?>").val(nFilas);
+                                            sumadorServicios = sumadorServicios + 1;
+            //                    
+                                               
+                                    }
+                                });
+                                         swal.close()   
+                                            swal({
+                                                title: 'Registro Exitoso !',
+                                                type: 'success',
+                                                html:
+                                                        'Los Parámetros de <big>Items de Elemento ó Servicio</big>, ' +
+                                                        'Se Registraron de Forma Correcta.',
+                                                confirmButtonText:
+                                                        'Ok'
+                                            })
+
+
+                                          $("#<?php echo $this->campoSeguro('tabla_elementos_servicios')?>").css('display','block');
+                            } else {
+
+                                if (data != '') {
+                                    swal.close()
+                                    swal({
+                                        title: 'Ocurrio un problema...',
+                                        type: 'error',
+                                        html:
+                                                'Los Datos Registrados en el Archivo de Carga se Encuentran Erroneos. Revisar la celda correspondiente : <br><br><big> ' + data + ' . </big><br><br>' +
+                                                'Puede Verificar la GUIA de acuerdo al primer registro del documento plantilla para el correcto formato de los datos.',
+                                        confirmButtonText:
+                                                'Ok'
+
+                                    })
+                                } else {
+                                    swal.close()
+                                    swal({
+                                        title: 'Ocurrio un problema...',
+                                        type: 'error',
+                                        html:
+                                                'Se ha Presentado un Error en la Carga del Archivo,  ' +
+                                                'Puede Verificar la Plantilla en la Pestaña GUIA para el correcto formato de los datos.',
+                                        confirmButtonText:
+                                                'Ok'
+
+                                    })
+
+
+                                }
+
+
+                            }
+
+                        }
+                    });
+
+               }
+        })
+    }
+    ;
 
 
 

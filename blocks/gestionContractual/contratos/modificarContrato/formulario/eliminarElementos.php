@@ -67,16 +67,18 @@ class registrarForm {
         // ---------------- FIN SECCION: de Parámetros Generales del Formulario ----------------------------
         // ----------------INICIAR EL FORMULARIO ------------------------------------------------------------
         $atributos ['tipoEtiqueta'] = 'inicio';
-        echo $this->miFormulario->formulario($atributos); {
+        echo $this->miFormulario->formulario($atributos);
+        {
 
             // ---------------- SECCION: Controles del Formulario -----------------------------------------------
             $esteCampo = "marcoDatosBasicos";
             $atributos ['id'] = $esteCampo;
             $atributos ["estilo"] = "jqueryui";
             $atributos ['tipoEtiqueta'] = 'inicio';
-            $atributos ["leyenda"] = "Eliminar Elemento Orden";
+            $atributos ["leyenda"] = "Eliminar Item Orden";
             echo $this->miFormulario->marcoAgrupacion('inicio', $atributos);
-            unset($atributos); {
+            unset($atributos);
+            {
                 $miPaginaActual = $this->miConfigurador->getVariableConfiguracion('pagina');
 
                 $directorio = $this->miConfigurador->getVariableConfiguracion("host");
@@ -85,19 +87,19 @@ class registrarForm {
                 $arreglo = preg_replace('!s:(\d+):"(.*?)";!e', "'s:'.strlen('$2').':\"$2\";'", $_REQUEST['arreglo']);
                 $arreglo = unserialize($arreglo);
 
+
                 $variable = "pagina=" . $miPaginaActual;
                 $variable .= "&opcion=consultaElementos";
-                $variable .= "&mensaje_titulo=" . $_REQUEST ['mensaje_titulo'];
-                $variable .= "&numerocontrato=" . $_REQUEST ['numerocontrato'];
-                $variable .= "&id\_contrato=";
-                $variable .= "&numero\_contrato=";
-                $variable .= "&clase\_contrato=";
-                $variable .= "&id_contratista=";
-                $variable .= "&fecha\_inicio\_consulta=";
-                $variable .= "&fecha\_final\_consulta=";
+                $variable .= "&id_contrato=";
+                $variable .= "&clase_contrato=";
+                $variable .= "&fecha_inicio_consulta=";
+                $variable .= "&fecha_final_consulta=";
+                $variable .= "&id_elemento_acta=" . $_REQUEST ['id_elemento_acta'];
                 $variable .= "&usuario=";
-                $variable .= "&vigencia=" . $_REQUEST ['vigencia'];
-                $variable .= "&arreglo=" . $_REQUEST ['arreglo'];
+                $variable .= "&arreglo=" . stripslashes($_REQUEST ['arreglo']);
+                $variable .= "&mensaje_titulo=" . $_REQUEST ['mensaje_titulo'];
+                $variable .= "&numerocontrato=" . $_REQUEST['numerocontrato'];
+                $variable .= "&vigencia=" . $_REQUEST['vigencia'];
 
                 $variable = $this->miConfigurador->fabricaConexiones->crypto->codificar_url($variable, $directorio);
 
@@ -114,7 +116,7 @@ class registrarForm {
                 echo $this->miFormulario->enlace($atributos);
                 unset($atributos);
 
-                $mensaje = "¿ESTÁ SEGURO DE  ELIMINAR EL ELEMENTO DEL CONTRATO DE  " . $_REQUEST ["mensaje_titulo"] . "?";
+                $mensaje = "¿ESTÁ SEGURO DE  ELIMINAR EL ITEM DEL CONTRATO DE  " . $_REQUEST ["mensaje_titulo"] . "?";
 
                 // ---------------- CONTROL: Cuadro de Texto --------------------------------------------------------
                 $esteCampo = 'mensajeRegistro';
@@ -208,6 +210,10 @@ class registrarForm {
             $valorCodificado .= "&bloqueGrupo=" . $esteBloque ["grupo"];
             $valorCodificado .= "&opcion=eliminarElementoOrden";
             $valorCodificado .= "&id_elemento_acta=" . $_REQUEST ['id_elemento_acta'];
+            $valorCodificado .= "&numerocontrato=" . $_REQUEST ['numerocontrato'];
+            $valorCodificado .= "&vigencia=" . $_REQUEST ['vigencia'];
+            $valorCodificado .= "&mensaje_titulo=" . $_REQUEST ['mensaje_titulo'];
+            $valorCodificado .= "&arreglo=" . stripslashes($_REQUEST ['arreglo']);
             $valorCodificado .= "&usuario=" . $_REQUEST ['usuario'];
 
             /**

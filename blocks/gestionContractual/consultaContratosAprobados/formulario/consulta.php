@@ -90,54 +90,85 @@ class registrarForm {
         $atributos ["leyenda"] = "Consultar Contratos Suscritos";
         echo $this->miFormulario->marcoAgrupacion('inicio', $atributos); {
             
-            
-            $esteCampo = 'vigencia_contrato';
-            $atributos ['id'] = $esteCampo;
+            // ---------------- CONTROL: Cuadro de Texto --------------------------------------------------------
+            $esteCampo = 'vigencia_por_contrato';
+            $atributos ['columnas'] = 2;
             $atributos ['nombre'] = $esteCampo;
-            $atributos ['tipo'] = 'text';
-            $atributos ['estilo'] = 'jqueryui';
-            $atributos ['marco'] = true;
-            $atributos ['estiloMarco'] = '';
+            $atributos ['id'] = $esteCampo;
+            $atributos ['evento'] = '';
+            $atributos ['deshabilitado'] = false;
             $atributos ["etiquetaObligatorio"] = false;
-            $atributos ['columnas'] = 1;
-            $atributos ['dobleLinea'] = 0;
-            $atributos ['tabIndex'] = $tab;
+            $atributos ['tab'] = $tab;
+            $atributos ['tamanno'] = 1;
+            $atributos ['estilo'] = 'jqueryui';
+            $atributos ['validar'] = ' ';
+            $atributos ['limitar'] = false;
             $atributos ['etiqueta'] = $this->lenguaje->getCadena($esteCampo);
-            $atributos ['validar'] = '';
-            $atributos ['textoFondo'] = 'Digite el numero del contrato';
+            $atributos ['anchoEtiqueta'] = 213;
 
             if (isset($_REQUEST [$esteCampo])) {
-                $atributos ['valor'] = $_REQUEST [$esteCampo];
+                $atributos ['seleccion'] = $_REQUEST [$esteCampo];
             } else {
-                $atributos ['valor'] = '';
+                $atributos ['seleccion'] = 6;
             }
-            $atributos ['titulo'] = $this->lenguaje->getCadena($esteCampo . 'Titulo');
+
+            // $atributos ['matrizItems'] = $matrizItems;
+            // Utilizar lo siguiente cuando no se pase un arreglo:
+            $atributos ['baseDatos'] = 'contractual';
+            $atributos ['cadena_sql'] = $this->miSql->getCadenaSql("vigencia_contrato");
+
+
+            $atributos = array_merge($atributos, $atributosGlobales);
+
+
+            echo $this->miFormulario->campoCuadroLista($atributos);
+            unset($atributos);
+            
+            $esteCampo = 'consecutivo_por_contrato';
+            $atributos ['columnas'] = 2;
+            $atributos ['nombre'] = $esteCampo;
+            $atributos ['id'] = $esteCampo;
+            $atributos ['evento'] = '';
             $atributos ['deshabilitado'] = false;
-            $atributos ['tamanno'] = 35;
-            $atributos ['maximoTamanno'] = '';
+            $atributos ["etiquetaObligatorio"] = false;
+            $atributos ['tab'] = $tab;
+            $atributos ['tamanno'] = 1;
+            $atributos ['estilo'] = 'jqueryui';
+            $atributos ['validar'] = ' ';
+            $atributos ['limitar'] = false;
+            $atributos ['etiqueta'] = $this->lenguaje->getCadena($esteCampo);
             $atributos ['anchoEtiqueta'] = 213;
+            if (isset($_REQUEST [$esteCampo])) {
+                $atributos ['seleccion'] = $_REQUEST [$esteCampo];
+            } else {
+                $atributos ['seleccion'] = -1;
+            }
+
             $tab ++;
 
-            // Aplica atributos globales al control
-            $atributos = array_merge($atributos, $atributosGlobales);
-            echo $this->miFormulario->campoCuadroTexto($atributos);
-            unset($atributos);
+            $consulta_consecutivo= array('unidad' => $unidad[0]['unidad_ejecutora'], 'vigencia_curso' => date('Y'));
 
-            $esteCampo = 'id_contrato';
-            $atributos ["id"] = $esteCampo; // No cambiar este nombre
-            $atributos ["tipo"] = "hidden";
-            $atributos ['estilo'] = '';
-            $atributos ["obligatorio"] = false;
-            $atributos ['marco'] = true;
-            $atributos ["etiqueta"] = "";
-            if (isset($_REQUEST [$esteCampo])) {
-                $atributos ['valor'] = $_REQUEST [$esteCampo];
-            } else {
-                $atributos ['valor'] = '';
+            $atributos ['cadena_sql'] = $this->miSql->getCadenaSql("consecutivo_contrato2",$consulta_consecutivo);
+            $matrizItems = $esteRecursoDB->ejecutarAcceso($atributos ['cadena_sql'], "busqueda");
+
+            if ($matrizItems) {
+                $atributos ['matrizItems'] = $matrizItems;
             }
+            else{
+                     $matrizItems = array(
+                          array(
+                              ' ',
+                              'Sin Datos'
+                          )
+                     );
+                     $atributos ['matrizItems'] = $matrizItems;
+            }  
+
             $atributos = array_merge($atributos, $atributosGlobales);
-            echo $this->miFormulario->campoCuadroTexto($atributos);
+            echo $this->miFormulario->campoCuadroLista($atributos);
             unset($atributos);
+            
+         
 
 
             $esteCampo = 'unidad_ejecutora_consulta';

@@ -276,6 +276,7 @@ class EnLetras {
 
 }
 
+
 if ($_REQUEST ['funcion'] == 'letrasNumeros') {
 
     $funcionLetras = new EnLetras ();
@@ -305,6 +306,42 @@ if ($_REQUEST ['funcion'] == 'consultarInfoConvenio') {
 
     echo $resultado;
 }
+
+if ($_REQUEST ['funcion'] == 'consultaFechaFin') {
+
+    if($_REQUEST ['id_novedad'] > 0){
+        $datos = array('fecha_inicio' => $_REQUEST ['fecha_inicio'], 'numero_contrato' => $_REQUEST ['numero_contrato'],
+        'vigencia_contrato' => $_REQUEST ['vigencia_contrato'], 'id_novedad' => $_REQUEST ['id_novedad']);
+
+        $cadenaSql = $this->sql->getCadenaSql('consultarFechaFinActaAjaxNov', $datos);
+        $resultadoItems = $esteRecursoDB->ejecutarAcceso($cadenaSql, "busqueda");
+    }else{
+        $datos = array('fecha_inicio' => $_REQUEST ['fecha_inicio'], 'numero_contrato' => $_REQUEST ['numero_contrato'],
+        'vigencia_contrato' => $_REQUEST ['vigencia_contrato']);
+
+        $cadenaSql = $this->sql->getCadenaSql('consultarFechaFinActaAjax', $datos);
+        $resultadoItems = $esteRecursoDB->ejecutarAcceso($cadenaSql, "busqueda");
+    }
+
+
+    $fecha_fin = explode("-", $resultadoItems[0][0]);
+     
+    if($fecha_fin[2]=='31'){
+        $fecha_fin[2]='30';
+    }
+    $fecha_fin= $fecha_fin[0] . '-' . $fecha_fin[1] . '-' . $fecha_fin[2];
+ 
+    $resultadoItems[0][0]=$fecha_fin;
+    $resultadoItems[0][fecha_final_contrato]=$fecha_fin;
+     
+    $resultado = json_encode($resultadoItems[0]);
+     
+    echo $resultado;
+
+}
+
+
+
 if ($_REQUEST ['funcion'] == 'consultarInfoContratistaUnico') {
 
     $cadenaSql = $this->sql->getCadenaSql('informacion_contratista_unico', $_REQUEST['id']);
@@ -406,21 +443,50 @@ if ($_REQUEST ['funcion'] == 'consultaContrato') {
 }
 
 if ($_REQUEST ['funcion'] == 'consultaContratoConsecutivo') {
+  
 
-    $cadenaSqlUnidad = $this->sql->getCadenaSql("obtenerInfoUsuario", $_REQUEST['usuario']);
-    $unidad = $DBFrameWork->ejecutarAcceso($cadenaSqlUnidad, "busqueda");
+    $id_usuario = $_REQUEST['usuario'];
+    
+    $cadena_buscada = 'CC';
 
-    $cadenaSql = $this->sql->getCadenaSql('consultarInformacionSupervisor', $unidad[0]['identificacion']);
+    $posicion_coincidencia = strrpos($id_usuario, $cadena_buscada);
+    
+    //cambiooooooooooooo
+    if ($posicion_coincidencia !== 0 || $posicion_coincidencia === false) {
+        $supervisor = $_REQUEST['usuario'];
+    } else {
+        $cadenaSqlUnidad = $this->sql->getCadenaSql("obtenerInfoUsuario", $id_usuario);
+        $unidadEjecutora = $DBFrameWork->ejecutarAcceso($cadenaSqlUnidad, "busqueda");
+
+        $supervisor = $unidadEjecutora[0]['identificacion'];
+    }
+
+    $cadenaSql = $this->sql->getCadenaSql('consultarInformacionSupervisor', $supervisor);
     $info_supervisor = $esteRecursoDB->ejecutarAcceso($cadenaSql, "busqueda");
-
-
+    
+    if($info_supervisor[0]['dependencia_supervisor']=='DEP39'){
+        $unidad=2;
+    }
+    else{
+        $unidad=1;
+    }
+    
+    $dependencia_supervisor='';
+    for ($i = 0; $i < count($info_supervisor); $i++) {
+        $dependencia_supervisor .= "'".$info_supervisor[$i]['dependencia_supervisor']."',";
+    }
+    
+    $dependencia_supervisor = substr($dependencia_supervisor, 0, -1);
+    
+    //cambioooo
     $arreglo = array(
-        'documento' => $info_supervisor[0]['documento'],
-        'dependencia' => $info_supervisor[0]['dependencia_supervisor'],
+        'documento' => $info_supervisor[0][2],
+        'dependencia' => $dependencia_supervisor,
     );
 
     $cadenaSql = $this->sql->getCadenaSql('consultarInformacionSupervisorxDependencia', $arreglo);
     $id_supervisor = $esteRecursoDB->ejecutarAcceso($cadenaSql, "busqueda");
+  
 
     $ids_super = '';
 
@@ -429,11 +495,9 @@ if ($_REQUEST ['funcion'] == 'consultaContratoConsecutivo') {
     }
 
     $ids_super = substr($ids_super, 0, -1);
-    
-    
 
-    $cadenaSql = $this->sql->getCadenaSql('buscar_contrato2', array('unidad' => $unidad[0]['unidad_ejecutora']
-        , 'identificacion' => $unidad[0]['identificacion'], 'vigencia_curso' => $_REQUEST ['vigencia'], 'supervisor' => $ids_super ));
+    $cadenaSql = $this->sql->getCadenaSql('buscar_contrato2', array('unidad' => $unidad
+        , 'identificacion' => $unidad[0]['identificacion'], 'vigencia_curso' => $_REQUEST ['vigencia'], 'supervisor' => $ids_super));
     $resultadoItems = $esteRecursoDB->ejecutarAcceso($cadenaSql, "busqueda");
 
 
@@ -470,6 +534,43 @@ if ($_REQUEST ['funcion'] == 'generarDocumento') {
     $variable_documento .= "&numero_contrato=" . $numeroContrato;
     $variable_documento .= "&tipo_contrato=" . $resultado[0] ['tipo_contrato'];
     $variable_documento .= "&unidad=" . $resultado[0]['unidad_ejecutora'];
+    $variable_documento .= "&tamanoletra=" . $_REQUEST['fuentedocumento'];
+    $variable_documento .= "&usuario=" . $_REQUEST['usuario'];
+    $variable_documento .= "&vigencia=" . $vigencia;
+
+    $variable_documento = $this->miConfigurador->fabricaConexiones->crypto->codificar_url($variable_documento, $directorio);
+    $indice = strpos($variable_documento, "index");
+    $variable_documento = substr($variable_documento, $indice);
+    $resultado = json_encode($variable_documento);
+
+    echo $resultado;
+}
+if ($_REQUEST ['funcion'] == 'generarDocumentoNov') {
+
+
+    $esteBloque = $this->miConfigurador->getVariableConfiguracion("esteBloque");
+    $miPaginaActual = $this->miConfigurador->getVariableConfiguracion('pagina');
+    $directorio = $this->miConfigurador->getVariableConfiguracion("host");
+    $directorio .= $this->miConfigurador->getVariableConfiguracion("site") . "/index.php?";
+    $directorio .= $this->miConfigurador->getVariableConfiguracion("enlace");
+
+    $rutaBloque = $this->miConfigurador->getVariableConfiguracion("host");
+    $rutaBloque .= $this->miConfigurador->getVariableConfiguracion("site") . "/blocks/";
+    $rutaBloque .= $esteBloque ['grupo'] . "/" . $esteBloque ['nombre'];
+    
+   
+   
+
+    $idNovedad = substr($_REQUEST ['numerocontrato'], 4);
+    $vigencia = substr($_REQUEST ['numerocontrato'], 0, 4);
+    
+    
+    $variable_documento = "action=" . $esteBloque ["nombre"];
+    $variable_documento .= "&pagina=" . $this->miConfigurador->getVariableConfiguracion('pagina');
+    $variable_documento .= "&bloque=" . $esteBloque ['nombre'];
+    $variable_documento .= "&bloqueGrupo=" . $esteBloque ["grupo"];
+    $variable_documento .= "&opcion=generarDocumentoNovedad";
+    $variable_documento .= "&idNovedad=" . $idNovedad;
     $variable_documento .= "&tamanoletra=" . $_REQUEST['fuentedocumento'];
     $variable_documento .= "&usuario=" . $_REQUEST['usuario'];
     $variable_documento .= "&vigencia=" . $vigencia;

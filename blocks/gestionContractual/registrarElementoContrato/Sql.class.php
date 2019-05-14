@@ -139,7 +139,7 @@ class Sql extends \Sql {
             case "funcionarios" :
 
                 $cadenaSql = " SELECT  FUN_IDENTIFICACION , FUN_IDENTIFICACION ";
-                $cadenaSql .= " ||' '|| FUN_NOMBRE  FROM SICAARKA.FUNCIONARIOS WHERE FUN_ESTADO='A' ";
+                $cadenaSql .= " ||' - '|| FUN_NOMBRE  FROM SICAARKA.FUNCIONARIOS WHERE FUN_ESTADO='A' ";
                 $cadenaSql .= " ORDER BY FUN_NOMBRE";
 
                 break;
@@ -403,6 +403,28 @@ class Sql extends \Sql {
                 $cadenaSql .= " WHERE ad.\"ESF_ESTADO\"='A'";
 
                 break;
+            
+            case "buscar_dependencia" :
+                $cadenaSql = "SELECT DISTINCT  \"ESF_CODIGO_DEP\" , \"ESF_DEP_ENCARGADA\" ";
+                $cadenaSql .= " FROM \"dependencia_SIC\" ";
+                $cadenaSql .= " WHERE \"ESF_CODIGO_DEP\"='".$variable."';";
+
+                break;
+            
+            case "buscar_dependencia_por_nombre" :
+                $cadenaSql = "SELECT DISTINCT  \"ESF_CODIGO_DEP\" , \"ESF_DEP_ENCARGADA\" ";
+                $cadenaSql .= " FROM \"dependencia_SIC\" ";
+                $cadenaSql .= " WHERE \"ESF_DEP_ENCARGADA\"='".$variable."';";
+
+                break;           
+            
+            
+            
+             case "buscar_funcionario" :
+                 $cadenaSql = " SELECT  FUN_IDENTIFICACION , FUN_IDENTIFICACION ";
+                $cadenaSql .= " ||' - '|| FUN_NOMBRE  FROM SICAARKA.FUNCIONARIOS WHERE FUN_IDENTIFICACION='" . $variable . "'";
+
+                break;
 
 
 
@@ -486,6 +508,14 @@ class Sql extends \Sql {
                 $cadenaSql .= "FROM arka.aplicacion_iva;";
 
                 break;
+            case "consultar_valor_tipo_iva" :
+
+                $cadenaSql = "SELECT id_iva, descripcion ";
+                $cadenaSql .= "FROM arka.aplicacion_iva;";
+                $cadenaSql .= "WHERE id_iva=" . $variable;
+
+
+                break;
 
             case "consultar_bodega" :
 
@@ -540,10 +570,11 @@ class Sql extends \Sql {
 
                 break;
 
-            case "consultar_tipo_iva" :
+            case "consultar_tipo_valor_iva" :
 
-                $cadenaSql = "SELECT id_iva, descripcion ";
-                $cadenaSql .= "FROM arka.aplicacion_iva;";
+                $cadenaSql = "SELECT id_iva, descripcion, iva ";
+                $cadenaSql .= "FROM arka.aplicacion_iva ";
+                $cadenaSql .= "WHERE id_iva=" . $variable;
 
                 break;
 
@@ -584,7 +615,7 @@ class Sql extends \Sql {
 
                 break;
 
-           case "ingresar_elemento_tipo_1" :
+            case "ingresar_elemento_tipo_1" :
                 $cadenaSql = " INSERT INTO ";
                 $cadenaSql .= " elemento_acta_recibido(fecha_registro, nivel, tipo_bien, descripcion, 
 						cantidad, unidad, valor, iva, subtotal_sin_iva, total_iva, total_iva_con,
@@ -606,7 +637,7 @@ class Sql extends \Sql {
                 $cadenaSql .= "'" . $variable ['dependencia_solicitante'] . "',";
                 $cadenaSql .= "'" . $variable ['funcionario'] . "',";
                 $cadenaSql .= "'" . $variable ['numero_contrato'] . "', ";
-                $cadenaSql .= "" . $variable ['vigencia']. ") ";
+                $cadenaSql .= "" . $variable ['vigencia'] . ") ";
                 $cadenaSql .= "RETURNING  id_elemento_ac ";
 
                 break;
@@ -636,6 +667,34 @@ class Sql extends \Sql {
                 $cadenaSql .= "'" . $variable ['numero_contrato'] . "',";
                 $cadenaSql .= "'" . $variable ['vigencia'] . "')";
                 $cadenaSql .= "RETURNING  id_elemento_ac; ";
+
+                break;
+
+            case "ingresar_elemento_o_servicio" :
+
+                $cadenaSql = " INSERT INTO argo.item_contrato( ";
+                $cadenaSql .= " nombre, descripcion, unidad,
+			        cantidad, valor, iva, dependencia, funcionario,";
+                if ($variable ['tiempo_ejecucion'] != '') {
+                    $cadenaSql .= "tiempo_ejecucion,";
+                }
+                $cadenaSql .= " numero_contrato,vigencia,  tipo_item, estado)";
+                $cadenaSql .= " VALUES (";
+                $cadenaSql .= "'" . $variable ['nombre'] . "',";
+                $cadenaSql .= "'" . $variable ['descripcion'] . "',";
+                $cadenaSql .= "'" . $variable ['unidad'] . "',";
+                $cadenaSql .= $variable ['cantidad'] . ",";
+                $cadenaSql .= $variable ['valor'] . ",";
+                $cadenaSql .= $variable ['iva'] . ",";
+                $cadenaSql .= "'" . $variable ['dependencia_solicitante'] . "',";
+                $cadenaSql .= "'" . $variable ['funcionario'] . "',";
+                if ($variable ['tiempo_ejecucion'] != '') {
+                    $cadenaSql .= $variable ['tiempo_ejecucion'] . ",";
+                } 
+                $cadenaSql .= "'" . $variable ['numero_contrato'] . "',";
+                $cadenaSql .= $variable ['vigencia'] . ",";
+                $cadenaSql .= "'" . $variable ['item'] . "', 'TRUE')";
+                $cadenaSql .= "RETURNING  id; ";
 
                 break;
 
@@ -812,7 +871,10 @@ class Sql extends \Sql {
                 $cadenaSql .= "   ORDER BY data ASC  LIMIT 10 ;";
                 break;
 
-
+            case "unidadUdistrital" :
+                $cadenaSql = " SELECT id, unidad";
+                $cadenaSql .= " FROM agora.unidad WHERE estado = TRUE;";
+                break;
 
             //------------------------- Nuevos SQLs-----------------------------------------------------------
         }

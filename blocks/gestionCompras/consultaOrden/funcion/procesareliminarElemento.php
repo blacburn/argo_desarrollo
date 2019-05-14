@@ -26,9 +26,22 @@ class RegistradorOrden {
 		$cadenaSql = $this->miSql->getCadenaSql ( 'eliminarElementoActa', $_REQUEST ['id_elemento_acta'] );
 		$eliminado = $esteRecursoDB->ejecutarAcceso ( $cadenaSql, "acceso", $_REQUEST ['id_elemento_acta'] , "eliminarelemento" );
 		
+
+		 $datosModificacion = array(
+            "id_elemento_acta" => $_REQUEST ['id_elemento_acta'],
+            "id_orden" => $_REQUEST['id_orden'],
+            'id_contratista' => $_REQUEST['id_contratista'],
+            'numerocontrato' => $_REQUEST['numerocontrato'],
+            'vigencia' => $_REQUEST['vigencia'],
+            'arreglo' => stripslashes($_REQUEST['arreglo']),
+            'mensaje_titulo' => $_REQUEST['mensaje_titulo'],
+            
+            
+        );
+
 		if ($eliminado) {
 			$this->miConfigurador->setVariableConfiguracion ( "cache", true );
-			redireccion::redireccionar ( 'eliminoElemento' );
+			redireccion::redireccionar ( 'eliminoElemento',$datosModificacion );
 			exit ();
 		} else {
 			

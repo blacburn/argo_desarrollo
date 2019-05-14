@@ -89,6 +89,13 @@ class registrarForm {
                 $contrato = "";
                 $vigencia = "";
             }
+            
+            // NUEVOOOOOOOOOOOOOO
+            if (isset($_REQUEST ['consecutivo_por_contrato']) && $_REQUEST ['consecutivo_por_contrato'] != '') {
+                $contrato = $_REQUEST ['consecutivo_por_contrato'];
+            } else {
+                $contrato = "";
+            }
 
             if (isset($_REQUEST ['unidad_ejecutora_consulta']) && $_REQUEST ['unidad_ejecutora_consulta'] != '') {
                 $unidad_ejecutora = $_REQUEST ['unidad_ejecutora_consulta'];
@@ -134,7 +141,7 @@ class registrarForm {
                 'fecha_inicial' => $fecha_inicio,
                 'fecha_final' => $fecha_final,
                 'unidad_ejecutora' => $unidadEjecutora[0]['unidad_ejecutora'],
-                'vigencia_curso' => date("Y")
+                'vigencia_curso' => $_REQUEST['vigencia_por_contrato']
             );
 
 
@@ -186,16 +193,17 @@ class registrarForm {
 
             echo "<thead>
                              <tr>
-                                <th>Vigencia</th>
-                                <th>Número Contrato</th>            
-                                <th>Tipo Contrato</th>            
-            			<th>Contratista</th>
-                                <th>Estado</th>
-                                <th>Consultar Contrato</th>
-                                <th>Acta de Inicio</th>
-                                <th>Gestion RPs</th>
-                                <th>Cancelar Contrato</th>
-                                <th>Documento<input type='text' name='fuentedocumento' placeholder='Tamaño Fuente' id='fuentedocumento'></th>
+                                <th><center>Vigencia</center></th>
+                                <th><center>Número Contrato</center></th>            
+                                <th><center>Tipo Contrato</center></th>            
+                                <th><center>Contratista</center></th>
+                                <th><center>Fecha Registro</center></th>
+                                <th><center>Fecha Aprobado</center></th>
+                                <th><center>Estado</center></th>
+                                <th><center>Consultar Contrato</center></th>
+                                <th><center>Gestion RPs</center></th>
+                                <th><center>Cancelar Contrato</center></th>
+                                <th><center>Documento<input type='text' name='fuentedocumento' placeholder='Tamaño Fuente' id='fuentedocumento'></th>
                              </tr>
             </thead>
             <tbody>";
@@ -286,7 +294,10 @@ class registrarForm {
                 } else {
                     $mostrarHtml .= "<td><center><a href='javascript:void(0);' onclick='VerInfoSociedadTemporal(" . $valor ['proveedor'] . ");'> Información Contratista</a></center></td>";
                 }
-
+                $mostrarHtml .="
+                    <td><center>" . $valor ['fecha_registro'] . "</center></td>";
+                 $mostrarHtml .="
+                    <td><center>" . $valor ['fecha_suscripcion'] . "</center></td>";
                 $mostrarHtml .="
                     <td><center>" . $valor ['nombre_estado'] . "</center></td>
                     <td><center>
@@ -295,7 +306,7 @@ class registrarForm {
                         </a>
                   	</center> </td>";
 
-                $mostrarHtml .= "<td><center>" . $acta_inicio . "</center> </td>";
+           
 
                 $mostrarHtml .= "<td><center>" . $registro_presupuestal . "</center> </td>";
 

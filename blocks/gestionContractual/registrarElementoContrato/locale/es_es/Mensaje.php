@@ -1,6 +1,11 @@
 
 <?php
 
+
+$this->idioma ["tipo_consulta"] = "Item a Registrar: ";
+$this->idioma ["tipo_consultaTitulo"] = "Item a Registrar  ";
+
+
 $this->idioma ["referencia"] = "Referencia : ";
 $this->idioma ["referenciaTitulo"] = "Ingrese Referencia";
 
@@ -86,11 +91,15 @@ $this->idioma ["tipo_bienTitulo"] = "Ingrese Número de Placa ";
 $this->idioma ["placa_dev"] = "Placa : ";
 $this->idioma ["placa_devTitulo"] = "Ingrese Número de Placa";
 
-$this->idioma ["marca"] = "Marca : ";
-$this->idioma ["marcaTitulo"] = "Ingrese Marca Elemento";
 
-$this->idioma ["serie"] = "Serie : ";
-$this->idioma ["serieTitulo"] = "Ingrese Serie Elemento";
+
+$this->idioma ["nombre"] = "Nombre : ";
+$this->idioma ["nombreTitulo"] = "Ingrese Nombre ELemento o Servicio";
+
+$this->idioma ["tiempo_ejecucion"] = "Tiempo de Ejecución <br> en Días: ";
+$this->idioma ["tiempo_ejecucionTitulo"] = "Ingrese tiempo de  Ejecución en días";
+
+
 
 $this->idioma ["placa_dev"] = "Placa : ";
 $this->idioma ["placa_devTitulo"] = "Ingrese Número de Placa";
@@ -113,11 +122,9 @@ $this->idioma ["cantidadTitulo"] = "Ingrese Cantidad";
 $this->idioma ["unidad"] = "Unidad de Medida: ";
 $this->idioma ["unidadTitulo"] = "Ingrese Unidad de Medida";
 
-$this->idioma ["valor"] = "Valor del Elemento: ";
-$this->idioma ["valorTitulo"] = "Ingrese Valor del Elemento";
 
-$this->idioma ["valor"] = "Valor del Elemento: ";
-$this->idioma ["valorTitulo"] = "Ingrese Valor del Elemento";
+$this->idioma ["valor"] = "Valor Unitario del <br>Elemento ó Servicio:  ";
+$this->idioma ["valorTitulo"] = "Ingrese Valor Unitario del Elemento";
 
 $this->idioma ["iva"] = "IVA : ";
 $this->idioma ["ivaTitulo"] = "Seleccione IVA";
@@ -362,4 +369,6 @@ $this->idioma ["botonAceptar"] = "Guardar";
 $this->idioma ["botonCancelar"] = "Cancelar";
 
 $this->idioma ["division1Titulo"] = "Seleccione Fecha Disponibilidad Presupuestal";
+
+$this->idioma["botonAgregarItem"] = "Agregar";
 ?>
